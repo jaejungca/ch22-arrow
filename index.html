@@ -7,7 +7,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
 <meta name="author" content="Jae Jung">
-<meta name="dcterms.date" content="2026-03-14">
+<meta name="dcterms.date" content="2026-03-17">
 
 <title>Apache Arrow and Apache Parqet</title>
 <style>
@@ -84,80 +84,80 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
     <h2 id="toc-title">Table of contents</h2>
    
   <ul>
-  <li><a href="#introduction-to-arrow" id="toc-introduction-to-arrow" class="nav-link active" data-scroll-target="#introduction-to-arrow">Introduction to Arrow</a>
+  <li><a href="#introduction-to-arrow" id="toc-introduction-to-arrow" class="nav-link active" data-scroll-target="#introduction-to-arrow"><span class="header-section-number">1</span> Introduction to Arrow</a>
   <ul class="collapse">
-  <li><a href="#what-is-apache-arrow" id="toc-what-is-apache-arrow" class="nav-link" data-scroll-target="#what-is-apache-arrow">What is Apache Arrow?</a></li>
-  <li><a href="#learning-resources" id="toc-learning-resources" class="nav-link" data-scroll-target="#learning-resources">Learning Resources</a></li>
-  <li><a href="#what-you-will-learn-from-this-lecture" id="toc-what-you-will-learn-from-this-lecture" class="nav-link" data-scroll-target="#what-you-will-learn-from-this-lecture">What you will learn from this lecture</a></li>
-  <li><a href="#when-to-use-arrow-vs.-dbplyr" id="toc-when-to-use-arrow-vs.-dbplyr" class="nav-link" data-scroll-target="#when-to-use-arrow-vs.-dbplyr">When to Use Arrow vs.&nbsp;dbplyr</a></li>
+  <li><a href="#what-is-apache-arrow" id="toc-what-is-apache-arrow" class="nav-link" data-scroll-target="#what-is-apache-arrow"><span class="header-section-number">1.1</span> What is Apache Arrow?</a></li>
+  <li><a href="#learning-resources" id="toc-learning-resources" class="nav-link" data-scroll-target="#learning-resources"><span class="header-section-number">1.2</span> Learning Resources</a></li>
+  <li><a href="#what-you-will-learn-from-this-lecture" id="toc-what-you-will-learn-from-this-lecture" class="nav-link" data-scroll-target="#what-you-will-learn-from-this-lecture"><span class="header-section-number">1.3</span> What you will learn from this lecture</a></li>
+  <li><a href="#when-to-use-arrow-vs.-dbplyr" id="toc-when-to-use-arrow-vs.-dbplyr" class="nav-link" data-scroll-target="#when-to-use-arrow-vs.-dbplyr"><span class="header-section-number">1.4</span> When to Use Arrow vs.&nbsp;dbplyr</a></li>
   </ul></li>
-  <li><a href="#getting-the-data" id="toc-getting-the-data" class="nav-link" data-scroll-target="#getting-the-data">Getting the data</a>
+  <li><a href="#getting-the-data" id="toc-getting-the-data" class="nav-link" data-scroll-target="#getting-the-data"><span class="header-section-number">2</span> Getting the data</a>
   <ul class="collapse">
-  <li><a href="#data-source" id="toc-data-source" class="nav-link" data-scroll-target="#data-source">Data Source:</a></li>
-  <li><a href="#whats-in-the-data" id="toc-whats-in-the-data" class="nav-link" data-scroll-target="#whats-in-the-data">What’s in the Data?</a></li>
-  <li><a href="#setting-up-arrow" id="toc-setting-up-arrow" class="nav-link" data-scroll-target="#setting-up-arrow">Setting Up Arrow</a></li>
-  <li><a href="#downloading-data" id="toc-downloading-data" class="nav-link" data-scroll-target="#downloading-data">Downloading Data</a></li>
+  <li><a href="#data-source" id="toc-data-source" class="nav-link" data-scroll-target="#data-source"><span class="header-section-number">2.1</span> Data Source:</a></li>
+  <li><a href="#whats-in-the-data" id="toc-whats-in-the-data" class="nav-link" data-scroll-target="#whats-in-the-data"><span class="header-section-number">2.2</span> What’s in the Data?</a></li>
+  <li><a href="#setting-up-arrow" id="toc-setting-up-arrow" class="nav-link" data-scroll-target="#setting-up-arrow"><span class="header-section-number">2.3</span> Setting Up Arrow</a></li>
+  <li><a href="#downloading-data" id="toc-downloading-data" class="nav-link" data-scroll-target="#downloading-data"><span class="header-section-number">2.4</span> Downloading Data</a></li>
   </ul></li>
-  <li><a href="#opening-a-dataset" id="toc-opening-a-dataset" class="nav-link" data-scroll-target="#opening-a-dataset">Opening a Dataset</a></li>
-  <li><a href="#data-manipulation-with-arrow" id="toc-data-manipulation-with-arrow" class="nav-link" data-scroll-target="#data-manipulation-with-arrow">Data Manipulation with Arrow</a>
+  <li><a href="#opening-a-dataset" id="toc-opening-a-dataset" class="nav-link" data-scroll-target="#opening-a-dataset"><span class="header-section-number">3</span> Opening a Dataset</a></li>
+  <li><a href="#data-manipulation-with-arrow" id="toc-data-manipulation-with-arrow" class="nav-link" data-scroll-target="#data-manipulation-with-arrow"><span class="header-section-number">4</span> Data Manipulation with Arrow</a>
   <ul class="collapse">
-  <li><a href="#collect-vs.-compute" id="toc-collect-vs.-compute" class="nav-link" data-scroll-target="#collect-vs.-compute"><code>collect()</code> vs.&nbsp;<code>compute()</code></a>
+  <li><a href="#collect-vs.-compute" id="toc-collect-vs.-compute" class="nav-link" data-scroll-target="#collect-vs.-compute"><span class="header-section-number">4.1</span> <code>collect()</code> vs.&nbsp;<code>compute()</code></a>
   <ul class="collapse">
-  <li><a href="#key-differences" id="toc-key-differences" class="nav-link" data-scroll-target="#key-differences">Key Differences</a></li>
+  <li><a href="#key-differences" id="toc-key-differences" class="nav-link" data-scroll-target="#key-differences"><span class="header-section-number">4.1.1</span> Key Differences</a></li>
   </ul></li>
-  <li><a href="#when-to-use-which" id="toc-when-to-use-which" class="nav-link" data-scroll-target="#when-to-use-which">When to use which</a>
+  <li><a href="#when-to-use-which" id="toc-when-to-use-which" class="nav-link" data-scroll-target="#when-to-use-which"><span class="header-section-number">4.2</span> When to use which</a>
   <ul class="collapse">
-  <li><a href="#use-case" id="toc-use-case" class="nav-link" data-scroll-target="#use-case">Use Case</a></li>
-  </ul></li>
-  </ul></li>
-  <li><a href="#engineering-data-with-apache-parquet" id="toc-engineering-data-with-apache-parquet" class="nav-link" data-scroll-target="#engineering-data-with-apache-parquet">Engineering Data with Apache Parquet</a>
-  <ul class="collapse">
-  <li><a href="#what-is-apache-parquet" id="toc-what-is-apache-parquet" class="nav-link" data-scroll-target="#what-is-apache-parquet">What is Apache Parquet?</a>
-  <ul class="collapse">
-  <li><a href="#key-features" id="toc-key-features" class="nav-link" data-scroll-target="#key-features">Key Features</a></li>
-  </ul></li>
-  <li><a href="#why-it-matters" id="toc-why-it-matters" class="nav-link" data-scroll-target="#why-it-matters">Why It Matters</a></li>
-  <li><a href="#advantages-of-parquet" id="toc-advantages-of-parquet" class="nav-link" data-scroll-target="#advantages-of-parquet">Advantages of parquet</a></li>
-  <li><a href="#parquet-vs.-other-formats" id="toc-parquet-vs.-other-formats" class="nav-link" data-scroll-target="#parquet-vs.-other-formats">Parquet vs.&nbsp;Other Formats</a></li>
-  <li><a href="#common-use-in-r" id="toc-common-use-in-r" class="nav-link" data-scroll-target="#common-use-in-r">Common Use in R</a></li>
-  <li><a href="#resources" id="toc-resources" class="nav-link" data-scroll-target="#resources">Resources</a></li>
-  <li><a href="#parquet-format" id="toc-parquet-format" class="nav-link" data-scroll-target="#parquet-format">Parquet Format</a></li>
-  </ul></li>
-  <li><a href="#converting-arrow-data-type-to-a-single-parquet-data" id="toc-converting-arrow-data-type-to-a-single-parquet-data" class="nav-link" data-scroll-target="#converting-arrow-data-type-to-a-single-parquet-data">Converting Arrow Data Type to a Single Parquet Data</a>
-  <ul class="collapse">
-  <li><a href="#saving-to-local-directory" id="toc-saving-to-local-directory" class="nav-link" data-scroll-target="#saving-to-local-directory">Saving to Local Directory</a></li>
-  <li><a href="#opening-the-parquet-file-arrow-dplyr" id="toc-opening-the-parquet-file-arrow-dplyr" class="nav-link" data-scroll-target="#opening-the-parquet-file-arrow-dplyr">Opening The Parquet File + Arrow + dplyr</a>
-  <ul class="collapse">
-  <li><a href="#measuring-speed" id="toc-measuring-speed" class="nav-link" data-scroll-target="#measuring-speed">Measuring Speed</a></li>
-  </ul></li>
-  <li><a href="#measuring-size" id="toc-measuring-size" class="nav-link" data-scroll-target="#measuring-size">Measuring Size</a></li>
-  </ul></li>
-  <li><a href="#partitioning-converting-arrow-file-into-multiple-parquets" id="toc-partitioning-converting-arrow-file-into-multiple-parquets" class="nav-link" data-scroll-target="#partitioning-converting-arrow-file-into-multiple-parquets">Partitioning (Converting Arrow File into Multiple Parquets)</a>
-  <ul class="collapse">
-  <li><a href="#saving-data" id="toc-saving-data" class="nav-link" data-scroll-target="#saving-data">Saving Data</a></li>
-  <li><a href="#opening-the-data" id="toc-opening-the-data" class="nav-link" data-scroll-target="#opening-the-data">Opening the Data</a>
-  <ul class="collapse">
-  <li><a href="#measuring-speed-1" id="toc-measuring-speed-1" class="nav-link" data-scroll-target="#measuring-speed-1">Measuring Speed</a></li>
-  </ul></li>
-  <li><a href="#comparisons-with-more-filtering" id="toc-comparisons-with-more-filtering" class="nav-link" data-scroll-target="#comparisons-with-more-filtering">Comparisons with more filtering</a></li>
-  </ul></li>
-  <li><a href="#partitioning-topic-in-ch22" id="toc-partitioning-topic-in-ch22" class="nav-link" data-scroll-target="#partitioning-topic-in-ch22">Partitioning topic in Ch22</a>
-  <ul class="collapse">
-  <li><a href="#saving-to-local-data" id="toc-saving-to-local-data" class="nav-link" data-scroll-target="#saving-to-local-data">Saving to Local Data</a></li>
-  <li><a href="#reading-the-partioined-parquet-data-in" id="toc-reading-the-partioined-parquet-data-in" class="nav-link" data-scroll-target="#reading-the-partioined-parquet-data-in">Reading the Partioined Parquet data in</a></li>
-  <li><a href="#using-dplyr-pipeline" id="toc-using-dplyr-pipeline" class="nav-link" data-scroll-target="#using-dplyr-pipeline">Using <code>dplyr</code> pipeline</a></li>
-  <li><a href="#performance-comparison" id="toc-performance-comparison" class="nav-link" data-scroll-target="#performance-comparison">Performance Comparison</a>
-  <ul class="collapse">
-  <li><a href="#one-large-csv-file-saved-with-arrow" id="toc-one-large-csv-file-saved-with-arrow" class="nav-link" data-scroll-target="#one-large-csv-file-saved-with-arrow">One large CSV file Saved with Arrow</a></li>
-  <li><a href="#different-smaller-parquet-files" id="toc-different-smaller-parquet-files" class="nav-link" data-scroll-target="#different-smaller-parquet-files">18 different smaller parquet files</a></li>
-  <li><a href="#performance-attribution" id="toc-performance-attribution" class="nav-link" data-scroll-target="#performance-attribution">Performance Attribution</a></li>
+  <li><a href="#use-case" id="toc-use-case" class="nav-link" data-scroll-target="#use-case"><span class="header-section-number">4.2.1</span> Use Case</a></li>
   </ul></li>
   </ul></li>
-  <li><a href="#using-duckdb-with-arrow" id="toc-using-duckdb-with-arrow" class="nav-link" data-scroll-target="#using-duckdb-with-arrow">Using Duckdb with Arrow</a>
+  <li><a href="#engineering-data-with-apache-parquet" id="toc-engineering-data-with-apache-parquet" class="nav-link" data-scroll-target="#engineering-data-with-apache-parquet"><span class="header-section-number">5</span> Engineering Data with Apache Parquet</a>
   <ul class="collapse">
-  <li><a href="#assignment" id="toc-assignment" class="nav-link" data-scroll-target="#assignment">Assignment</a></li>
+  <li><a href="#what-is-apache-parquet" id="toc-what-is-apache-parquet" class="nav-link" data-scroll-target="#what-is-apache-parquet"><span class="header-section-number">5.1</span> What is Apache Parquet?</a>
+  <ul class="collapse">
+  <li><a href="#key-features" id="toc-key-features" class="nav-link" data-scroll-target="#key-features"><span class="header-section-number">5.1.1</span> Key Features</a></li>
   </ul></li>
-  <li><a href="#reference" id="toc-reference" class="nav-link" data-scroll-target="#reference">Reference</a></li>
+  <li><a href="#why-it-matters" id="toc-why-it-matters" class="nav-link" data-scroll-target="#why-it-matters"><span class="header-section-number">5.2</span> Why It Matters</a></li>
+  <li><a href="#advantages-of-parquet" id="toc-advantages-of-parquet" class="nav-link" data-scroll-target="#advantages-of-parquet"><span class="header-section-number">5.3</span> Advantages of parquet</a></li>
+  <li><a href="#parquet-vs.-other-formats" id="toc-parquet-vs.-other-formats" class="nav-link" data-scroll-target="#parquet-vs.-other-formats"><span class="header-section-number">5.4</span> Parquet vs.&nbsp;Other Formats</a></li>
+  <li><a href="#common-use-in-r" id="toc-common-use-in-r" class="nav-link" data-scroll-target="#common-use-in-r"><span class="header-section-number">5.5</span> Common Use in R</a></li>
+  <li><a href="#resources" id="toc-resources" class="nav-link" data-scroll-target="#resources"><span class="header-section-number">5.6</span> Resources</a></li>
+  <li><a href="#parquet-format" id="toc-parquet-format" class="nav-link" data-scroll-target="#parquet-format"><span class="header-section-number">5.7</span> Parquet Format</a></li>
+  </ul></li>
+  <li><a href="#converting-arrow-data-type-to-a-single-parquet-data" id="toc-converting-arrow-data-type-to-a-single-parquet-data" class="nav-link" data-scroll-target="#converting-arrow-data-type-to-a-single-parquet-data"><span class="header-section-number">6</span> Converting Arrow Data Type to a Single Parquet Data</a>
+  <ul class="collapse">
+  <li><a href="#saving-to-local-directory" id="toc-saving-to-local-directory" class="nav-link" data-scroll-target="#saving-to-local-directory"><span class="header-section-number">6.1</span> Saving to Local Directory</a></li>
+  <li><a href="#opening-the-parquet-file-arrow-dplyr" id="toc-opening-the-parquet-file-arrow-dplyr" class="nav-link" data-scroll-target="#opening-the-parquet-file-arrow-dplyr"><span class="header-section-number">6.2</span> Opening The Parquet File + Arrow + dplyr</a>
+  <ul class="collapse">
+  <li><a href="#measuring-speed" id="toc-measuring-speed" class="nav-link" data-scroll-target="#measuring-speed"><span class="header-section-number">6.2.1</span> Measuring Speed</a></li>
+  </ul></li>
+  <li><a href="#measuring-size" id="toc-measuring-size" class="nav-link" data-scroll-target="#measuring-size"><span class="header-section-number">6.3</span> Measuring Size</a></li>
+  </ul></li>
+  <li><a href="#partitioning-converting-arrow-file-into-multiple-parquets" id="toc-partitioning-converting-arrow-file-into-multiple-parquets" class="nav-link" data-scroll-target="#partitioning-converting-arrow-file-into-multiple-parquets"><span class="header-section-number">7</span> Partitioning (Converting Arrow File into Multiple Parquets)</a>
+  <ul class="collapse">
+  <li><a href="#saving-data" id="toc-saving-data" class="nav-link" data-scroll-target="#saving-data"><span class="header-section-number">7.1</span> Saving Data</a></li>
+  <li><a href="#opening-the-data" id="toc-opening-the-data" class="nav-link" data-scroll-target="#opening-the-data"><span class="header-section-number">7.2</span> Opening the Data</a>
+  <ul class="collapse">
+  <li><a href="#measuring-speed-1" id="toc-measuring-speed-1" class="nav-link" data-scroll-target="#measuring-speed-1"><span class="header-section-number">7.2.1</span> Measuring Speed</a></li>
+  </ul></li>
+  <li><a href="#comparisons-with-more-filtering" id="toc-comparisons-with-more-filtering" class="nav-link" data-scroll-target="#comparisons-with-more-filtering"><span class="header-section-number">7.3</span> Comparisons with more filtering</a></li>
+  </ul></li>
+  <li><a href="#partitioning-topic-in-ch22" id="toc-partitioning-topic-in-ch22" class="nav-link" data-scroll-target="#partitioning-topic-in-ch22"><span class="header-section-number">8</span> Partitioning topic in Ch22</a>
+  <ul class="collapse">
+  <li><a href="#saving-to-local-data" id="toc-saving-to-local-data" class="nav-link" data-scroll-target="#saving-to-local-data"><span class="header-section-number">8.1</span> Saving to Local Data</a></li>
+  <li><a href="#reading-the-partioined-parquet-data-in" id="toc-reading-the-partioined-parquet-data-in" class="nav-link" data-scroll-target="#reading-the-partioined-parquet-data-in"><span class="header-section-number">8.2</span> Reading the Partioined Parquet data in</a></li>
+  <li><a href="#using-dplyr-pipeline" id="toc-using-dplyr-pipeline" class="nav-link" data-scroll-target="#using-dplyr-pipeline"><span class="header-section-number">8.3</span> Using <code>dplyr</code> pipeline</a></li>
+  <li><a href="#performance-comparison" id="toc-performance-comparison" class="nav-link" data-scroll-target="#performance-comparison"><span class="header-section-number">8.4</span> Performance Comparison</a>
+  <ul class="collapse">
+  <li><a href="#one-large-csv-file-saved-with-arrow" id="toc-one-large-csv-file-saved-with-arrow" class="nav-link" data-scroll-target="#one-large-csv-file-saved-with-arrow"><span class="header-section-number">8.4.1</span> One large CSV file Saved with Arrow</a></li>
+  <li><a href="#different-smaller-parquet-files" id="toc-different-smaller-parquet-files" class="nav-link" data-scroll-target="#different-smaller-parquet-files"><span class="header-section-number">8.4.2</span> 18 different smaller parquet files</a></li>
+  <li><a href="#performance-attribution" id="toc-performance-attribution" class="nav-link" data-scroll-target="#performance-attribution"><span class="header-section-number">8.4.3</span> Performance Attribution</a></li>
+  </ul></li>
+  </ul></li>
+  <li><a href="#using-duckdb-with-arrow" id="toc-using-duckdb-with-arrow" class="nav-link" data-scroll-target="#using-duckdb-with-arrow"><span class="header-section-number">9</span> Using Duckdb with Arrow</a>
+  <ul class="collapse">
+  <li><a href="#assignment" id="toc-assignment" class="nav-link" data-scroll-target="#assignment"><span class="header-section-number">9.1</span> Assignment</a></li>
+  </ul></li>
+  <li><a href="#reference" id="toc-reference" class="nav-link" data-scroll-target="#reference"><span class="header-section-number">10</span> Reference</a></li>
   </ul>
 </nav>
 </div>
@@ -183,7 +183,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
     <div>
     <div class="quarto-title-meta-heading">Published</div>
     <div class="quarto-title-meta-contents">
-      <p class="date">March 14, 2026</p>
+      <p class="date">March 17, 2026</p>
     </div>
   </div>
   
@@ -198,86 +198,86 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
     <h2 id="toc-title">Table of contents</h2>
    
   <ul>
-  <li><a href="#introduction-to-arrow" id="toc-introduction-to-arrow">Introduction to Arrow</a>
+  <li><a href="#introduction-to-arrow" id="toc-introduction-to-arrow"><span class="header-section-number">1</span> Introduction to Arrow</a>
   <ul>
-  <li><a href="#what-is-apache-arrow" id="toc-what-is-apache-arrow">What is Apache Arrow?</a></li>
-  <li><a href="#learning-resources" id="toc-learning-resources">Learning Resources</a></li>
-  <li><a href="#what-you-will-learn-from-this-lecture" id="toc-what-you-will-learn-from-this-lecture">What you will learn from this lecture</a></li>
-  <li><a href="#when-to-use-arrow-vs.-dbplyr" id="toc-when-to-use-arrow-vs.-dbplyr">When to Use Arrow vs.&nbsp;dbplyr</a></li>
+  <li><a href="#what-is-apache-arrow" id="toc-what-is-apache-arrow"><span class="header-section-number">1.1</span> What is Apache Arrow?</a></li>
+  <li><a href="#learning-resources" id="toc-learning-resources"><span class="header-section-number">1.2</span> Learning Resources</a></li>
+  <li><a href="#what-you-will-learn-from-this-lecture" id="toc-what-you-will-learn-from-this-lecture"><span class="header-section-number">1.3</span> What you will learn from this lecture</a></li>
+  <li><a href="#when-to-use-arrow-vs.-dbplyr" id="toc-when-to-use-arrow-vs.-dbplyr"><span class="header-section-number">1.4</span> When to Use Arrow vs.&nbsp;dbplyr</a></li>
   </ul></li>
-  <li><a href="#getting-the-data" id="toc-getting-the-data">Getting the data</a>
+  <li><a href="#getting-the-data" id="toc-getting-the-data"><span class="header-section-number">2</span> Getting the data</a>
   <ul>
-  <li><a href="#data-source" id="toc-data-source">Data Source:</a></li>
-  <li><a href="#whats-in-the-data" id="toc-whats-in-the-data">What’s in the Data?</a></li>
-  <li><a href="#setting-up-arrow" id="toc-setting-up-arrow">Setting Up Arrow</a></li>
-  <li><a href="#downloading-data" id="toc-downloading-data">Downloading Data</a></li>
+  <li><a href="#data-source" id="toc-data-source"><span class="header-section-number">2.1</span> Data Source:</a></li>
+  <li><a href="#whats-in-the-data" id="toc-whats-in-the-data"><span class="header-section-number">2.2</span> What’s in the Data?</a></li>
+  <li><a href="#setting-up-arrow" id="toc-setting-up-arrow"><span class="header-section-number">2.3</span> Setting Up Arrow</a></li>
+  <li><a href="#downloading-data" id="toc-downloading-data"><span class="header-section-number">2.4</span> Downloading Data</a></li>
   </ul></li>
-  <li><a href="#opening-a-dataset" id="toc-opening-a-dataset">Opening a Dataset</a></li>
-  <li><a href="#data-manipulation-with-arrow" id="toc-data-manipulation-with-arrow">Data Manipulation with Arrow</a>
+  <li><a href="#opening-a-dataset" id="toc-opening-a-dataset"><span class="header-section-number">3</span> Opening a Dataset</a></li>
+  <li><a href="#data-manipulation-with-arrow" id="toc-data-manipulation-with-arrow"><span class="header-section-number">4</span> Data Manipulation with Arrow</a>
   <ul>
-  <li><a href="#collect-vs.-compute" id="toc-collect-vs.-compute"><code>collect()</code> vs.&nbsp;<code>compute()</code></a>
+  <li><a href="#collect-vs.-compute" id="toc-collect-vs.-compute"><span class="header-section-number">4.1</span> <code>collect()</code> vs.&nbsp;<code>compute()</code></a>
   <ul>
-  <li><a href="#key-differences" id="toc-key-differences">Key Differences</a></li>
+  <li><a href="#key-differences" id="toc-key-differences"><span class="header-section-number">4.1.1</span> Key Differences</a></li>
   </ul></li>
-  <li><a href="#when-to-use-which" id="toc-when-to-use-which">When to use which</a>
+  <li><a href="#when-to-use-which" id="toc-when-to-use-which"><span class="header-section-number">4.2</span> When to use which</a>
   <ul>
-  <li><a href="#use-case" id="toc-use-case">Use Case</a></li>
-  </ul></li>
-  </ul></li>
-  <li><a href="#engineering-data-with-apache-parquet" id="toc-engineering-data-with-apache-parquet">Engineering Data with Apache Parquet</a>
-  <ul>
-  <li><a href="#what-is-apache-parquet" id="toc-what-is-apache-parquet">What is Apache Parquet?</a>
-  <ul>
-  <li><a href="#key-features" id="toc-key-features">Key Features</a></li>
-  </ul></li>
-  <li><a href="#why-it-matters" id="toc-why-it-matters">Why It Matters</a></li>
-  <li><a href="#advantages-of-parquet" id="toc-advantages-of-parquet">Advantages of parquet</a></li>
-  <li><a href="#parquet-vs.-other-formats" id="toc-parquet-vs.-other-formats">Parquet vs.&nbsp;Other Formats</a></li>
-  <li><a href="#common-use-in-r" id="toc-common-use-in-r">Common Use in R</a></li>
-  <li><a href="#resources" id="toc-resources">Resources</a></li>
-  <li><a href="#parquet-format" id="toc-parquet-format">Parquet Format</a></li>
-  </ul></li>
-  <li><a href="#converting-arrow-data-type-to-a-single-parquet-data" id="toc-converting-arrow-data-type-to-a-single-parquet-data">Converting Arrow Data Type to a Single Parquet Data</a>
-  <ul>
-  <li><a href="#saving-to-local-directory" id="toc-saving-to-local-directory">Saving to Local Directory</a></li>
-  <li><a href="#opening-the-parquet-file-arrow-dplyr" id="toc-opening-the-parquet-file-arrow-dplyr">Opening The Parquet File + Arrow + dplyr</a>
-  <ul>
-  <li><a href="#measuring-speed" id="toc-measuring-speed">Measuring Speed</a></li>
-  </ul></li>
-  <li><a href="#measuring-size" id="toc-measuring-size">Measuring Size</a></li>
-  </ul></li>
-  <li><a href="#partitioning-converting-arrow-file-into-multiple-parquets" id="toc-partitioning-converting-arrow-file-into-multiple-parquets">Partitioning (Converting Arrow File into Multiple Parquets)</a>
-  <ul>
-  <li><a href="#saving-data" id="toc-saving-data">Saving Data</a></li>
-  <li><a href="#opening-the-data" id="toc-opening-the-data">Opening the Data</a>
-  <ul>
-  <li><a href="#measuring-speed-1" id="toc-measuring-speed-1">Measuring Speed</a></li>
-  </ul></li>
-  <li><a href="#comparisons-with-more-filtering" id="toc-comparisons-with-more-filtering">Comparisons with more filtering</a></li>
-  </ul></li>
-  <li><a href="#partitioning-topic-in-ch22" id="toc-partitioning-topic-in-ch22">Partitioning topic in Ch22</a>
-  <ul>
-  <li><a href="#saving-to-local-data" id="toc-saving-to-local-data">Saving to Local Data</a></li>
-  <li><a href="#reading-the-partioined-parquet-data-in" id="toc-reading-the-partioined-parquet-data-in">Reading the Partioined Parquet data in</a></li>
-  <li><a href="#using-dplyr-pipeline" id="toc-using-dplyr-pipeline">Using <code>dplyr</code> pipeline</a></li>
-  <li><a href="#performance-comparison" id="toc-performance-comparison">Performance Comparison</a>
-  <ul>
-  <li><a href="#one-large-csv-file-saved-with-arrow" id="toc-one-large-csv-file-saved-with-arrow">One large CSV file Saved with Arrow</a></li>
-  <li><a href="#different-smaller-parquet-files" id="toc-different-smaller-parquet-files">18 different smaller parquet files</a></li>
-  <li><a href="#performance-attribution" id="toc-performance-attribution">Performance Attribution</a></li>
+  <li><a href="#use-case" id="toc-use-case"><span class="header-section-number">4.2.1</span> Use Case</a></li>
   </ul></li>
   </ul></li>
-  <li><a href="#using-duckdb-with-arrow" id="toc-using-duckdb-with-arrow">Using Duckdb with Arrow</a>
+  <li><a href="#engineering-data-with-apache-parquet" id="toc-engineering-data-with-apache-parquet"><span class="header-section-number">5</span> Engineering Data with Apache Parquet</a>
   <ul>
-  <li><a href="#assignment" id="toc-assignment">Assignment</a></li>
+  <li><a href="#what-is-apache-parquet" id="toc-what-is-apache-parquet"><span class="header-section-number">5.1</span> What is Apache Parquet?</a>
+  <ul>
+  <li><a href="#key-features" id="toc-key-features"><span class="header-section-number">5.1.1</span> Key Features</a></li>
   </ul></li>
-  <li><a href="#reference" id="toc-reference">Reference</a></li>
+  <li><a href="#why-it-matters" id="toc-why-it-matters"><span class="header-section-number">5.2</span> Why It Matters</a></li>
+  <li><a href="#advantages-of-parquet" id="toc-advantages-of-parquet"><span class="header-section-number">5.3</span> Advantages of parquet</a></li>
+  <li><a href="#parquet-vs.-other-formats" id="toc-parquet-vs.-other-formats"><span class="header-section-number">5.4</span> Parquet vs.&nbsp;Other Formats</a></li>
+  <li><a href="#common-use-in-r" id="toc-common-use-in-r"><span class="header-section-number">5.5</span> Common Use in R</a></li>
+  <li><a href="#resources" id="toc-resources"><span class="header-section-number">5.6</span> Resources</a></li>
+  <li><a href="#parquet-format" id="toc-parquet-format"><span class="header-section-number">5.7</span> Parquet Format</a></li>
+  </ul></li>
+  <li><a href="#converting-arrow-data-type-to-a-single-parquet-data" id="toc-converting-arrow-data-type-to-a-single-parquet-data"><span class="header-section-number">6</span> Converting Arrow Data Type to a Single Parquet Data</a>
+  <ul>
+  <li><a href="#saving-to-local-directory" id="toc-saving-to-local-directory"><span class="header-section-number">6.1</span> Saving to Local Directory</a></li>
+  <li><a href="#opening-the-parquet-file-arrow-dplyr" id="toc-opening-the-parquet-file-arrow-dplyr"><span class="header-section-number">6.2</span> Opening The Parquet File + Arrow + dplyr</a>
+  <ul>
+  <li><a href="#measuring-speed" id="toc-measuring-speed"><span class="header-section-number">6.2.1</span> Measuring Speed</a></li>
+  </ul></li>
+  <li><a href="#measuring-size" id="toc-measuring-size"><span class="header-section-number">6.3</span> Measuring Size</a></li>
+  </ul></li>
+  <li><a href="#partitioning-converting-arrow-file-into-multiple-parquets" id="toc-partitioning-converting-arrow-file-into-multiple-parquets"><span class="header-section-number">7</span> Partitioning (Converting Arrow File into Multiple Parquets)</a>
+  <ul>
+  <li><a href="#saving-data" id="toc-saving-data"><span class="header-section-number">7.1</span> Saving Data</a></li>
+  <li><a href="#opening-the-data" id="toc-opening-the-data"><span class="header-section-number">7.2</span> Opening the Data</a>
+  <ul>
+  <li><a href="#measuring-speed-1" id="toc-measuring-speed-1"><span class="header-section-number">7.2.1</span> Measuring Speed</a></li>
+  </ul></li>
+  <li><a href="#comparisons-with-more-filtering" id="toc-comparisons-with-more-filtering"><span class="header-section-number">7.3</span> Comparisons with more filtering</a></li>
+  </ul></li>
+  <li><a href="#partitioning-topic-in-ch22" id="toc-partitioning-topic-in-ch22"><span class="header-section-number">8</span> Partitioning topic in Ch22</a>
+  <ul>
+  <li><a href="#saving-to-local-data" id="toc-saving-to-local-data"><span class="header-section-number">8.1</span> Saving to Local Data</a></li>
+  <li><a href="#reading-the-partioined-parquet-data-in" id="toc-reading-the-partioined-parquet-data-in"><span class="header-section-number">8.2</span> Reading the Partioined Parquet data in</a></li>
+  <li><a href="#using-dplyr-pipeline" id="toc-using-dplyr-pipeline"><span class="header-section-number">8.3</span> Using <code>dplyr</code> pipeline</a></li>
+  <li><a href="#performance-comparison" id="toc-performance-comparison"><span class="header-section-number">8.4</span> Performance Comparison</a>
+  <ul>
+  <li><a href="#one-large-csv-file-saved-with-arrow" id="toc-one-large-csv-file-saved-with-arrow"><span class="header-section-number">8.4.1</span> One large CSV file Saved with Arrow</a></li>
+  <li><a href="#different-smaller-parquet-files" id="toc-different-smaller-parquet-files"><span class="header-section-number">8.4.2</span> 18 different smaller parquet files</a></li>
+  <li><a href="#performance-attribution" id="toc-performance-attribution"><span class="header-section-number">8.4.3</span> Performance Attribution</a></li>
+  </ul></li>
+  </ul></li>
+  <li><a href="#using-duckdb-with-arrow" id="toc-using-duckdb-with-arrow"><span class="header-section-number">9</span> Using Duckdb with Arrow</a>
+  <ul>
+  <li><a href="#assignment" id="toc-assignment"><span class="header-section-number">9.1</span> Assignment</a></li>
+  </ul></li>
+  <li><a href="#reference" id="toc-reference"><span class="header-section-number">10</span> Reference</a></li>
   </ul>
 </nav>
-<section id="introduction-to-arrow" class="level1">
-<h1>Introduction to Arrow</h1>
-<section id="what-is-apache-arrow" class="level2">
-<h2 class="anchored" data-anchor-id="what-is-apache-arrow">What is Apache Arrow?</h2>
+<section id="introduction-to-arrow" class="level1" data-number="1">
+<h1 data-number="1"><span class="header-section-number">1</span> Introduction to Arrow</h1>
+<section id="what-is-apache-arrow" class="level2" data-number="1.1">
+<h2 data-number="1.1" class="anchored" data-anchor-id="what-is-apache-arrow"><span class="header-section-number">1.1</span> What is Apache Arrow?</h2>
 <p><img src="images/paste-1.png" class="img-fluid"></p>
 <p><strong>Apache Arrow</strong>&nbsp;is a&nbsp;<a href="https://en.wikipedia.org/wiki/Language-agnostic" title="Language-agnostic">language-agnostic</a>&nbsp;<a href="https://en.wikipedia.org/wiki/Software_framework" title="Software framework">software framework</a>&nbsp;for developing data analytics applications that process&nbsp;<a href="https://en.wikipedia.org/wiki/Column-oriented_DBMS" title="Column-oriented DBMS">columnar data</a>. It contains a standardized column-oriented memory format that is able to represent flat and hierarchical data for efficient analytic operations on modern&nbsp;<a href="https://en.wikipedia.org/wiki/Central_processing_unit" title="Central processing unit">CPU</a>&nbsp;and&nbsp;<a href="https://en.wikipedia.org/wiki/Graphics_processing_unit" title="Graphics processing unit">GPU</a>&nbsp;hardware (<a href="https://en.wikipedia.org/" class="uri">https://en.wikipedia.org/</a>).</p>
 <p>Arrow can be used with&nbsp;<a href="https://en.wikipedia.org/wiki/Apache_Parquet" title="Apache Parquet">Apache Parquet</a>,&nbsp;<a href="https://en.wikipedia.org/wiki/Apache_Spark" title="Apache Spark">Apache Spark</a>,&nbsp;<a href="https://en.wikipedia.org/wiki/NumPy" title="NumPy">NumPy</a>,&nbsp;<a href="https://en.wikipedia.org/wiki/PySpark" title="PySpark">PySpark</a>,&nbsp;<a href="https://en.wikipedia.org/wiki/Pandas_(software)" title="Pandas (software)">pandas</a>&nbsp;and other data processing libraries. The project includes native&nbsp;<a href="https://en.wikipedia.org/wiki/Library_(computing)" title="Library (computing)">software libraries</a>&nbsp;written in C, C++, C#, Go, Java, JavaScript, Julia, MATLAB, Python (PyArrow<sup><a href="https://en.wikipedia.org/wiki/Apache_Arrow#cite_note-8">[8]</a></sup>), R, Ruby, and Rust. Arrow allows for zero-copy reads and fast data access and interchange without serialization overhead between these languages and systems (<a href="https://en.wikipedia.org/" class="uri">https://en.wikipedia.org/</a>).</p>
@@ -287,15 +287,15 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <p><img src="images/paste-5.png" class="img-fluid"></p>
 <p><img src="images/paste-6.png" class="img-fluid"></p>
 </section>
-<section id="learning-resources" class="level2">
-<h2 class="anchored" data-anchor-id="learning-resources">Learning Resources</h2>
+<section id="learning-resources" class="level2" data-number="1.2">
+<h2 data-number="1.2" class="anchored" data-anchor-id="learning-resources"><span class="header-section-number">1.2</span> Learning Resources</h2>
 <ul>
 <li><p>Scaling Up With R and Arrow (<a href="https://arrowrbook.com/" class="uri">https://arrowrbook.com/</a>)</p></li>
 <li><p>R4DS, Chapter 22 (<a href="https://r4ds.hadley.nz/arrow.html" class="uri">https://r4ds.hadley.nz/arrow.html</a>)</p></li>
 </ul>
 </section>
-<section id="what-you-will-learn-from-this-lecture" class="level2">
-<h2 class="anchored" data-anchor-id="what-you-will-learn-from-this-lecture">What you will learn from this lecture</h2>
+<section id="what-you-will-learn-from-this-lecture" class="level2" data-number="1.3">
+<h2 data-number="1.3" class="anchored" data-anchor-id="what-you-will-learn-from-this-lecture"><span class="header-section-number">1.3</span> What you will learn from this lecture</h2>
 <ul>
 <li><p>You’ll learn about a powerful alternative: the <code>parquet</code> format, an open standards-based format widely used by big data systems.</p></li>
 <li><p><code>parquet</code> is designed for efficient storage and fast querying, making it ideal for large datasets. It’s a <strong>columnar storage</strong> format, which means it stores data by columns rather than rows, allowing for better compression and faster read times.</p></li>
@@ -304,18 +304,18 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <li><p>Both <strong><code>arrow</code></strong> and <strong><code>dbplyr</code></strong> provide dplyr backends, so you might wonder when to use each.</p></li>
 </ul>
 </section>
-<section id="when-to-use-arrow-vs.-dbplyr" class="level2">
-<h2 class="anchored" data-anchor-id="when-to-use-arrow-vs.-dbplyr">When to Use Arrow vs.&nbsp;dbplyr</h2>
+<section id="when-to-use-arrow-vs.-dbplyr" class="level2" data-number="1.4">
+<h2 data-number="1.4" class="anchored" data-anchor-id="when-to-use-arrow-vs.-dbplyr"><span class="header-section-number">1.4</span> When to Use Arrow vs.&nbsp;dbplyr</h2>
 <ul>
 <li>Use <strong><code>arrow</code></strong> when working with large datasets stored in <strong><code>parquet</code></strong> files, especially when you want to perform in-memory analytics without the overhead of a database connection.</li>
 <li>Use <strong><code>dbplyr</code></strong> when you have data stored in a <strong><em>relational database</em></strong> and want to leverage <strong>SQL</strong> for querying, especially if you need to perform complex joins or transactions that are better handled by a database system.</li>
 </ul>
 </section>
 </section>
-<section id="getting-the-data" class="level1">
-<h1>Getting the data</h1>
-<section id="data-source" class="level2">
-<h2 class="anchored" data-anchor-id="data-source">Data Source:</h2>
+<section id="getting-the-data" class="level1" data-number="2">
+<h1 data-number="2"><span class="header-section-number">2</span> Getting the data</h1>
+<section id="data-source" class="level2" data-number="2.1">
+<h2 data-number="2.1" class="anchored" data-anchor-id="data-source"><span class="header-section-number">2.1</span> Data Source:</h2>
 <ul>
 <li><p>&nbsp;<a href="https://data.seattle.gov/Community/Checkouts-by-Title/tmmm-ytt6">data.seattle.gov/Community/Checkouts-by-Title/tmmm-ytt6</a></p>
 <ul>
@@ -324,8 +324,8 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </ul></li>
 </ul>
 </section>
-<section id="whats-in-the-data" class="level2">
-<h2 class="anchored" data-anchor-id="whats-in-the-data">What’s in the Data?</h2>
+<section id="whats-in-the-data" class="level2" data-number="2.2">
+<h2 data-number="2.2" class="anchored" data-anchor-id="whats-in-the-data"><span class="header-section-number">2.2</span> What’s in the Data?</h2>
 <dl>
 <dt>Rows</dt>
 <dd>
@@ -430,8 +430,8 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </ul>
 <p><img src="images/paste-8.png" class="img-fluid"></p>
 </section>
-<section id="setting-up-arrow" class="level2">
-<h2 class="anchored" data-anchor-id="setting-up-arrow">Setting Up Arrow</h2>
+<section id="setting-up-arrow" class="level2" data-number="2.3">
+<h2 data-number="2.3" class="anchored" data-anchor-id="setting-up-arrow"><span class="header-section-number">2.3</span> Setting Up Arrow</h2>
 <p>To get started with <code>arrow</code>, you can install the package from CRAN:</p>
 <div class="cell">
 <details open="" class="code-fold">
@@ -473,8 +473,8 @@ Attaching package: 'arrow'</code></pre>
 </div>
 </div>
 </section>
-<section id="downloading-data" class="level2">
-<h2 class="anchored" data-anchor-id="downloading-data">Downloading Data</h2>
+<section id="downloading-data" class="level2" data-number="2.4">
+<h2 data-number="2.4" class="anchored" data-anchor-id="downloading-data"><span class="header-section-number">2.4</span> Downloading Data</h2>
 <div class="cell">
 <details open="" class="code-fold">
 <summary>Code</summary>
@@ -516,8 +516,8 @@ Attaching package: 'arrow'</code></pre>
 </div>
 </section>
 </section>
-<section id="opening-a-dataset" class="level1">
-<h1>Opening a Dataset</h1>
+<section id="opening-a-dataset" class="level1" data-number="3">
+<h1 data-number="3"><span class="header-section-number">3</span> Opening a Dataset</h1>
 <ul>
 <li><p>A good rule of thumb is that you usually want at least <strong>twice as much memory</strong> as the size of the data, and many laptops top out at <strong>16 GB</strong>.</p></li>
 <li><p>This means we want to avoid <strong>read_csv()</strong> and instead use the <strong>arrow::open_dataset()</strong>:</p></li>
@@ -664,8 +664,8 @@ See $.data for the source Arrow object
 <li>The code above still works, but the speed can be improved with <code>parquet</code></li>
 </ul>
 </section>
-<section id="data-manipulation-with-arrow" class="level1">
-<h1>Data Manipulation with Arrow</h1>
+<section id="data-manipulation-with-arrow" class="level1" data-number="4">
+<h1 data-number="4"><span class="header-section-number">4</span> Data Manipulation with Arrow</h1>
 <p><img src="images/paste-10.png" class="img-fluid"></p>
 <div class="cell">
 <details open="" class="code-fold">
@@ -807,8 +807,8 @@ Warning
   14.25    5.43   14.69 </code></pre>
 </div>
 </div>
-<section id="collect-vs.-compute" class="level2">
-<h2 class="anchored" data-anchor-id="collect-vs.-compute"><code>collect()</code> vs.&nbsp;<code>compute()</code></h2>
+<section id="collect-vs.-compute" class="level2" data-number="4.1">
+<h2 data-number="4.1" class="anchored" data-anchor-id="collect-vs.-compute"><span class="header-section-number">4.1</span> <code>collect()</code> vs.&nbsp;<code>compute()</code></h2>
 <div class="cell">
 <details open="" class="code-fold">
 <summary>Code</summary>
@@ -840,8 +840,8 @@ $Checkouts &lt;int64&gt;
 <ul>
 <li>Both are from <code>dplyr</code></li>
 </ul>
-<section id="key-differences" class="level3">
-<h3 class="anchored" data-anchor-id="key-differences">Key Differences</h3>
+<section id="key-differences" class="level3" data-number="4.1.1">
+<h3 data-number="4.1.1" class="anchored" data-anchor-id="key-differences"><span class="header-section-number">4.1.1</span> Key Differences</h3>
 <table class="caption-top table">
 <colgroup>
 <col style="width: 33%">
@@ -885,14 +885,14 @@ $Checkouts &lt;int64&gt;
 </table>
 </section>
 </section>
-<section id="when-to-use-which" class="level2">
-<h2 class="anchored" data-anchor-id="when-to-use-which">When to use which</h2>
+<section id="when-to-use-which" class="level2" data-number="4.2">
+<h2 data-number="4.2" class="anchored" data-anchor-id="when-to-use-which"><span class="header-section-number">4.2</span> When to use which</h2>
 <ul>
 <li><p>Use <strong><code>collect()</code></strong> when you’re done querying and need the data in R for plotting, modeling, or export.</p></li>
 <li><p>Use <strong><code>compute()</code></strong> when your query is complex/expensive and you want to <strong>cache an intermediate result</strong> in the database to build further queries on top of it — avoiding recomputation.</p></li>
 </ul>
-<section id="use-case" class="level3">
-<h3 class="anchored" data-anchor-id="use-case">Use Case</h3>
+<section id="use-case" class="level3" data-number="4.2.1">
+<h3 data-number="4.2.1" class="anchored" data-anchor-id="use-case"><span class="header-section-number">4.2.1</span> Use Case</h3>
 <p>A common pattern is to use <code>compute()</code> for heavy intermediate transformations, then <code>collect()</code> at the very end:</p>
 <div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb25"><pre class="sourceCode markdown code-with-copy"><code class="sourceCode markdown"><span id="cb25-1"><a href="#cb25-1" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
 <span id="cb25-2"><a href="#cb25-2" aria-hidden="true" tabindex="-1"></a>filtered <span class="ot">&lt;-</span> <span class="fu">tbl</span>(con, <span class="st">"big_table"</span>) <span class="sc">|&gt;</span></span>
@@ -908,18 +908,18 @@ $Checkouts &lt;int64&gt;
 </section>
 </section>
 </section>
-<section id="engineering-data-with-apache-parquet" class="level1">
-<h1>Engineering Data with Apache Parquet</h1>
+<section id="engineering-data-with-apache-parquet" class="level1" data-number="5">
+<h1 data-number="5"><span class="header-section-number">5</span> Engineering Data with Apache Parquet</h1>
 <p><img src="images/paste-11.png" class="img-fluid"></p>
-<section id="what-is-apache-parquet" class="level2">
-<h2 class="anchored" data-anchor-id="what-is-apache-parquet">What is Apache Parquet?</h2>
+<section id="what-is-apache-parquet" class="level2" data-number="5.1">
+<h2 data-number="5.1" class="anchored" data-anchor-id="what-is-apache-parquet"><span class="header-section-number">5.1</span> What is Apache Parquet?</h2>
 <p>Apache Parquet is an open-source <strong>columnar storage file format</strong> designed for efficient data storage and retrieval, particularly in big data ecosystems.</p>
 <ul>
 <li><p>parquet is used for rectangular data.</p></li>
 <li><p>It is a custom binary format specifically for the needs of big data.</p></li>
 </ul>
-<section id="key-features" class="level3">
-<h3 class="anchored" data-anchor-id="key-features">Key Features</h3>
+<section id="key-features" class="level3" data-number="5.1.1">
+<h3 data-number="5.1.1" class="anchored" data-anchor-id="key-features"><span class="header-section-number">5.1.1</span> Key Features</h3>
 <ul>
 <li><p><strong>Compression</strong> — Similar values stored together compress extremely well (e.g., a column of integers vs.&nbsp;mixed row data). Supports Snappy, Gzip, Zstd, etc.</p></li>
 <li><p><strong>Predicate pushdown</strong> — Stores min/max statistics per row group, so query engines can skip entire chunks of data without reading them.</p></li>
@@ -929,8 +929,8 @@ $Checkouts &lt;int64&gt;
 </ul>
 </section>
 </section>
-<section id="why-it-matters" class="level2">
-<h2 class="anchored" data-anchor-id="why-it-matters">Why It Matters</h2>
+<section id="why-it-matters" class="level2" data-number="5.2">
+<h2 data-number="5.2" class="anchored" data-anchor-id="why-it-matters"><span class="header-section-number">5.2</span> Why It Matters</h2>
 <table class="caption-top table">
 <colgroup>
 <col style="width: 50%">
@@ -963,8 +963,8 @@ $Checkouts &lt;int64&gt;
 </table>
 <p><img src="images/paste-12.png" class="img-fluid"></p>
 </section>
-<section id="advantages-of-parquet" class="level2">
-<h2 class="anchored" data-anchor-id="advantages-of-parquet">Advantages of parquet</h2>
+<section id="advantages-of-parquet" class="level2" data-number="5.3">
+<h2 data-number="5.3" class="anchored" data-anchor-id="advantages-of-parquet"><span class="header-section-number">5.3</span> Advantages of parquet</h2>
 <table class="caption-top table">
 <colgroup>
 <col style="width: 36%">
@@ -1012,8 +1012,8 @@ $Checkouts &lt;int64&gt;
 </tbody>
 </table>
 </section>
-<section id="parquet-vs.-other-formats" class="level2">
-<h2 class="anchored" data-anchor-id="parquet-vs.-other-formats">Parquet vs.&nbsp;Other Formats</h2>
+<section id="parquet-vs.-other-formats" class="level2" data-number="5.4">
+<h2 data-number="5.4" class="anchored" data-anchor-id="parquet-vs.-other-formats"><span class="header-section-number">5.4</span> Parquet vs.&nbsp;Other Formats</h2>
 <table class="caption-top table">
 <colgroup>
 <col style="width: 22%">
@@ -1071,8 +1071,8 @@ $Checkouts &lt;int64&gt;
 </table>
 <p>Parquet has become essentially the <strong>standard format for data lakes and analytics pipelines</strong> — you’ll find it everywhere from AWS S3 + Athena to Databricks to dbt projects.</p>
 </section>
-<section id="common-use-in-r" class="level2">
-<h2 class="anchored" data-anchor-id="common-use-in-r">Common Use in R</h2>
+<section id="common-use-in-r" class="level2" data-number="5.5">
+<h2 data-number="5.5" class="anchored" data-anchor-id="common-use-in-r"><span class="header-section-number">5.5</span> Common Use in R</h2>
 <div class="cell">
 <details open="" class="code-fold">
 <summary>Code</summary>
@@ -1092,14 +1092,14 @@ $Checkouts &lt;int64&gt;
 </details>
 </div>
 </section>
-<section id="resources" class="level2">
-<h2 class="anchored" data-anchor-id="resources">Resources</h2>
+<section id="resources" class="level2" data-number="5.6">
+<h2 data-number="5.6" class="anchored" data-anchor-id="resources"><span class="header-section-number">5.6</span> Resources</h2>
 <ul>
 <li><a href="https://parquet.apache.org/" class="uri">https://parquet.apache.org/</a></li>
 </ul>
 </section>
-<section id="parquet-format" class="level2">
-<h2 class="anchored" data-anchor-id="parquet-format">Parquet Format</h2>
+<section id="parquet-format" class="level2" data-number="5.7">
+<h2 data-number="5.7" class="anchored" data-anchor-id="parquet-format"><span class="header-section-number">5.7</span> Parquet Format</h2>
 <ol type="1">
 <li><p>Split the file into multiple files</p>
 <ul>
@@ -1110,10 +1110,10 @@ $Checkouts &lt;int64&gt;
 </ol>
 </section>
 </section>
-<section id="converting-arrow-data-type-to-a-single-parquet-data" class="level1">
-<h1>Converting Arrow Data Type to a Single Parquet Data</h1>
-<section id="saving-to-local-directory" class="level2">
-<h2 class="anchored" data-anchor-id="saving-to-local-directory">Saving to Local Directory</h2>
+<section id="converting-arrow-data-type-to-a-single-parquet-data" class="level1" data-number="6">
+<h1 data-number="6"><span class="header-section-number">6</span> Converting Arrow Data Type to a Single Parquet Data</h1>
+<section id="saving-to-local-directory" class="level2" data-number="6.1">
+<h2 data-number="6.1" class="anchored" data-anchor-id="saving-to-local-directory"><span class="header-section-number">6.1</span> Saving to Local Directory</h2>
 <div class="cell">
 <details open="" class="code-fold">
 <summary>Code</summary>
@@ -1134,8 +1134,8 @@ $Checkouts &lt;int64&gt;
 </details>
 </div>
 </section>
-<section id="opening-the-parquet-file-arrow-dplyr" class="level2">
-<h2 class="anchored" data-anchor-id="opening-the-parquet-file-arrow-dplyr">Opening The Parquet File + Arrow + dplyr</h2>
+<section id="opening-the-parquet-file-arrow-dplyr" class="level2" data-number="6.2">
+<h2 data-number="6.2" class="anchored" data-anchor-id="opening-the-parquet-file-arrow-dplyr"><span class="header-section-number">6.2</span> Opening The Parquet File + Arrow + dplyr</h2>
 <div class="cell">
 <details open="" class="code-fold">
 <summary>Code</summary>
@@ -1162,8 +1162,8 @@ Creator: string
 Subjects: string
 Publisher: string
 PublicationYear: string</code></pre>
-<section id="measuring-speed" class="level3">
-<h3 class="anchored" data-anchor-id="measuring-speed">Measuring Speed</h3>
+<section id="measuring-speed" class="level3" data-number="6.2.1">
+<h3 data-number="6.2.1" class="anchored" data-anchor-id="measuring-speed"><span class="header-section-number">6.2.1</span> Measuring Speed</h3>
 <div class="cell">
 <details open="" class="code-fold">
 <summary>Code</summary>
@@ -1187,8 +1187,8 @@ PublicationYear: string</code></pre>
    5.75    3.81    2.05 </code></pre>
 </section>
 </section>
-<section id="measuring-size" class="level2">
-<h2 class="anchored" data-anchor-id="measuring-size">Measuring Size</h2>
+<section id="measuring-size" class="level2" data-number="6.3">
+<h2 data-number="6.3" class="anchored" data-anchor-id="measuring-size"><span class="header-section-number">6.3</span> Measuring Size</h2>
 <div class="cell">
 <details open="" class="code-fold">
 <summary>Code</summary>
@@ -1208,8 +1208,8 @@ PublicationYear: string</code></pre>
 </ul>
 </section>
 </section>
-<section id="partitioning-converting-arrow-file-into-multiple-parquets" class="level1">
-<h1>Partitioning (Converting Arrow File into Multiple Parquets)</h1>
+<section id="partitioning-converting-arrow-file-into-multiple-parquets" class="level1" data-number="7">
+<h1 data-number="7"><span class="header-section-number">7</span> Partitioning (Converting Arrow File into Multiple Parquets)</h1>
 <p><img src="images/paste-13.png" class="img-fluid"></p>
 <ul>
 <li><p><strong>Why Petitioning?</strong></p>
@@ -1225,8 +1225,8 @@ PublicationYear: string</code></pre>
 <li><p>Partition by variables that you filter by</p></li>
 </ul></li>
 </ul>
-<section id="saving-data" class="level2">
-<h2 class="anchored" data-anchor-id="saving-data">Saving Data</h2>
+<section id="saving-data" class="level2" data-number="7.1">
+<h2 data-number="7.1" class="anchored" data-anchor-id="saving-data"><span class="header-section-number">7.1</span> Saving Data</h2>
 <div class="cell">
 <details open="" class="code-fold">
 <summary>Code</summary>
@@ -1248,8 +1248,8 @@ PublicationYear: string</code></pre>
 </details>
 </div>
 </section>
-<section id="opening-the-data" class="level2">
-<h2 class="anchored" data-anchor-id="opening-the-data">Opening the Data</h2>
+<section id="opening-the-data" class="level2" data-number="7.2">
+<h2 data-number="7.2" class="anchored" data-anchor-id="opening-the-data"><span class="header-section-number">7.2</span> Opening the Data</h2>
 <div class="cell">
 <details open="" class="code-fold">
 <summary>Code</summary>
@@ -1286,8 +1286,8 @@ PublicationYear: string</code></pre>
 18         2022   6301822</code></pre>
 </div>
 </div>
-<section id="measuring-speed-1" class="level3">
-<h3 class="anchored" data-anchor-id="measuring-speed-1">Measuring Speed</h3>
+<section id="measuring-speed-1" class="level3" data-number="7.2.1">
+<h3 data-number="7.2.1" class="anchored" data-anchor-id="measuring-speed-1"><span class="header-section-number">7.2.1</span> Measuring Speed</h3>
 <div class="cell">
 <details open="" class="code-fold">
 <summary>Code</summary>
@@ -1324,8 +1324,8 @@ Tip
 </div>
 </section>
 </section>
-<section id="comparisons-with-more-filtering" class="level2">
-<h2 class="anchored" data-anchor-id="comparisons-with-more-filtering">Comparisons with more filtering</h2>
+<section id="comparisons-with-more-filtering" class="level2" data-number="7.3">
+<h2 data-number="7.3" class="anchored" data-anchor-id="comparisons-with-more-filtering"><span class="header-section-number">7.3</span> Comparisons with more filtering</h2>
 <div class="cell">
 <details open="" class="code-fold">
 <summary>Code</summary>
@@ -1354,14 +1354,14 @@ Tip
 </div>
 <div class="columns">
 <div class="column">
-<section id="partitioned-parquet-files-arrow-dplyr" class="level3">
-<h3 class="anchored" data-anchor-id="partitioned-parquet-files-arrow-dplyr">Partitioned Parquet Files + Arrow + dplyr</h3>
+<section id="partitioned-parquet-files-arrow-dplyr" class="level3" data-number="7.3.1">
+<h3 data-number="7.3.1" class="anchored" data-anchor-id="partitioned-parquet-files-arrow-dplyr"><span class="header-section-number">7.3.1</span> Partitioned Parquet Files + Arrow + dplyr</h3>
 <pre><code>   user  system elapsed 
    0.28    0.15    0.11 </code></pre>
 </section>
 </div><div class="column">
-<section id="arrow-file-arrow-dplyr" class="level3">
-<h3 class="anchored" data-anchor-id="arrow-file-arrow-dplyr">Arrow File + Arrow + dplyr</h3>
+<section id="arrow-file-arrow-dplyr" class="level3" data-number="7.3.2">
+<h3 data-number="7.3.2" class="anchored" data-anchor-id="arrow-file-arrow-dplyr"><span class="header-section-number">7.3.2</span> Arrow File + Arrow + dplyr</h3>
 <pre><code>   user  system elapsed 
   13.33    5.89   14.75</code></pre>
 </section>
@@ -1369,10 +1369,10 @@ Tip
 </div>
 </section>
 </section>
-<section id="partitioning-topic-in-ch22" class="level1">
-<h1>Partitioning topic in Ch22</h1>
-<section id="saving-to-local-data" class="level2">
-<h2 class="anchored" data-anchor-id="saving-to-local-data">Saving to Local Data</h2>
+<section id="partitioning-topic-in-ch22" class="level1" data-number="8">
+<h1 data-number="8"><span class="header-section-number">8</span> Partitioning topic in Ch22</h1>
+<section id="saving-to-local-data" class="level2" data-number="8.1">
+<h2 data-number="8.1" class="anchored" data-anchor-id="saving-to-local-data"><span class="header-section-number">8.1</span> Saving to Local Data</h2>
 <div class="cell">
 <details open="" class="code-fold">
 <summary>Code</summary>
@@ -1458,8 +1458,8 @@ Note
 </div>
 </div>
 </section>
-<section id="reading-the-partioined-parquet-data-in" class="level2">
-<h2 class="anchored" data-anchor-id="reading-the-partioined-parquet-data-in">Reading the Partioined Parquet data in</h2>
+<section id="reading-the-partioined-parquet-data-in" class="level2" data-number="8.2">
+<h2 data-number="8.2" class="anchored" data-anchor-id="reading-the-partioined-parquet-data-in"><span class="header-section-number">8.2</span> Reading the Partioined Parquet data in</h2>
 <ul>
 <li>Using parquet data with <code>dplyr</code> and <code>arrow</code></li>
 </ul>
@@ -1472,8 +1472,8 @@ Note
 </details>
 </div>
 </section>
-<section id="using-dplyr-pipeline" class="level2">
-<h2 class="anchored" data-anchor-id="using-dplyr-pipeline">Using <code>dplyr</code> pipeline</h2>
+<section id="using-dplyr-pipeline" class="level2" data-number="8.3">
+<h2 data-number="8.3" class="anchored" data-anchor-id="using-dplyr-pipeline"><span class="header-section-number">8.3</span> Using <code>dplyr</code> pipeline</h2>
 <ul>
 <li><strong>Task</strong>: count the total number of books checked out in each month for the last five years:</li>
 </ul>
@@ -1595,10 +1595,10 @@ Tip
 </div>
 </div>
 </section>
-<section id="performance-comparison" class="level2">
-<h2 class="anchored" data-anchor-id="performance-comparison">Performance Comparison</h2>
-<section id="one-large-csv-file-saved-with-arrow" class="level3">
-<h3 class="anchored" data-anchor-id="one-large-csv-file-saved-with-arrow">One large CSV file Saved with Arrow</h3>
+<section id="performance-comparison" class="level2" data-number="8.4">
+<h2 data-number="8.4" class="anchored" data-anchor-id="performance-comparison"><span class="header-section-number">8.4</span> Performance Comparison</h2>
+<section id="one-large-csv-file-saved-with-arrow" class="level3" data-number="8.4.1">
+<h3 data-number="8.4.1" class="anchored" data-anchor-id="one-large-csv-file-saved-with-arrow"><span class="header-section-number">8.4.1</span> One large CSV file Saved with Arrow</h3>
 <div class="cell">
 <details open="" class="code-fold">
 <summary>Code</summary>
@@ -1630,8 +1630,8 @@ Note
 </div>
 </div>
 </section>
-<section id="different-smaller-parquet-files" class="level3">
-<h3 class="anchored" data-anchor-id="different-smaller-parquet-files">18 different smaller parquet files</h3>
+<section id="different-smaller-parquet-files" class="level3" data-number="8.4.2">
+<h3 data-number="8.4.2" class="anchored" data-anchor-id="different-smaller-parquet-files"><span class="header-section-number">8.4.2</span> 18 different smaller parquet files</h3>
 <div class="cell">
 <details open="" class="code-fold">
 <summary>Code</summary>
@@ -1665,8 +1665,8 @@ Note
 </div>
 </div>
 </section>
-<section id="performance-attribution" class="level3">
-<h3 class="anchored" data-anchor-id="performance-attribution">Performance Attribution</h3>
+<section id="performance-attribution" class="level3" data-number="8.4.3">
+<h3 data-number="8.4.3" class="anchored" data-anchor-id="performance-attribution"><span class="header-section-number">8.4.3</span> Performance Attribution</h3>
 <div class="callout callout-style-default callout-important callout-titled">
 <div class="callout-header d-flex align-content-center">
 <div class="callout-icon-container">
@@ -1687,8 +1687,8 @@ Note
 </section>
 </section>
 </section>
-<section id="using-duckdb-with-arrow" class="level1">
-<h1>Using Duckdb with Arrow</h1>
+<section id="using-duckdb-with-arrow" class="level1" data-number="9">
+<h1 data-number="9"><span class="header-section-number">9</span> Using Duckdb with Arrow</h1>
 <blockquote class="blockquote">
 <p>It’s very easy to turn an arrow dataset into a DuckDB database by calling <code>arrow::to_duckdb()</code>:</p>
 </blockquote>
@@ -1745,8 +1745,8 @@ Tip
 <p>The neat thing about <code>to_duckdb()</code> is that the transfer doesn’t involve any memory copying, and speaks to the goals of the arrow ecosystem: enabling seamless transitions from one computing environment to another.</p>
 </div>
 </div>
-<section id="assignment" class="level2">
-<h2 class="anchored" data-anchor-id="assignment">Assignment</h2>
+<section id="assignment" class="level2" data-number="9.1">
+<h2 data-number="9.1" class="anchored" data-anchor-id="assignment"><span class="header-section-number">9.1</span> Assignment</h2>
 <ol type="1">
 <li><p>Figure out the most popular book each year.</p></li>
 <li><p>Which author has the most books in the Seattle library system?</p></li>
@@ -1754,8 +1754,8 @@ Tip
 </ol>
 </section>
 </section>
-<section id="reference" class="level1">
-<h1>Reference</h1>
+<section id="reference" class="level1" data-number="10">
+<h1 data-number="10"><span class="header-section-number">10</span> Reference</h1>
 <ul>
 <li><p><a href="https://r4ds.hadley.nz/arrow.html">R for Data Science, Ch22</a></p></li>
 <li><p>Apache Arrow (<a href="https://arrow.apache.org/" class="uri">https://arrow.apache.org/</a>)</p></li>
