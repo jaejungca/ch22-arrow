@@ -7,7 +7,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
 <meta name="author" content="Jae Jung">
-<meta name="dcterms.date" content="2026-03-17">
+<meta name="dcterms.date" content="2026-03-18">
 <meta name="description" content="This page describes DuckDB and compares it with Arrow and Parquet and explain how to use them together effectively when dealing with big data">
 
 <title>DuckDB for Marketing Analytics: From Parquet to Powerful Queries – Arrow and DuckDB</title>
@@ -106,9 +106,16 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
     "search-label": "Search"
   }
 }</script>
-<script src="site_libs/quarto-diagram/mermaid.min.js"></script>
-<script src="site_libs/quarto-diagram/mermaid-init.js"></script>
-<link href="site_libs/quarto-diagram/mermaid.css" rel="stylesheet">
+<link href="site_libs/htmltools-fill-0.5.9/fill.css" rel="stylesheet">
+
+<script src="site_libs/htmlwidgets-1.6.4/htmlwidgets.js"></script>
+
+<script src="site_libs/viz-1.8.2/viz.js"></script>
+
+<link href="site_libs/DiagrammeR-styles-0.2/styles.css" rel="stylesheet">
+
+<script src="site_libs/grViz-binding-1.0.11/grViz.js"></script>
+
 
 
 </head>
@@ -237,7 +244,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
     <div>
     <div class="quarto-title-meta-heading">Published</div>
     <div class="quarto-title-meta-contents">
-      <p class="date">March 17, 2026</p>
+      <p class="date">March 18, 2026</p>
     </div>
   </div>
   
@@ -978,52 +985,10 @@ con &lt;- dbConnect(duckdb::duckdb())   # That's it. Running in 1 second.</code>
 </section>
 <section id="the-big-picture-workflow" class="level1" data-number="4">
 <h1 data-number="4"><span class="header-section-number">4</span> The Big Picture Workflow</h1>
-<div class="cell" data-layout-align="default">
-<details open="" class="code-fold">
-<summary>Code</summary>
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb13"><pre class="sourceCode markdown code-with-copy"><code class="sourceCode markdown"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a><span class="in">```{mermaid}</span></span>
-<span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a>flowchart TD</span>
-<span id="cb13-3"><a href="#cb13-3" aria-hidden="true" tabindex="-1"></a>    A[🗄️ Parquet files on disk] --&gt; B[🦆 DuckDB queries\nSQL <span class="ot">or</span> dplyr verbs]</span>
-<span id="cb13-4"><a href="#cb13-4" aria-hidden="true" tabindex="-1"></a>    B --&gt; C{Large intermediate\nresult?}</span>
-<span id="cb13-5"><a href="#cb13-5" aria-hidden="true" tabindex="-1"></a>    C -- Yes --&gt; D[compute()\nCheckpoint as temp table]</span>
-<span id="cb13-6"><a href="#cb13-6" aria-hidden="true" tabindex="-1"></a>    D --&gt; E[collect()\nPull small summary into R]</span>
-<span id="cb13-7"><a href="#cb13-7" aria-hidden="true" tabindex="-1"></a>    C -- No --&gt; E</span>
-<span id="cb13-8"><a href="#cb13-8" aria-hidden="true" tabindex="-1"></a>    E --&gt; F[📊 Visualize\nggplot2]</span>
-<span id="cb13-9"><a href="#cb13-9" aria-hidden="true" tabindex="-1"></a>    E --&gt; G[🤖 Model\ntidymodels]</span>
-<span id="cb13-10"><a href="#cb13-10" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb13-11"><a href="#cb13-11" aria-hidden="true" tabindex="-1"></a>    style A fill:<span class="co">#C0DD97,stroke:#639922,color:#27500A</span></span>
-<span id="cb13-12"><a href="#cb13-12" aria-hidden="true" tabindex="-1"></a>    style B fill:<span class="co">#B5D4F4,stroke:#185FA5,color:#0C447C</span></span>
-<span id="cb13-13"><a href="#cb13-13" aria-hidden="true" tabindex="-1"></a>    style C fill:<span class="co">#FAC775,stroke:#BA7517,color:#633806</span></span>
-<span id="cb13-14"><a href="#cb13-14" aria-hidden="true" tabindex="-1"></a>    style D fill:<span class="co">#B5D4F4,stroke:#185FA5,color:#0C447C</span></span>
-<span id="cb13-15"><a href="#cb13-15" aria-hidden="true" tabindex="-1"></a>    style E fill:<span class="co">#B5D4F4,stroke:#185FA5,color:#0C447C</span></span>
-<span id="cb13-16"><a href="#cb13-16" aria-hidden="true" tabindex="-1"></a>    style F fill:<span class="co">#F4C0D1,stroke:#993556,color:#72243E</span></span>
-<span id="cb13-17"><a href="#cb13-17" aria-hidden="true" tabindex="-1"></a>    style G fill:<span class="co">#F4C0D1,stroke:#993556,color:#72243E</span></span>
-<span id="cb13-18"><a href="#cb13-18" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-</details>
+<div class="cell">
 <div class="cell-output-display">
-<div>
-<p></p><figure class="figure"><p></p>
-<div>
-<pre class="mermaid mermaid-js">flowchart TD
-    A[🗄️ Parquet files on disk] --&gt; B[🦆 DuckDB queries\nSQL or dplyr verbs]
-    B --&gt; C{Large intermediate\nresult?}
-    C -- Yes --&gt; D[compute()\nCheckpoint as temp table]
-    D --&gt; E[collect()\nPull small summary into R]
-    C -- No --&gt; E
-    E --&gt; F[📊 Visualize\nggplot2]
-    E --&gt; G[🤖 Model\ntidymodels]
-
-    style A fill:#C0DD97,stroke:#639922,color:#27500A
-    style B fill:#B5D4F4,stroke:#185FA5,color:#0C447C
-    style C fill:#FAC775,stroke:#BA7517,color:#633806
-    style D fill:#B5D4F4,stroke:#185FA5,color:#0C447C
-    style E fill:#B5D4F4,stroke:#185FA5,color:#0C447C
-    style F fill:#F4C0D1,stroke:#993556,color:#72243E
-    style G fill:#F4C0D1,stroke:#993556,color:#72243E
-</pre>
-</div>
-<p></p></figure><p></p>
-</div>
+<div class="grViz html-widget html-fill-item" id="htmlwidget-919919e6f592d548d20d" style="width:100%;height:464px;"></div>
+<script type="application/json" data-for="htmlwidget-919919e6f592d548d20d">{"x":{"diagram":"\n  digraph workflow {\n    graph [layout = dot, rankdir = TD]\n    node [shape = rectangle, style = filled]\n    \n    A [label = \"Parquet files on disk\", fillcolor = \"#C0DD97\"]\n    B [label = \"DuckDB queries\", fillcolor = \"#B5D4F4\"]\n    C [label = \"Large intermediate result?\", fillcolor = \"#FAC775\", shape = diamond]\n    D [label = \"compute()\", fillcolor = \"#B5D4F4\"]\n    E [label = \"collect()\", fillcolor = \"#B5D4F4\"]\n    F [label = \"Visualize - ggplot2\", fillcolor = \"#F4C0D1\"]\n    G [label = \"Model - tidymodels\", fillcolor = \"#F4C0D1\"]\n    \n    A -> B -> C\n    C -> D [label = \"Yes\"]\n    C -> E [label = \"No\"]\n    D -> E -> F\n    E -> G\n  }\n","config":{"engine":"dot","options":null}},"evals":[],"jsHooks":[]}</script>
 </div>
 </div>
 <p><strong>Parquet is your warehouse, Arrow is your forklift, DuckDB is your analyst.</strong> Each does its job, and they hand off to each other seamlessly.</p>

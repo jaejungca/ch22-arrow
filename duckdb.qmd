@@ -618,23 +618,31 @@ dbDisconnect(con, shutdown = TRUE)
 
 # The Big Picture Workflow
 
-```{mermaid}
-flowchart TD
-    A[🗄️ Parquet files on disk] --> B[🦆 DuckDB queries\nSQL or dplyr verbs]
-    B --> C{Large intermediate\nresult?}
-    C -- Yes --> D[compute()\nCheckpoint as temp table]
-    D --> E[collect()\nPull small summary into R]
-    C -- No --> E
-    E --> F[📊 Visualize\nggplot2]
-    E --> G[🤖 Model\ntidymodels]
+```{r}
+#| echo: false
+#install.packages("DiagrammeR")
+library(DiagrammeR)
 
-    style A fill:#C0DD97,stroke:#639922,color:#27500A
-    style B fill:#B5D4F4,stroke:#185FA5,color:#0C447C
-    style C fill:#FAC775,stroke:#BA7517,color:#633806
-    style D fill:#B5D4F4,stroke:#185FA5,color:#0C447C
-    style E fill:#B5D4F4,stroke:#185FA5,color:#0C447C
-    style F fill:#F4C0D1,stroke:#993556,color:#72243E
-    style G fill:#F4C0D1,stroke:#993556,color:#72243E
+grViz("
+  digraph workflow {
+    graph [layout = dot, rankdir = TD]
+    node [shape = rectangle, style = filled]
+    
+    A [label = 'Parquet files on disk', fillcolor = '#C0DD97']
+    B [label = 'DuckDB queries', fillcolor = '#B5D4F4']
+    C [label = 'Large intermediate result?', fillcolor = '#FAC775', shape = diamond]
+    D [label = 'compute()', fillcolor = '#B5D4F4']
+    E [label = 'collect()', fillcolor = '#B5D4F4']
+    F [label = 'Visualize - ggplot2', fillcolor = '#F4C0D1']
+    G [label = 'Model - tidymodels', fillcolor = '#F4C0D1']
+    
+    A -> B -> C
+    C -> D [label = 'Yes']
+    C -> E [label = 'No']
+    D -> E -> F
+    E -> G
+  }
+")
 ```
 
 **Parquet is your warehouse, Arrow is your forklift, DuckDB is your analyst.** Each does its job, and they hand off to each other seamlessly.
