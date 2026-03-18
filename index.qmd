@@ -1,0 +1,18 @@
+---
+title: "Fundamnentals on Arrow, Parquet, and DuckDB"
+subtitle: "Comparisons and Guide"
+listing: 
+    contents: 
+        - "*.qmd"
+        - "!index.qmd"
+        - "!draft-*.qmd"
+    type: grid
+    fields: [title, description, categories]
+    sort: "order"
+---
+
+Introduction to Arrow, Parquet, and DuckDB. 
+
+## Tools
+
+`R` · `Quarto` · `DBI` · `arrow` · `parquet` · `duckdb` · `dplyr` · `dbplyr`

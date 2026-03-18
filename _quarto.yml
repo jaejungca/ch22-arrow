@@ -1,0 +1,20 @@
+project: 
+  type: website
+  output-dir: docs
+  render: 
+    - "*.qmd"
+    - "!draft-*.qmd"
+
+website: 
+  title: "Arrow and DuckDB"
+  navbar: 
+    left: 
+      - href: index.qmd
+        text: Home
+  sidebar: 
+    contents: auto
+
+format: 
+  html: 
+    theme: cosmo
+    toc: true

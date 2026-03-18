@@ -4,5 +4,7 @@
 .Ruserdata
 data/
 test.R
-*.qmd
-arrow_cache/
+*_cache/
+*_files/
+.quarto/
+**/*.quarto_ipynb

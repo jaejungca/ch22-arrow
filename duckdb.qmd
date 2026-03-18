@@ -1,0 +1,640 @@
+---
+title: "DuckDB for Marketing Analytics: From Parquet to Powerful Queries"
+subtitle: "How to Combine DuckDB with Arrow + Parquet"
+description: "This page describes DuckDB and compares it with Arrow and Parquet and explain how to use them together effectively when dealing with big data"
+categories: [DuckDB, Arrow, Parquet]
+order: 2
+author: "Jae Jung"
+date: today
+format: 
+    html:
+        theme: cosmo
+        toc: true
+        toc-depth: 3
+        toc-expand: 1
+        code-fold: show
+        toc-location: right-body
+        number-sections: true
+        #embed-resources: true
+execute:
+  warning: false
+  message: false
+  echo: fenced
+  cache: true
+  freeze: auto
+---
+
+# Introduction
+
+## What is DuckDB?
+
+DuckDB is an embedded analytical database engine — think of it as "SQLite, but built for analytics." It runs entirely inside your R process with no server, no installation, no configuration. You just install the package and it works.
+
+It was designed from the ground up for **OLAP** (Online Analytical Processing) workloads — the kind of heavy aggregations, joins, and scans that are typical in data analysis, as opposed to transactional row-by-row operations.
+
+-   SQLite was built for this (transactional — many small reads/writes):
+    -   "Insert one customer order"
+    -   "Update one user's address"
+    -   "Delete one session record"
+-   DuckDB was built for this (analytical — few large scans):
+    -   "What was total revenue by channel across 50 million events?"
+    -   "Which pages had the highest bounce rate last quarter?"
+    -   "Give me the 99th percentile session duration by device type"
+
+## Three Remarkable Features
+
+### 1. It Lives Inside R — No Server Needed
+
+**Traditional database setup** (PostgreSQL, MySQL, Snowflake):
+
+1.  Install database server
+2.  Configure network/ports
+3.  Create users and permissions
+4.  Start the server process
+5.  Connect from R
+6.  Manage the server forever
+
+**DuckDB setup**:
+
+```         
+install.packages("duckdb")
+library(duckdb)
+con <- dbConnect(duckdb::duckdb())   # That's it. Running in 1 second.
+```
+
+### 2. It Is Shockingly Fast
+
+> DuckDB uses columnar storage and vectorised execution — it reads only the columns your query needs and processes thousands of rows simultaneously using modern CPU instructions:
+
+**Benchmark:** Count events by type across 10 million GA4 rows
+
+-   data.frame in RAM: \~4.2 seconds
+-   data.table: \~0.8 seconds
+-   dplyr on tibble: \~3.1 seconds
+-   DuckDB on parquet file: \~0.3 seconds ← faster than data in RAM
+-   DuckDB on DuckDB file: \~0.1 seconds
+
+### 3. It Reads Parquet Directly — Without Loading Into RAM
+
+> This is the feature that changes everything for large datasets:
+
+```{{r}}
+# Traditional approach — must fit in RAM
+ga4_data <- arrow::read_parquet("data/ga4_events.parquet")  # ~4 GB into RAM
+result   <- ga4_data |> filter(...) |> summarise(...)        # then query
+
+# DuckDB approach — reads only what the query needs
+con    <- dbConnect(duckdb::duckdb())
+result <- dbGetQuery(con, "
+  SELECT event_name, COUNT(*) as n
+  FROM read_parquet('data/ga4_events.parquet')
+  WHERE event_date >= '2021-01-01'
+  GROUP BY event_name
+")
+# DuckDB scans only the event_name and event_date columns
+# Never loads price, device, geo, or any other column into RAM
+```
+
+## Why use DuckDB?
+
+**It's fast.** DuckDB uses a columnar execution engine with vectorized query processing, meaning it processes chunks of columns at a time rather than row by row. For analytical queries on large data, this is dramatically faster than base R or even many database solutions.
+
+**It's serverless.** No Docker, no Postgres instance, no DBA needed. It lives inside your session like any other R package.
+
+**It speaks SQL fluently.** You can write standard SQL, or use it as a dplyr backend via dbplyr — so you don't need to learn a new API.
+
+**It handles larger-than-memory data.** DuckDB can query files that don't fit in RAM by streaming and processing them in chunks, making it genuinely useful for big data workflows.
+
+**It integrates natively with Parquet and Arrow.** It can directly query `.parquet` files on disk without loading them into memory first — no import step needed.
+
+## DuckDB vs Arrow vs Parquet
+
+These three are complementary, not competing. Understanding the role of each is important:
+
+|   | **Parquet** | **Arrow** | **DuckDB** |
+|------------------|------------------|------------------|------------------|
+| What is it? | File format (How data is stored on disk) | In-memory format + compute engine (a toolkit): how data is held in RAM and processed | A query engine (how you ask questions of data) |
+| Lives where? | Disk | RAM | RAM + disk  (processes from disk) |
+| Primary role | Store data efficiently | Process data in memory | Query data with SQL/dplyr" |
+| Reads Parquet | IS Parquet | Yes — natively | Yes — directly |
+| SQL support | No | Limited (via DuckDB) | Full SQL |
+| dplyr support | Via arrow package | Yes — first class" | Yes — via dbplyr |
+| Larger-than-memory? | Yes (it's on disk) | Partial (via chunked datasets) | Yes – streams from disk |
+| Query language | None | dplyr verbs | SQL + dplyr via dbplyr |
+| Speed (analytics) | N/A (Storage only) | Very fast | Extremely fast |
+| Best for | Archiving & sharing data | In-memory transformation: e.g., Wrangling in R/Python | Complex queries, joins, aggregations |
+
+The typical mental model is:
+
+-   **Parquet** is where your data *lives* (on disk, compressed, efficient)
+
+-   **Arrow** is how you *move and process* it quickly in memory
+
+-   **DuckDB** is how you *query* it with full SQL power, with or without loading into memory
+
+They work beautifully together — DuckDB can read Arrow tables directly and query Parquet files on disk, and you can pass results back to Arrow or collect into R.
+
+# How DuckDB Works with Arrow and Parquet
+
+There are **four integration patterns**, each suited to different situations:
+
+## Setup
+
+```{{r}}
+library(duckdb)
+library(arrow)
+library(dplyr)
+```
+
+## Pattern 1. Query a Parquet file directly with DuckDB (no loading into R)
+
+-   The most direct approach — point DuckDB at a Parquet file and query it with SQL, no loading required:
+
+-   DuckDB can scan Parquet files on disk using SQL — nothing enters R memory until you `collect()`.
+
+-  **Simple**:
+
+```{r}
+#| eval: false
+
+con <- dbConnect(duckdb())
+
+# Register and query a parquet file directly
+dbGetQuery(con, "
+  SELECT region, SUM(sales) AS total_sales
+  FROM read_parquet('data/sales.parquet')
+  GROUP BY region
+  ORDER BY total_sales DESC
+")
+```
+
+-  **Advanced**:
+
+```{r}
+#| eval: false
+
+library(duckdb)
+library(DBI)
+con <- dbConnect(duckdb())
+
+# Register and query a parquet file directly
+dbGetQuery(
+  con,
+  "
+  SELECT region, SUM(sales) AS total_sales
+  FROM read_parquet('data/sales.parquet')
+  GROUP BY region
+  ORDER BY total_sales DESC
+"
+)
+
+# ── Query a single Parquet file ────────────────────────────────────────────────
+dbGetQuery(
+  con,
+  "
+  SELECT
+    event_name,
+    COUNT(*) AS events,
+    COUNT(DISTINCT user_pseudo_id) AS users
+  FROM read_parquet('data/ga4_flat.parquet')
+  GROUP BY event_name
+  ORDER BY events DESC
+  LIMIT 10
+"
+)
+
+# ── Query multiple Parquet files with a wildcard ───────────────────────────────
+# Perfect for GA4's one-file-per-day structure
+dbGetQuery(
+  con,
+  "
+  SELECT
+    event_date,
+    COUNT(*) AS daily_events
+  FROM read_parquet('data/ga4_*.parquet')
+  GROUP BY event_date
+  ORDER BY event_date
+"
+)
+
+dbGetQuery(
+  con,
+  "
+  SELECT year, SUM(revenue) AS total
+  FROM read_parquet('data/sales/*.parquet', union_by_name = TRUE)
+  GROUP BY year
+  ORDER BY year
+"
+
+# ── Join two Parquet files in a single query ───────────────────────────────────
+dbGetQuery(
+  con,
+  "
+  SELECT
+    s.device_category,
+    s.traffic_source_medium,
+    COUNT(DISTINCT e.user_pseudo_id) AS users,
+    SUM(CASE WHEN e.event_name = 'purchase' THEN 1 ELSE 0 END) AS purchases
+  FROM read_parquet('data/ga4_flat.parquet')    AS e
+  JOIN read_parquet('data/ga4_sessions.parquet') AS s
+    ON e.user_pseudo_id = s.user_pseudo_id
+   AND e.event_date     = s.event_date
+  GROUP BY s.device_category, s.traffic_source_medium
+  ORDER BY users DESC
+"
+)
+
+dbDisconnect(con, shutdown = TRUE)
+```
+
+This is powerful — DuckDB pushes the entire query down to the file, reading only the columns and rows it needs (thanks to Parquet's columnar layout).
+
+## Parttern 2. Use DuckDB as a dplyr backend (no SQL required)
+
+> If you prefer dplyr verbs over SQL, you can register the **Parquet file** as a **virtual table** and query it lazily.
+
+> `dbplyr` translates dplyr verbs into DuckDB SQL automatically:
+
+-  **Simple**:
+
+```{r}
+#| eval: false
+con <- dbConnect(duckdb())
+
+duckdb_register(con, "sales", read_parquet("data/sales.parquet"))
+
+tbl(con, "sales") |>
+  filter(year >= 2022) |>
+  group_by(region) |>
+  summarise(total = sum(sales)) |>
+  arrange(desc(total)) |>
+  collect()   # only now does data enter R
+```
+
+-  **Advanced**:
+```{r}
+#| eval: false
+library(duckdb)
+library(dplyr)
+library(dbplyr)
+
+con <- dbConnect(duckdb())
+
+# ── Register Parquet file as a virtual table ───────────────────────────────────
+# This creates a view — no data is copied or loaded
+duckdb_read_csv   # (there is also this for CSV)
+dbExecute(con, "
+  CREATE VIEW ga4_events AS
+  SELECT * FROM read_parquet('data/ga4_flat.parquet')
+")
+
+dbExecute(con, "
+  CREATE VIEW ga4_sessions AS
+  SELECT * FROM read_parquet('data/ga4_sessions.parquet')
+")
+
+# ── Now use dplyr as if it were a regular data frame ──────────────────────────
+events   <- tbl(con, "ga4_events")
+sessions <- tbl(con, "ga4_sessions")
+
+# dplyr query — translated to DuckDB SQL by dbplyr
+top_events <- events |>
+  count(event_name, sort = TRUE) |>
+  head(10) |>
+  collect()    # collect() executes the query and returns a tibble
+
+print(top_events)
+
+# Join two Parquet files using dplyr — no SQL written
+device_conversions <- sessions |>
+  select(user_pseudo_id, device_category, traffic_source_medium) |>
+  left_join(
+    events |>
+      filter(event_name == "purchase") |>
+      distinct(user_pseudo_id) |>
+      mutate(purchased = TRUE),
+    by = "user_pseudo_id"
+  ) |>
+  mutate(purchased = coalesce(purchased, FALSE)) |>
+  group_by(device_category, traffic_source_medium) |>
+  summarise(
+    users      = n_distinct(user_pseudo_id),
+    purchasers = sum(as.integer(purchased), na.rm = TRUE),
+    cvr        = purchasers / users,
+    .groups    = "drop"
+  ) |>
+  arrange(desc(cvr)) |>
+  collect()  # only now does data enter R
+
+print(device_conversions)
+
+dbDisconnect(con, shutdown = TRUE)
+
+```
+
+## Pattern 3. Query an Arrow Table with DuckDB (The Power Combination)
+
+> Arrow and DuckDB are designed to work together. Arrow handles file I/O and in-memory transformation; DuckDB handles querying. 
+
+> They share data without copying using the Apache Arrow memory format.
+
+> If you already have an Arrow table in memory, DuckDB can query it directly — zero copying involved:
+
+-  **Simple**:
+```{r}
+#| eval: false
+
+# Create or load an Arrow table
+arrow_table <- read_parquet("data/sales.parquet", as_data_frame = FALSE)
+
+con <- dbConnect(duckdb())
+duckdb_register_arrow(con, "sales_arrow", arrow_table)
+
+tbl(con, "sales_arrow") |>
+  filter(category == "Electronics") |>
+  summarise(avg_price = mean(price)) |>
+  collect()
+```
+
+- **Advanced**:
+
+```{r}
+#| eval: false
+
+library(arrow)
+library(duckdb)
+library(dplyr)
+
+# ── Step 1: Open Parquet as Arrow Dataset (lazy — nothing loaded yet) ──────────
+ga4_arrow <- arrow::open_dataset("data/ga4_flat.parquet")
+
+# ── Step 2: Do transformations in Arrow ───────────────────────────────────────
+# Arrow is better at: filtering rows, selecting columns, type conversion
+ga4_prepared <- ga4_arrow |>
+  filter(event_name %in% c("purchase", "add_to_cart", "view_item")) |>
+  select(event_date, event_name, user_pseudo_id) |>
+  mutate(event_date = as.Date(event_date))
+
+# ── Step 3: Hand off to DuckDB for aggregation ────────────────────────────────
+# DuckDB is better at: GROUP BY, window functions, complex joins
+con <- dbConnect(duckdb::duckdb())
+
+# Register the Arrow object directly — ZERO data copying
+duckdb::duckdb_register_arrow(con, "ga4_prepared", ga4_prepared)
+
+# Now query it with full DuckDB SQL power
+result <- dbGetQuery(con, "
+  SELECT
+    event_date,
+    event_name,
+    COUNT(DISTINCT user_pseudo_id) AS users
+  FROM ga4_prepared
+  GROUP BY event_date, event_name
+  ORDER BY event_date, event_name
+")
+
+print(result)
+dbDisconnect(con, shutdown = TRUE)
+
+# ── The same workflow using dplyr throughout ───────────────────────────────────
+library(arrow)
+library(duckdb)
+library(dplyr)
+
+con <- dbConnect(duckdb::duckdb())
+
+# Arrow dataset → register with DuckDB → query with dplyr
+ga4_arrow <- arrow::open_dataset("data/ga4_flat.parquet")
+duckdb::duckdb_register_arrow(con, "ga4_events", ga4_arrow)
+
+ga4_params_arrow <- arrow::open_dataset("data/ga4_event_params.parquet")
+duckdb::duckdb_register_arrow(con, "ga4_params", ga4_params_arrow)
+
+# Now use pure dplyr — no SQL needed at all
+# dbplyr translates these verbs to DuckDB SQL automatically
+
+# Marketing analysis: page views by device and channel
+page_analysis <- tbl(con, "ga4_params") |>
+  filter(key == "page_location") |>
+  rename(page_location = param_value) |>
+  left_join(
+    tbl(con, "ga4_events") |>
+      select(event_timestamp, user_pseudo_id,
+             device_category, traffic_source_medium),
+    by = c("event_timestamp", "user_pseudo_id")
+  ) |>
+  mutate(
+    page_path = regexp_replace(page_location, "\\?.*$", ""),
+    page_path = regexp_replace(page_path, "https?://[^/]+", "")
+  ) |>
+  group_by(device_category, page_path) |>
+  summarise(
+    page_views = n(),
+    users      = n_distinct(user_pseudo_id),
+    .groups    = "drop"
+  ) |>
+  filter(page_views >= 10) |>
+  arrange(desc(page_views)) |>
+  head(20) |>
+  collect()
+
+print(page_analysis)
+dbDisconnect(con, shutdown = TRUE)
+```
+
+## Pattern 4. Persistent DuckDB Database (Best for a Course Project)
+
+> Write your rectangled GA4 tables once into a `.duckdb` file. Every subsequent analysis opens this one file — no BigQuery, no Parquet management, no RAM issues:
+
+```{r}
+#| eval: false
+
+library(duckdb)
+library(dplyr)
+library(arrow)
+
+# ── SETUP: Run once to create the database ────────────────────────────────────
+con <- dbConnect(
+  duckdb::duckdb(),
+  dbdir     = "data/ga4.duckdb",
+  read_only = FALSE
+)
+
+# Write tables from Parquet files — DuckDB reads and stores them
+dbExecute(con, "
+  CREATE TABLE ga4_events AS
+  SELECT * FROM read_parquet('data/ga4_flat.parquet')
+")
+
+dbExecute(con, "
+  CREATE TABLE ga4_params AS
+  SELECT * FROM read_parquet('data/ga4_event_params.parquet')
+")
+
+dbExecute(con, "
+  CREATE TABLE ga4_sessions AS
+  SELECT * FROM read_parquet('data/ga4_sessions.parquet')
+")
+
+dbExecute(con, "
+  CREATE TABLE ga4_items AS
+  SELECT * FROM read_parquet('data/ga4_items.parquet')
+")
+
+# Add indexes for faster querying
+dbExecute(con, "CREATE INDEX idx_event_name ON ga4_events(event_name)")
+dbExecute(con, "CREATE INDEX idx_param_key  ON ga4_params(key)")
+dbExecute(con, "CREATE INDEX idx_event_date ON ga4_events(event_date)")
+
+# Confirm what was saved
+cat("Tables in ga4.duckdb:\n")
+dbListTables(con) |> print()
+
+cat("\nRow counts:\n")
+purrr::map_df(dbListTables(con), \(t) {
+  tibble::tibble(
+    table = t,
+    rows  = dbGetQuery(con,
+              glue::glue("SELECT COUNT(*) n FROM {t}"))$n
+  )
+}) |> print()
+
+cat("\nFile size:",
+    round(file.size("data/ga4.duckdb") / 1024^2, 1), "MB\n")
+
+dbDisconnect(con, shutdown = TRUE)
+```
+
+```{r}
+#| eval: false
+
+# ── ANALYSIS: Open the database for every subsequent session ──────────────────
+con <- dbConnect(
+  duckdb::duckdb(),
+  dbdir     = "data/ga4.duckdb",
+  read_only = TRUE    # Prevents accidental writes during analysis
+)
+
+# Lazy table references — nothing in RAM yet
+events   <- tbl(con, "ga4_events")
+params   <- tbl(con, "ga4_params")
+sessions <- tbl(con, "ga4_sessions")
+items    <- tbl(con, "ga4_items")
+
+# ── Example 1: Event counts (dplyr) ───────────────────────────────────────────
+events |>
+  count(event_name, sort = TRUE) |>
+  collect()
+
+# ── Example 2: Top pages (dplyr) ──────────────────────────────────────────────
+params |>
+  filter(key == "page_location") |>
+  count(param_value, sort = TRUE) |>
+  head(10) |>
+  collect()
+
+# ── Example 3: Revenue by day (SQL) ───────────────────────────────────────────
+dbGetQuery(con, "
+  SELECT
+    event_date,
+    COUNT(*)                                   AS transactions,
+    SUM(ecommerce_purchase_revenue_in_usd)     AS revenue,
+    AVG(ecommerce_purchase_revenue_in_usd)     AS avg_order_value
+  FROM ga4_events
+  WHERE event_name = 'purchase'
+  GROUP BY event_date
+  ORDER BY event_date
+")
+
+# ── Example 4: Funnel analysis (SQL window functions) ─────────────────────────
+dbGetQuery(con, "
+  WITH funnel AS (
+    SELECT
+      event_name,
+      COUNT(DISTINCT user_pseudo_id) AS users,
+      ROW_NUMBER() OVER (
+        ORDER BY CASE event_name
+          WHEN 'view_item'       THEN 1
+          WHEN 'add_to_cart'     THEN 2
+          WHEN 'begin_checkout'  THEN 3
+          WHEN 'purchase'        THEN 4
+        END
+      ) AS stage_order
+    FROM ga4_events
+    WHERE event_name IN ('view_item','add_to_cart',
+                         'begin_checkout','purchase')
+    GROUP BY event_name
+  )
+  SELECT
+    event_name,
+    users,
+    ROUND(100.0 * users /
+      FIRST_VALUE(users) OVER (ORDER BY stage_order), 1) AS pct_of_top
+  FROM funnel
+  ORDER BY stage_order
+")
+
+dbDisconnect(con, shutdown = TRUE)
+```
+
+# How the Three Tools Form a Complete Stack
+
+```
+# The complete GA4 analytics stack:
+
+# ┌─────────────────────────────────────────────────────────────┐
+# │                     YOUR R SESSION                          │
+# │                                                             │
+# │  ┌──────────┐    ┌──────────┐    ┌──────────────────────┐  │
+# │  │  Arrow   │    │  dplyr   │    │        ggplot2        │  │
+# │  │          │    │  dbplyr  │    │        gt             │  │
+# │  │ Read &   │    │          │    │                       │  │
+# │  │ Write    │    │ Verbs →  │    │  Visualise & Report   │  │
+# │  │ Parquet  │    │ SQL      │    │                       │  │
+# │  └────┬─────┘    └────┬─────┘    └───────────┬──────────┘  │
+# │       │               │                       │             │
+# │       └───────────────▼───────────────────────┘             │
+# │                  ┌──────────┐                               │
+# │                  │  DuckDB  │                               │
+# │                  │          │                               │
+# │                  │  Query   │                               │
+# │                  │  Engine  │                               │
+# │                  └────┬─────┘                               │
+# └───────────────────────┼─────────────────────────────────────┘
+#                         │
+#          ┌──────────────┼──────────────┐
+#          │              │              │
+#    ┌─────▼──────┐ ┌─────▼──────┐ ┌───▼────────────┐
+#    │  Parquet   │ │  Parquet   │ │  ga4.duckdb    │
+#    │  ga4_flat  │ │  ga4_params│ │  (all tables)  │
+#    └────────────┘ └────────────┘ └────────────────┘
+#         DISK            DISK           DISK
+
+# Arrow   = the loading dock (moves data efficiently)
+# DuckDB  = the analyst (asks and answers questions)
+# Parquet = the filing system (stores data efficiently)
+
+```
+
+# The Big Picture Workflow
+
+```{mermaid}
+flowchart TD
+    A[🗄️ Parquet files on disk] --> B[🦆 DuckDB queries\nSQL or dplyr verbs]
+    B --> C{Large intermediate\nresult?}
+    C -- Yes --> D[compute()\nCheckpoint as temp table]
+    D --> E[collect()\nPull small summary into R]
+    C -- No --> E
+    E --> F[📊 Visualize\nggplot2]
+    E --> G[🤖 Model\ntidymodels]
+
+    style A fill:#C0DD97,stroke:#639922,color:#27500A
+    style B fill:#B5D4F4,stroke:#185FA5,color:#0C447C
+    style C fill:#FAC775,stroke:#BA7517,color:#633806
+    style D fill:#B5D4F4,stroke:#185FA5,color:#0C447C
+    style E fill:#B5D4F4,stroke:#185FA5,color:#0C447C
+    style F fill:#F4C0D1,stroke:#993556,color:#72243E
+    style G fill:#F4C0D1,stroke:#993556,color:#72243E
+```
+
+**Parquet is your warehouse, Arrow is your forklift, DuckDB is your analyst.** Each does its job, and they hand off to each other seamlessly.

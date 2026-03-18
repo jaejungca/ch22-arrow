@@ -1,0 +1,445 @@
+[
+  {
+    "objectID": "index.html",
+    "href": "index.html",
+    "title": "Fundamnentals on Arrow, Parquet, and DuckDB",
+    "section": "",
+    "text": "Introduction to Arrow, Parquet, and DuckDB."
+  },
+  {
+    "objectID": "index.html#tools",
+    "href": "index.html#tools",
+    "title": "Fundamnentals on Arrow, Parquet, and DuckDB",
+    "section": "Tools",
+    "text": "Tools\nR · Quarto · DBI · arrow · parquet · duckdb · dplyr · dbplyr"
+  },
+  {
+    "objectID": "arrow.html",
+    "href": "arrow.html",
+    "title": "Apache Arrow and Apache Parqet",
+    "section": "",
+    "text": "1 Introduction to Arrow\n  \n  1.1 What is Apache Arrow?\n  1.2 Learning Resources\n  1.3 What you will learn from this lecture\n  1.4 When to Use Arrow vs. dbplyr\n  \n  2 Getting the data\n  \n  2.1 Data Source:\n  2.2 What’s in the Data?\n  2.3 Setting Up Arrow\n  2.4 Downloading Data\n  \n  3 Opening a Dataset\n  4 Data Manipulation with Arrow\n  \n  4.1 collect() vs. compute()\n  \n  4.1.1 Key Differences\n  \n  4.2 When to use which\n  \n  4.2.1 Use Case\n  \n  \n  5 Engineering Data with Apache Parquet\n  \n  5.1 What is Apache Parquet?\n  \n  5.1.1 Key Features\n  \n  5.2 Why It Matters\n  5.3 Advantages of parquet\n  5.4 Parquet vs. Other Formats\n  5.5 Common Use in R\n  5.6 Resources\n  5.7 Parquet Format\n  \n  6 Converting Arrow Data Type to a Single Parquet Data\n  \n  6.1 Saving to Local Directory\n  6.2 Opening The Parquet File + Arrow + dplyr\n  \n  6.2.1 Measuring Speed\n  \n  6.3 Measuring Size\n  \n  7 Partitioning (Converting Arrow File into Multiple Parquets)\n  \n  7.1 Saving Data\n  7.2 Opening the Data\n  \n  7.2.1 Measuring Speed\n  \n  7.3 Comparisons with more filtering\n  \n  8 Partitioning topic in Ch22\n  \n  8.1 Saving to Local Data\n  8.2 Reading the Partioined Parquet data in\n  8.3 Using dplyr pipeline\n  8.4 Performance Comparison\n  \n  8.4.1 One large CSV file Saved with Arrow\n  8.4.2 18 different smaller parquet files\n  8.4.3 Performance Attribution\n  \n  \n  9 Using Duckdb with Arrow\n  \n  9.1 Assignment\n  \n  10 Reference",
+    "crumbs": [
+      "Home",
+      "Apache Arrow and Apache Parqet"
+    ]
+  },
+  {
+    "objectID": "arrow.html#what-is-apache-arrow",
+    "href": "arrow.html#what-is-apache-arrow",
+    "title": "Apache Arrow and Apache Parqet",
+    "section": "1.1 What is Apache Arrow?",
+    "text": "1.1 What is Apache Arrow?\n\nApache Arrow is a language-agnostic software framework for developing data analytics applications that process columnar data. It contains a standardized column-oriented memory format that is able to represent flat and hierarchical data for efficient analytic operations on modern CPU and GPU hardware (https://en.wikipedia.org/).\nArrow can be used with Apache Parquet, Apache Spark, NumPy, PySpark, pandas and other data processing libraries. The project includes native software libraries written in C, C++, C#, Go, Java, JavaScript, Julia, MATLAB, Python (PyArrow[8]), R, Ruby, and Rust. Arrow allows for zero-copy reads and fast data access and interchange without serialization overhead between these languages and systems (https://en.wikipedia.org/).",
+    "crumbs": [
+      "Home",
+      "Apache Arrow and Apache Parqet"
+    ]
+  },
+  {
+    "objectID": "arrow.html#learning-resources",
+    "href": "arrow.html#learning-resources",
+    "title": "Apache Arrow and Apache Parqet",
+    "section": "1.2 Learning Resources",
+    "text": "1.2 Learning Resources\n\nScaling Up With R and Arrow (https://arrowrbook.com/)\nR4DS, Chapter 22 (https://r4ds.hadley.nz/arrow.html)",
+    "crumbs": [
+      "Home",
+      "Apache Arrow and Apache Parqet"
+    ]
+  },
+  {
+    "objectID": "arrow.html#what-you-will-learn-from-this-lecture",
+    "href": "arrow.html#what-you-will-learn-from-this-lecture",
+    "title": "Apache Arrow and Apache Parqet",
+    "section": "1.3 What you will learn from this lecture",
+    "text": "1.3 What you will learn from this lecture\n\nYou’ll learn about a powerful alternative: the parquet format, an open standards-based format widely used by big data systems.\nparquet is designed for efficient storage and fast querying, making it ideal for large datasets. It’s a columnar storage format, which means it stores data by columns rather than rows, allowing for better compression and faster read times.\nWe’ll pair parquet files with Apache Arrow, a cross-language development platform for in-memory data.\nWe’ll use Apache Arrow via the arrow package, which provides a dplyr backend allowing you to analyze larger-than-memory datasets using familiar dplyr syntax.\nBoth arrow and dbplyr provide dplyr backends, so you might wonder when to use each.",
+    "crumbs": [
+      "Home",
+      "Apache Arrow and Apache Parqet"
+    ]
+  },
+  {
+    "objectID": "arrow.html#when-to-use-arrow-vs.-dbplyr",
+    "href": "arrow.html#when-to-use-arrow-vs.-dbplyr",
+    "title": "Apache Arrow and Apache Parqet",
+    "section": "1.4 When to Use Arrow vs. dbplyr",
+    "text": "1.4 When to Use Arrow vs. dbplyr\n\nUse arrow when working with large datasets stored in parquet files, especially when you want to perform in-memory analytics without the overhead of a database connection.\nUse dbplyr when you have data stored in a relational database and want to leverage SQL for querying, especially if you need to perform complex joins or transactions that are better handled by a database system.",
+    "crumbs": [
+      "Home",
+      "Apache Arrow and Apache Parqet"
+    ]
+  },
+  {
+    "objectID": "arrow.html#data-source",
+    "href": "arrow.html#data-source",
+    "title": "Apache Arrow and Apache Parqet",
+    "section": "2.1 Data Source:",
+    "text": "2.1 Data Source:\n\n data.seattle.gov/Community/Checkouts-by-Title/tmmm-ytt6\n\nItem checkout data from Seattle public libraries\n9GB CSV file",
+    "crumbs": [
+      "Home",
+      "Apache Arrow and Apache Parqet"
+    ]
+  },
+  {
+    "objectID": "arrow.html#whats-in-the-data",
+    "href": "arrow.html#whats-in-the-data",
+    "title": "Apache Arrow and Apache Parqet",
+    "section": "2.2 What’s in the Data?",
+    "text": "2.2 What’s in the Data?\n\nRows\n\n50.3M\n\nColumns\n\n12\n\nEach row is a\n\nCheckout Count\n\n\nColumns (12)\n\n\n\nColumn Name\nDescription\nAPI Field Name\nData Type\n\n\n\n\nUsageClass\nDenotes if item is “physical” or “digital”\nusageclass\nText\n\n\nCheckoutType\nDenotes the vendor tool used to check out the item.\ncheckouttype\nText\n\n\nMaterialType\nDescribes the type of item checked out (examples: book, song movie, music, magazine)\nmaterialtype\nText\n\n\nCheckoutYear\nThe 4-digit year of checkout for this record.\ncheckoutyear\nNumber\n\n\nCheckoutMonth\nThe month of checkout for this record.\ncheckoutmonth\nNumber\n\n\nCheckouts\nA count of the number of times the title was checked out within the “Checkout Month”.\ncheckouts\nNumber\n\n\nTitle\nThe full title and subtitle of an individual item\ntitle\nText\n\n\nISBN\nA comma separated list of ISBNs associated with the item record for the checkout.\nisbn\nText\n\n\nCreator\nThe author or entity responsible for authoring the item.\ncreator\nText\n\n\nSubjects\nThe subject of the item as it appears in the catalog\nsubjects\nText\n\n\nPublisher\nThe publisher of the title\npublisher\nText\n\n\nPublicationYear\nThe year from the catalog record in which the item was published, printed, or copyrighted.\npublicationyear\nText\n\n\n\n\nhttps://data.seattle.gov/Community-and-Culture/Checkouts-by-Title/tmmm-ytt6/data_preview",
+    "crumbs": [
+      "Home",
+      "Apache Arrow and Apache Parqet"
+    ]
+  },
+  {
+    "objectID": "arrow.html#setting-up-arrow",
+    "href": "arrow.html#setting-up-arrow",
+    "title": "Apache Arrow and Apache Parqet",
+    "section": "2.3 Setting Up Arrow",
+    "text": "2.3 Setting Up Arrow\nTo get started with arrow, you can install the package from CRAN:\n\n\nCode\n```{r}\n# install.packages(\"arrow\")\nlibrary(arrow)\nlibrary(tidyverse)\n```",
+    "crumbs": [
+      "Home",
+      "Apache Arrow and Apache Parqet"
+    ]
+  },
+  {
+    "objectID": "arrow.html#downloading-data",
+    "href": "arrow.html#downloading-data",
+    "title": "Apache Arrow and Apache Parqet",
+    "section": "2.4 Downloading Data",
+    "text": "2.4 Downloading Data\n\n\nCode\n```{r}\n#| eval: true\ndir.create(\"data\", showWarnings = FALSE)\n\ncurl::multi_download(\n  urls = \"https://r4ds.s3.us-west-2.amazonaws.com/seattle-library-checkouts.csv\",\n  destfiles = \"data/seattle-library-checkouts.csv\", # almost 9GB size when saved\n  resume = TRUE\n)\n```\n\n\n# A tibble: 1 × 10\n  success status_code resumefrom url    destfile error type  modified\n  &lt;lgl&gt;         &lt;dbl&gt;      &lt;dbl&gt; &lt;chr&gt;  &lt;chr&gt;    &lt;chr&gt; &lt;chr&gt; &lt;dttm&gt;  \n1 TRUE            416          0 https… \"C:\\\\Us… &lt;NA&gt;  appl… NA      \n# ℹ 2 more variables: time &lt;dbl&gt;, headers &lt;list&gt;\n\n\n\nAlternatively, you can use this approach below.\n\n\n\nCode\n```{r}\n#| eval: false\noptions(timeout = 1800)\ndownload.file(\n  url = \"https://r4ds.s3.us-west-2.amazonaws.com/seattle-library-checkouts.csv\",\n  destfile = \".data/seattle-library-checkouts.csv\"\n)\nfile.size(\"./data/seattle-library-checkouts.csv\") / 10**9\n```",
+    "crumbs": [
+      "Home",
+      "Apache Arrow and Apache Parqet"
+    ]
+  },
+  {
+    "objectID": "arrow.html#collect-vs.-compute",
+    "href": "arrow.html#collect-vs.-compute",
+    "title": "Apache Arrow and Apache Parqet",
+    "section": "4.1 collect() vs. compute()",
+    "text": "4.1 collect() vs. compute()\ncollect()\n\nExecutes the query and pulls the result into R as a local tibble. Now the data lives in your R session’s memory.\nUse it as the final step when you’re done filtering/aggregating and need the data for plotting, modeling, or exporting.\n\ncompute()\n\nExecutes the query but keeps the result on the remote/backend side (database table, Arrow dataset, etc.). It materializes the result into a temporary table in-place without pulling data into R memory.\nUse it when you want to checkpoint an intermediate result that you’ll query again — avoids re-running expensive upstream steps.\n\n\n\nCode\n```{r}\n#| eval: false\n\nseattle_csv_compute &lt;- seattle_csv |&gt;\n  filter(endsWith(MaterialType, \"BOOK\")) |&gt;\n  group_by(CheckoutYear) |&gt;\n  summarise(Checkouts = sum(Checkouts)) |&gt;\n  arrange(CheckoutYear) |&gt;\n  compute()\n\nseattle_csv_compute |&gt; nrow()\n\nseattle_csv_compute |&gt; print()\n\nseattle_csv_compute |&gt; glimpse()\n\nseattle_csv_compute |&gt; head()\n\nseattle_csv_compute |&gt; skimr::skim()\n\nseattle_csv_compute |&gt; collect()\n```\n\n\n\nBoth are from dplyr\n\n\n4.1.1 Key Differences\n\n\n\n\n\n\n\n\nFeature\ncollect()\ncompute()\n\n\n\n\nWhere result lives\nLocal R memory\nRemote source (DB, Spark)\n\n\nReturn type\nLocal tibble/data frame\nRemote tbl reference\n\n\nUse case\nFinal step; bring data into R\nIntermediate step; cache in DB\n\n\nMemory impact\nUses R’s RAM\nUses remote storage\n\n\nFurther lazy ops?\nNo (it’s local now)\nYes (still a remote reference)",
+    "crumbs": [
+      "Home",
+      "Apache Arrow and Apache Parqet"
+    ]
+  },
+  {
+    "objectID": "arrow.html#when-to-use-which",
+    "href": "arrow.html#when-to-use-which",
+    "title": "Apache Arrow and Apache Parqet",
+    "section": "4.2 When to use which",
+    "text": "4.2 When to use which\n\nUse collect() when you’re done querying and need the data in R for plotting, modeling, or export.\nUse compute() when your query is complex/expensive and you want to cache an intermediate result in the database to build further queries on top of it — avoiding recomputation.\n\n\n4.2.1 Use Case\nA common pattern is to use compute() for heavy intermediate transformations, then collect() at the very end:\n```{r}\nfiltered &lt;- tbl(con, \"big_table\") |&gt;\n  filter(status == \"active\") |&gt;\n  group_by(region) |&gt;\n  summarise(n = n()) |&gt;\n  compute() # Cache this aggregation in the DB\n\nfinal &lt;- filtered |&gt;\n  filter(n &gt; 100) |&gt;\n  collect() # Now bring into R\n```",
+    "crumbs": [
+      "Home",
+      "Apache Arrow and Apache Parqet"
+    ]
+  },
+  {
+    "objectID": "arrow.html#what-is-apache-parquet",
+    "href": "arrow.html#what-is-apache-parquet",
+    "title": "Apache Arrow and Apache Parqet",
+    "section": "5.1 What is Apache Parquet?",
+    "text": "5.1 What is Apache Parquet?\nApache Parquet is an open-source columnar storage file format designed for efficient data storage and retrieval, particularly in big data ecosystems.\n\nparquet is used for rectangular data.\nIt is a custom binary format specifically for the needs of big data.\n\n\n5.1.1 Key Features\n\nCompression — Similar values stored together compress extremely well (e.g., a column of integers vs. mixed row data). Supports Snappy, Gzip, Zstd, etc.\nPredicate pushdown — Stores min/max statistics per row group, so query engines can skip entire chunks of data without reading them.\nSchema evolution — Columns can be added or removed over time without rewriting old files.\nNested data support — Handles complex types like arrays, maps, and structs (using Dremel encoding).\nLanguage agnostic — Readable by Python, R, Java, Scala, C++, and more.",
+    "crumbs": [
+      "Home",
+      "Apache Arrow and Apache Parqet"
+    ]
+  },
+  {
+    "objectID": "arrow.html#why-it-matters",
+    "href": "arrow.html#why-it-matters",
+    "title": "Apache Arrow and Apache Parqet",
+    "section": "5.2 Why It Matters",
+    "text": "5.2 Why It Matters\n\n\n\n\n\n\n\nScenario\nBenefit\n\n\n\n\nAnalytical queries (SELECT col_a, col_b)\nOnly reads needed columns → much faster\n\n\nLarge datasets\n5–10x smaller than equivalent CSV\n\n\nCloud storage (S3, GCS)\nFewer bytes transferred = lower cost\n\n\nDistributed systems\nWorks natively with Spark, Hive, Presto, Dask",
+    "crumbs": [
+      "Home",
+      "Apache Arrow and Apache Parqet"
+    ]
+  },
+  {
+    "objectID": "arrow.html#advantages-of-parquet",
+    "href": "arrow.html#advantages-of-parquet",
+    "title": "Apache Arrow and Apache Parqet",
+    "section": "5.3 Advantages of parquet",
+    "text": "5.3 Advantages of parquet\n\n\n\n\n\n\n\n\nComparison Dimensions\nCSV\nParquet\n\n\n\n\nFile size\nLarger\nSmaller, compressed\n\n\nSpeed\nSlower\nFaster\n\n\nAbility to identify file type\nNo information\nHas a rich type system about column\n\n\nOrganization\nRow-oriented\nColumn-oriented\n\n\nOperation\nNot Chunked\nChunked\n\n\nReaderable? - readr::read_file()\nReadeable to humans\nUnreadeable to humans",
+    "crumbs": [
+      "Home",
+      "Apache Arrow and Apache Parqet"
+    ]
+  },
+  {
+    "objectID": "arrow.html#parquet-vs.-other-formats",
+    "href": "arrow.html#parquet-vs.-other-formats",
+    "title": "Apache Arrow and Apache Parqet",
+    "section": "5.4 Parquet vs. Other Formats",
+    "text": "5.4 Parquet vs. Other Formats\n\n\n\n\n\n\n\n\n\n\nFormat\nType\nCompressed\nColumnar\nHuman-readable\n\n\n\n\nCSV\nRow\nNo\nNo\nYes\n\n\nJSON\nRow\nNo\nNo\nYes\n\n\nFeather/Arrow\nColumnar\nOptional\nYes\nNo\n\n\nParquet\nColumnar\nYes\nYes\nNo\n\n\nORC\nColumnar\nYes\nYes\nNo\n\n\n\nParquet has become essentially the standard format for data lakes and analytics pipelines — you’ll find it everywhere from AWS S3 + Athena to Databricks to dbt projects.",
+    "crumbs": [
+      "Home",
+      "Apache Arrow and Apache Parqet"
+    ]
+  },
+  {
+    "objectID": "arrow.html#common-use-in-r",
+    "href": "arrow.html#common-use-in-r",
+    "title": "Apache Arrow and Apache Parqet",
+    "section": "5.5 Common Use in R",
+    "text": "5.5 Common Use in R\n\n\nCode\n```{r}\n#| eval: false\nlibrary(arrow)\n\n# Write\nwrite_parquet(my_df, \"data.parquet\")\n\n# Read (entire file)\ndf &lt;- read_parquet(\"data.parquet\")\n\n# Read only specific columns (very efficient)\ndf &lt;- read_parquet(\"data.parquet\", col_select = c(\"age\", \"region\"))\n```",
+    "crumbs": [
+      "Home",
+      "Apache Arrow and Apache Parqet"
+    ]
+  },
+  {
+    "objectID": "arrow.html#resources",
+    "href": "arrow.html#resources",
+    "title": "Apache Arrow and Apache Parqet",
+    "section": "5.6 Resources",
+    "text": "5.6 Resources\n\nhttps://parquet.apache.org/",
+    "crumbs": [
+      "Home",
+      "Apache Arrow and Apache Parqet"
+    ]
+  },
+  {
+    "objectID": "arrow.html#parquet-format",
+    "href": "arrow.html#parquet-format",
+    "title": "Apache Arrow and Apache Parqet",
+    "section": "5.7 Parquet Format",
+    "text": "5.7 Parquet Format\n\nSplit the file into multiple files\n\nParquet\nPartitioning\n\nApply the concept to the Seattle library data",
+    "crumbs": [
+      "Home",
+      "Apache Arrow and Apache Parqet"
+    ]
+  },
+  {
+    "objectID": "arrow.html#saving-to-local-directory",
+    "href": "arrow.html#saving-to-local-directory",
+    "title": "Apache Arrow and Apache Parqet",
+    "section": "6.1 Saving to Local Directory",
+    "text": "6.1 Saving to Local Directory\n\n\nCode\n```{r}\nseattle_parquet_dir &lt;- \"./data/seattle-library-checkouts-parquet\"\n```\n\n\n\n\nCode\n```{r}\n#| eval: false\n\nseattle_csv |&gt;\n  write_dataset(path = seattle_parquet_dir, format = \"parquet\") # Arrow\n```",
+    "crumbs": [
+      "Home",
+      "Apache Arrow and Apache Parqet"
+    ]
+  },
+  {
+    "objectID": "arrow.html#opening-the-parquet-file-arrow-dplyr",
+    "href": "arrow.html#opening-the-parquet-file-arrow-dplyr",
+    "title": "Apache Arrow and Apache Parqet",
+    "section": "6.2 Opening The Parquet File + Arrow + dplyr",
+    "text": "6.2 Opening The Parquet File + Arrow + dplyr\n\n\nCode\n```{r}\n#| eval: false\nopen_dataset(sources = seattle_parquet_dir, format = \"parquet\")\n# also\nopen_dataset(seattle_parquet_dir) #File system dataset\n```\n\n\nOutput:\nFileSystemDataset with 1 Parquet file\n12 columns\nUsageClass: string\nCheckoutType: string\nMaterialType: string\nCheckoutYear: int64\nCheckoutMonth: int64\nCheckouts: int64\nTitle: string\nISBN: string\nCreator: string\nSubjects: string\nPublisher: string\nPublicationYear: string\n\n6.2.1 Measuring Speed\n\n\nCode\n```{r}\n#| eval: false\nopen_dataset(sources = seattle_parquet_dir, format = \"parquet\") |&gt;\n  filter(endsWith(MaterialType, \"BOOK\")) |&gt;\n  group_by(CheckoutYear) |&gt;\n  summarise(Checkouts = sum(Checkouts)) |&gt;\n  arrange(CheckoutYear) |&gt;\n  collect() |&gt;\n  system.time()\n```\n\n\nOutput:\n   user  system elapsed \n   5.75    3.81    2.05",
+    "crumbs": [
+      "Home",
+      "Apache Arrow and Apache Parqet"
+    ]
+  },
+  {
+    "objectID": "arrow.html#measuring-size",
+    "href": "arrow.html#measuring-size",
+    "title": "Apache Arrow and Apache Parqet",
+    "section": "6.3 Measuring Size",
+    "text": "6.3 Measuring Size\n\n\nCode\n```{r}\n#| eval: false\nfile &lt;- list.files(seattle_parquet_dir, recursive = TRUE, full.names = TRUE)\nfile.size(file) / 10^9\n```\n\n\nOutput:\n[1] 4.416318\n\nThe file size was reduced by half compared with CSV file on-disk.",
+    "crumbs": [
+      "Home",
+      "Apache Arrow and Apache Parqet"
+    ]
+  },
+  {
+    "objectID": "arrow.html#saving-data",
+    "href": "arrow.html#saving-data",
+    "title": "Apache Arrow and Apache Parqet",
+    "section": "7.1 Saving Data",
+    "text": "7.1 Saving Data\n\n\nCode\n```{r}\nseattle_parquet_part &lt;- \"./data/seattle-library-checkouts\"\n```\n\n\n\n\nCode\n```{r}\n#| eval: false\n\nseattle_csv |&gt;\n  group_by(CheckoutYear) |&gt;\n  write_dataset(path = seattle_parquet_part, format = \"parquet\")\n```",
+    "crumbs": [
+      "Home",
+      "Apache Arrow and Apache Parqet"
+    ]
+  },
+  {
+    "objectID": "arrow.html#opening-the-data",
+    "href": "arrow.html#opening-the-data",
+    "title": "Apache Arrow and Apache Parqet",
+    "section": "7.2 Opening the Data",
+    "text": "7.2 Opening the Data\n\n\nCode\n```{r}\nopen_dataset(sources = seattle_parquet_part, format = \"parquet\") |&gt;\n  filter(endsWith(MaterialType, \"BOOK\")) |&gt;\n  group_by(CheckoutYear) |&gt;\n  summarise(Checkouts = sum(Checkouts)) |&gt;\n  arrange(CheckoutYear) |&gt;\n  collect()\n```\n\n\n# A tibble: 18 × 2\n   CheckoutYear Checkouts\n          &lt;int&gt;     &lt;int&gt;\n 1         2005   2129128\n 2         2006   3385869\n 3         2007   3679981\n 4         2008   4156859\n 5         2009   4500788\n 6         2010   4389760\n 7         2011   4484366\n 8         2012   4696376\n 9         2013   5394411\n10         2014   5606168\n11         2015   5784864\n12         2016   5915722\n13         2017   6280679\n14         2018   6831226\n15         2019   7339010\n16         2020   5549585\n17         2021   6659627\n18         2022   6301822\n\n\n\n7.2.1 Measuring Speed\n\n\nCode\n```{r}\n#| eval: false\nopen_dataset(sources = seattle_parquet_part, format = \"parquet\") |&gt;\n  filter(endsWith(MaterialType, \"BOOK\")) |&gt;\n  group_by(CheckoutYear) |&gt;\n  summarise(Checkouts = sum(Checkouts)) |&gt;\n  arrange(CheckoutYear) |&gt;\n  collect() |&gt;\n  system.time()\n```\n\n\nOutput:\n   user  system elapsed \n   4.17    1.94    1.54 \n\n\n\n\n\n\nTip\n\n\n\nThere was not a huge gain in speed beween one parquet file and partitioning.",
+    "crumbs": [
+      "Home",
+      "Apache Arrow and Apache Parqet"
+    ]
+  },
+  {
+    "objectID": "arrow.html#comparisons-with-more-filtering",
+    "href": "arrow.html#comparisons-with-more-filtering",
+    "title": "Apache Arrow and Apache Parqet",
+    "section": "7.3 Comparisons with more filtering",
+    "text": "7.3 Comparisons with more filtering\n\n\n\n7.3.1 Partitioned Parquet Files + Arrow + dplyr\n\n\nCode\n```{r}\n#| eval: false\n# filtering by CheckoutYear as well\n\nopen_dataset(sources = seattle_parquet_part, format = \"parquet\") |&gt;\n  filter(CheckoutYear == 2020, endsWith(MaterialType, \"BOOK\")) |&gt;\n  group_by(CheckoutYear) |&gt;\n  summarise(Checkouts = sum(Checkouts)) |&gt;\n  arrange(CheckoutYear) |&gt;\n  collect() |&gt;\n  system.time()\n```\n\n\nOutput:\n   user  system elapsed \n   0.28    0.15    0.11 \n\n\n\n\n\n7.3.2 CSV File read with Arrow function + dplyr\n\n\nCode\n```{r}\n#| eval: false\n# filtering by CheckoutYear as well\n\nseattle_csv |&gt;\n  filter(CheckoutYear == 2020, endsWith(MaterialType, \"BOOK\")) |&gt;\n  group_by(CheckoutYear) |&gt;\n  summarise(Checkouts = sum(Checkouts)) |&gt;\n  arrange(CheckoutYear) |&gt;\n  collect() |&gt;\n  system.time()\n```\n\n\nOutput:\n   user  system elapsed \n  13.33    5.89   14.75",
+    "crumbs": [
+      "Home",
+      "Apache Arrow and Apache Parqet"
+    ]
+  },
+  {
+    "objectID": "arrow.html#saving-to-local-data",
+    "href": "arrow.html#saving-to-local-data",
+    "title": "Apache Arrow and Apache Parqet",
+    "section": "8.1 Saving to Local Data",
+    "text": "8.1 Saving to Local Data\n\n\nCode\n```{r}\npq_path &lt;- \"data/seattle-library-checkouts\"\n```\n\n\n\n\nCode\n```{r}\n#| eval: false\nseattle_csv |&gt; # Arrow data\n  group_by(CheckoutYear) |&gt;\n  write_dataset(\n    path = pq_path,\n    format = \"parquet\"\n  )\n```\n\n\n\n\n\n\n\n\nNote\n\n\n\nThis takes about a minute to run; as we’ll see shortly this is an initial investment that pays off by making future operations much much faster.\n\n\n\n\nObserve the partitioned files\n\n\n\n\nCode\n```{r}\ntibble(\n  files = list.files(pq_path, recursive = TRUE),\n  size_MB = file.size(file.path(pq_path, files)) / 1024^2\n)\n\ntibble(\n  files = list.files(pq_path, recursive = TRUE),\n  size_MB = file.size(file.path(pq_path, files)) / 1024^2\n) |&gt;\n  summarize(total_size = sum(size_MB))\n```\n\n\n# A tibble: 18 × 2\n   files                            size_MB\n   &lt;chr&gt;                              &lt;dbl&gt;\n 1 CheckoutYear=2005/part-0.parquet    109.\n 2 CheckoutYear=2006/part-0.parquet    164.\n 3 CheckoutYear=2007/part-0.parquet    177.\n 4 CheckoutYear=2008/part-0.parquet    194.\n 5 CheckoutYear=2009/part-0.parquet    214.\n 6 CheckoutYear=2010/part-0.parquet    222.\n 7 CheckoutYear=2011/part-0.parquet    238.\n 8 CheckoutYear=2012/part-0.parquet    248.\n 9 CheckoutYear=2013/part-0.parquet    268.\n10 CheckoutYear=2014/part-0.parquet    282.\n11 CheckoutYear=2015/part-0.parquet    293.\n12 CheckoutYear=2016/part-0.parquet    300.\n13 CheckoutYear=2017/part-0.parquet    304.\n14 CheckoutYear=2018/part-0.parquet    292.\n15 CheckoutYear=2019/part-0.parquet    288.\n16 CheckoutYear=2020/part-0.parquet    151.\n17 CheckoutYear=2021/part-0.parquet    228.\n18 CheckoutYear=2022/part-0.parquet    240.\n# A tibble: 1 × 1\n  total_size\n       &lt;dbl&gt;\n1      4212.",
+    "crumbs": [
+      "Home",
+      "Apache Arrow and Apache Parqet"
+    ]
+  },
+  {
+    "objectID": "arrow.html#reading-the-partioined-parquet-data-in",
+    "href": "arrow.html#reading-the-partioined-parquet-data-in",
+    "title": "Apache Arrow and Apache Parqet",
+    "section": "8.2 Reading the Partioined Parquet data in",
+    "text": "8.2 Reading the Partioined Parquet data in\n\nUsing parquet data with dplyr and arrow\n\n\n\nCode\n```{r}\nseattle_pq &lt;- open_dataset(pq_path) # directory only\nseattle_pq\n```\n\n\nFileSystemDataset with 18 Parquet files\n12 columns\nUsageClass: string\nCheckoutType: string\nMaterialType: string\nCheckoutMonth: int64\nCheckouts: int64\nTitle: string\nISBN: string\nCreator: string\nSubjects: string\nPublisher: string\nPublicationYear: string\nCheckoutYear: int32",
+    "crumbs": [
+      "Home",
+      "Apache Arrow and Apache Parqet"
+    ]
+  },
+  {
+    "objectID": "arrow.html#using-dplyr-pipeline",
+    "href": "arrow.html#using-dplyr-pipeline",
+    "title": "Apache Arrow and Apache Parqet",
+    "section": "8.3 Using dplyr pipeline",
+    "text": "8.3 Using dplyr pipeline\n\nTask: count the total number of books checked out in each month for the last five years:\n\n\n\nCode\n```{r}\n#| eval: true\n\nseattle_pq |&gt;\n  select(CheckoutYear, CheckoutMonth, MaterialType, Checkouts) |&gt;\n  group_by(CheckoutYear) |&gt;\n  collect()\n\nseattle_pq |&gt;\n  count(CheckoutYear, CheckoutMonth, Checkouts) |&gt;\n  mutate(Total_checkouts = sum(Checkouts)) |&gt;\n  arrange(CheckoutYear, CheckoutMonth, Checkouts) |&gt;\n  collect()\n```\n\n\n# A tibble: 41,389,465 × 4\n# Groups:   CheckoutYear [18]\n   CheckoutYear CheckoutMonth MaterialType Checkouts\n          &lt;int&gt;         &lt;int&gt; &lt;chr&gt;            &lt;int&gt;\n 1         2005             4 BOOK                 1\n 2         2005             4 BOOK                 3\n 3         2005             4 BOOK                 1\n 4         2005             4 BOOK                 1\n 5         2005             4 BOOK                 1\n 6         2005             4 SOUNDDISC            4\n 7         2005             4 BOOK                 4\n 8         2006             1 BOOK                 1\n 9         2005             4 BOOK                 2\n10         2005             4 BOOK                 1\n# ℹ 41,389,455 more rows\n# A tibble: 46,024 × 5\n   CheckoutYear CheckoutMonth Checkouts     n Total_checkouts\n          &lt;int&gt;         &lt;int&gt;     &lt;int&gt; &lt;int&gt;           &lt;int&gt;\n 1         2005             4         1 69774         6323670\n 2         2005             4         2 21471         6323670\n 3         2005             4         3 10260         6323670\n 4         2005             4         4  5583         6323670\n 5         2005             4         5  3398         6323670\n 6         2005             4         6  2160         6323670\n 7         2005             4         7  1371         6323670\n 8         2005             4         8   915         6323670\n 9         2005             4         9   642         6323670\n10         2005             4        10   441         6323670\n# ℹ 46,014 more rows\n\n\n\n\nCode\n```{r}\nquery &lt;- seattle_pq |&gt;\n  filter(CheckoutYear &gt;= 2018, MaterialType == \"BOOK\") |&gt;\n  group_by(CheckoutYear, CheckoutMonth) |&gt;\n  summarize(TotalCheckouts = sum(Checkouts)) |&gt;\n  arrange(CheckoutYear, CheckoutMonth)\n```\n\n\n\nMechnics: you write dplyr code, which is automatically transformed into a query that the Apache Arrow C++ library understands, which is then executed when you call collect()\n\n\n\nCode\n```{r}\nquery\n\nquery |&gt; collect()\n```\n\n\nFileSystemDataset (query)\nCheckoutYear: int32\nCheckoutMonth: int64\nTotalCheckouts: int64\n\n* Grouped by CheckoutYear\n* Sorted by CheckoutYear [asc], CheckoutMonth [asc]\nSee $.data for the source Arrow object\n# A tibble: 58 × 3\n# Groups:   CheckoutYear [5]\n   CheckoutYear CheckoutMonth TotalCheckouts\n          &lt;int&gt;         &lt;int&gt;          &lt;int&gt;\n 1         2018             1         355101\n 2         2018             2         309813\n 3         2018             3         344487\n 4         2018             4         330988\n 5         2018             5         318049\n 6         2018             6         341825\n 7         2018             7         351207\n 8         2018             8         352977\n 9         2018             9         319587\n10         2018            10         338497\n# ℹ 48 more rows\n\n\n\n\n\n\n\n\nTip\n\n\n\n\nLike dbplyr, arrow only understands some R expressions, so you may not be able to write exactly the same code you usually would.\nHowever, the list of operations and functions supported is fairly extensive and continues to grow;\nFind a complete list of currently supported functions in ?acero. acero is Arrow query engine.",
+    "crumbs": [
+      "Home",
+      "Apache Arrow and Apache Parqet"
+    ]
+  },
+  {
+    "objectID": "arrow.html#performance-comparison",
+    "href": "arrow.html#performance-comparison",
+    "title": "Apache Arrow and Apache Parqet",
+    "section": "8.4 Performance Comparison",
+    "text": "8.4 Performance Comparison\n\n8.4.1 One large CSV file Saved with Arrow\n\n\nCode\n```{r}\n#| eval: false\n# Task: how long does it take to calculate the number of books checked out in each month of 2021\nseattle_csv |&gt;\n  filter(CheckoutYear == 2021, MaterialType == \"BOOK\") |&gt;\n  group_by(CheckoutMonth) |&gt;\n  summarize(TotalCheckouts = sum(Checkouts)) |&gt;\n  arrange(desc(CheckoutMonth)) |&gt;\n  collect() |&gt;\n  system.time()\n```\n\n\n\n\n\n\n\n\nNote\n\n\n\n   user  system elapsed \n  12.99    5.44   15.00 \n\n\n\n\n8.4.2 18 different smaller parquet files\n\n\nCode\n```{r}\n#| eval: false\nseattle_pq |&gt;\n  filter(CheckoutYear == 2021, MaterialType == \"BOOK\") |&gt;\n  group_by(CheckoutMonth) |&gt;\n  summarize(TotalCheckouts = sum(Checkouts)) |&gt;\n  arrange(desc(CheckoutMonth)) |&gt;\n  collect() |&gt;\n  system.time()\n```\n\n\n\n\n\n\n\n\nNote\n\n\n\n   user  system elapsed \n   0.42    0.25    0.13 \n\n\n\n\n8.4.3 Performance Attribution\n\n\n\n\n\n\nImportantAttribution\n\n\n\n\nPartitioning improves performance because this query uses CheckoutYear == 2021 to filter the data, and arrow is smart enough to recognize that it only needs to read 1 of the 18 parquet files.\nStoring data in binary format can be read more directly into memory\nThe column-wise format and rich metadata means only four columns are needed: CheckoutYear, MaterialType, CheckoutMonth, and Checkouts",
+    "crumbs": [
+      "Home",
+      "Apache Arrow and Apache Parqet"
+    ]
+  },
+  {
+    "objectID": "arrow.html#assignment",
+    "href": "arrow.html#assignment",
+    "title": "Apache Arrow and Apache Parqet",
+    "section": "9.1 Assignment",
+    "text": "9.1 Assignment\n\nFigure out the most popular book each year.\nWhich author has the most books in the Seattle library system?\nHow has checkouts of books vs ebooks changed over the last 10 years?",
+    "crumbs": [
+      "Home",
+      "Apache Arrow and Apache Parqet"
+    ]
+  },
+  {
+    "objectID": "duckdb.html",
+    "href": "duckdb.html",
+    "title": "DuckDB for Marketing Analytics: From Parquet to Powerful Queries",
+    "section": "",
+    "text": "1 Introduction\n  \n  1.1 What is DuckDB?\n  1.2 Three Remarkable Features\n  \n  1.2.1 1. It Lives Inside R — No Server Needed\n  1.2.2 2. It Is Shockingly Fast\n  1.2.3 3. It Reads Parquet Directly — Without Loading Into RAM\n  \n  1.3 Why use DuckDB?\n  1.4 DuckDB vs Arrow vs Parquet\n  \n  2 How DuckDB Works with Arrow and Parquet\n  \n  2.1 Setup\n  2.2 Pattern 1. Query a Parquet file directly with DuckDB (no loading into R)\n  2.3 Parttern 2. Use DuckDB as a dplyr backend (no SQL required)\n  2.4 Pattern 3. Query an Arrow Table with DuckDB (The Power Combination)\n  2.5 Pattern 4. Persistent DuckDB Database (Best for a Course Project)\n  \n  3 How the Three Tools Form a Complete Stack\n  4 The Big Picture Workflow",
+    "crumbs": [
+      "Home",
+      "DuckDB for Marketing Analytics: From Parquet to Powerful Queries"
+    ]
+  },
+  {
+    "objectID": "duckdb.html#what-is-duckdb",
+    "href": "duckdb.html#what-is-duckdb",
+    "title": "DuckDB for Marketing Analytics: From Parquet to Powerful Queries",
+    "section": "1.1 What is DuckDB?",
+    "text": "1.1 What is DuckDB?\nDuckDB is an embedded analytical database engine — think of it as “SQLite, but built for analytics.” It runs entirely inside your R process with no server, no installation, no configuration. You just install the package and it works.\nIt was designed from the ground up for OLAP (Online Analytical Processing) workloads — the kind of heavy aggregations, joins, and scans that are typical in data analysis, as opposed to transactional row-by-row operations.\n\nSQLite was built for this (transactional — many small reads/writes):\n\n“Insert one customer order”\n“Update one user’s address”\n“Delete one session record”\n\nDuckDB was built for this (analytical — few large scans):\n\n“What was total revenue by channel across 50 million events?”\n“Which pages had the highest bounce rate last quarter?”\n“Give me the 99th percentile session duration by device type”",
+    "crumbs": [
+      "Home",
+      "DuckDB for Marketing Analytics: From Parquet to Powerful Queries"
+    ]
+  },
+  {
+    "objectID": "duckdb.html#three-remarkable-features",
+    "href": "duckdb.html#three-remarkable-features",
+    "title": "DuckDB for Marketing Analytics: From Parquet to Powerful Queries",
+    "section": "1.2 Three Remarkable Features",
+    "text": "1.2 Three Remarkable Features\n\n1.2.1 1. It Lives Inside R — No Server Needed\nTraditional database setup (PostgreSQL, MySQL, Snowflake):\n\nInstall database server\nConfigure network/ports\nCreate users and permissions\nStart the server process\nConnect from R\nManage the server forever\n\nDuckDB setup:\ninstall.packages(\"duckdb\")\nlibrary(duckdb)\ncon &lt;- dbConnect(duckdb::duckdb())   # That's it. Running in 1 second.\n\n\n1.2.2 2. It Is Shockingly Fast\n\nDuckDB uses columnar storage and vectorised execution — it reads only the columns your query needs and processes thousands of rows simultaneously using modern CPU instructions:\n\nBenchmark: Count events by type across 10 million GA4 rows\n\ndata.frame in RAM: ~4.2 seconds\ndata.table: ~0.8 seconds\ndplyr on tibble: ~3.1 seconds\nDuckDB on parquet file: ~0.3 seconds ← faster than data in RAM\nDuckDB on DuckDB file: ~0.1 seconds\n\n\n\n1.2.3 3. It Reads Parquet Directly — Without Loading Into RAM\n\nThis is the feature that changes everything for large datasets:\n\n```{r}\n# Traditional approach — must fit in RAM\nga4_data &lt;- arrow::read_parquet(\"data/ga4_events.parquet\")  # ~4 GB into RAM\nresult   &lt;- ga4_data |&gt; filter(...) |&gt; summarise(...)        # then query\n\n# DuckDB approach — reads only what the query needs\ncon    &lt;- dbConnect(duckdb::duckdb())\nresult &lt;- dbGetQuery(con, \"\n  SELECT event_name, COUNT(*) as n\n  FROM read_parquet('data/ga4_events.parquet')\n  WHERE event_date &gt;= '2021-01-01'\n  GROUP BY event_name\n\")\n# DuckDB scans only the event_name and event_date columns\n# Never loads price, device, geo, or any other column into RAM\n```",
+    "crumbs": [
+      "Home",
+      "DuckDB for Marketing Analytics: From Parquet to Powerful Queries"
+    ]
+  },
+  {
+    "objectID": "duckdb.html#why-use-duckdb",
+    "href": "duckdb.html#why-use-duckdb",
+    "title": "DuckDB for Marketing Analytics: From Parquet to Powerful Queries",
+    "section": "1.3 Why use DuckDB?",
+    "text": "1.3 Why use DuckDB?\nIt’s fast. DuckDB uses a columnar execution engine with vectorized query processing, meaning it processes chunks of columns at a time rather than row by row. For analytical queries on large data, this is dramatically faster than base R or even many database solutions.\nIt’s serverless. No Docker, no Postgres instance, no DBA needed. It lives inside your session like any other R package.\nIt speaks SQL fluently. You can write standard SQL, or use it as a dplyr backend via dbplyr — so you don’t need to learn a new API.\nIt handles larger-than-memory data. DuckDB can query files that don’t fit in RAM by streaming and processing them in chunks, making it genuinely useful for big data workflows.\nIt integrates natively with Parquet and Arrow. It can directly query .parquet files on disk without loading them into memory first — no import step needed.",
+    "crumbs": [
+      "Home",
+      "DuckDB for Marketing Analytics: From Parquet to Powerful Queries"
+    ]
+  },
+  {
+    "objectID": "duckdb.html#duckdb-vs-arrow-vs-parquet",
+    "href": "duckdb.html#duckdb-vs-arrow-vs-parquet",
+    "title": "DuckDB for Marketing Analytics: From Parquet to Powerful Queries",
+    "section": "1.4 DuckDB vs Arrow vs Parquet",
+    "text": "1.4 DuckDB vs Arrow vs Parquet\nThese three are complementary, not competing. Understanding the role of each is important:\n\n\n\n\n\n\n\n\n\n\nParquet\nArrow\nDuckDB\n\n\n\n\nWhat is it?\nFile format (How data is stored on disk)\nIn-memory format + compute engine (a toolkit): how data is held in RAM and processed\nA query engine (how you ask questions of data)\n\n\nLives where?\nDisk\nRAM\nRAM + disk (processes from disk)\n\n\nPrimary role\nStore data efficiently\nProcess data in memory\nQuery data with SQL/dplyr”\n\n\nReads Parquet\nIS Parquet\nYes — natively\nYes — directly\n\n\nSQL support\nNo\nLimited (via DuckDB)\nFull SQL\n\n\ndplyr support\nVia arrow package\nYes — first class”\nYes — via dbplyr\n\n\nLarger-than-memory?\nYes (it’s on disk)\nPartial (via chunked datasets)\nYes – streams from disk\n\n\nQuery language\nNone\ndplyr verbs\nSQL + dplyr via dbplyr\n\n\nSpeed (analytics)\nN/A (Storage only)\nVery fast\nExtremely fast\n\n\nBest for\nArchiving & sharing data\nIn-memory transformation: e.g., Wrangling in R/Python\nComplex queries, joins, aggregations\n\n\n\nThe typical mental model is:\n\nParquet is where your data lives (on disk, compressed, efficient)\nArrow is how you move and process it quickly in memory\nDuckDB is how you query it with full SQL power, with or without loading into memory\n\nThey work beautifully together — DuckDB can read Arrow tables directly and query Parquet files on disk, and you can pass results back to Arrow or collect into R.",
+    "crumbs": [
+      "Home",
+      "DuckDB for Marketing Analytics: From Parquet to Powerful Queries"
+    ]
+  },
+  {
+    "objectID": "duckdb.html#setup",
+    "href": "duckdb.html#setup",
+    "title": "DuckDB for Marketing Analytics: From Parquet to Powerful Queries",
+    "section": "2.1 Setup",
+    "text": "2.1 Setup\n```{r}\nlibrary(duckdb)\nlibrary(arrow)\nlibrary(dplyr)\n```",
+    "crumbs": [
+      "Home",
+      "DuckDB for Marketing Analytics: From Parquet to Powerful Queries"
+    ]
+  },
+  {
+    "objectID": "duckdb.html#pattern-1.-query-a-parquet-file-directly-with-duckdb-no-loading-into-r",
+    "href": "duckdb.html#pattern-1.-query-a-parquet-file-directly-with-duckdb-no-loading-into-r",
+    "title": "DuckDB for Marketing Analytics: From Parquet to Powerful Queries",
+    "section": "2.2 Pattern 1. Query a Parquet file directly with DuckDB (no loading into R)",
+    "text": "2.2 Pattern 1. Query a Parquet file directly with DuckDB (no loading into R)\n\nThe most direct approach — point DuckDB at a Parquet file and query it with SQL, no loading required:\nDuckDB can scan Parquet files on disk using SQL — nothing enters R memory until you collect().\nSimple:\n\n\n\nCode\n```{r}\n#| eval: false\n\ncon &lt;- dbConnect(duckdb())\n\n# Register and query a parquet file directly\ndbGetQuery(con, \"\n  SELECT region, SUM(sales) AS total_sales\n  FROM read_parquet('data/sales.parquet')\n  GROUP BY region\n  ORDER BY total_sales DESC\n\")\n```\n\n\n\nAdvanced:\n\n\n\nCode\n```{r}\n#| eval: false\n\nlibrary(duckdb)\nlibrary(DBI)\ncon &lt;- dbConnect(duckdb())\n\n# Register and query a parquet file directly\ndbGetQuery(\n  con,\n  \"\n  SELECT region, SUM(sales) AS total_sales\n  FROM read_parquet('data/sales.parquet')\n  GROUP BY region\n  ORDER BY total_sales DESC\n\"\n)\n\n# ── Query a single Parquet file ────────────────────────────────────────────────\ndbGetQuery(\n  con,\n  \"\n  SELECT\n    event_name,\n    COUNT(*) AS events,\n    COUNT(DISTINCT user_pseudo_id) AS users\n  FROM read_parquet('data/ga4_flat.parquet')\n  GROUP BY event_name\n  ORDER BY events DESC\n  LIMIT 10\n\"\n)\n\n# ── Query multiple Parquet files with a wildcard ───────────────────────────────\n# Perfect for GA4's one-file-per-day structure\ndbGetQuery(\n  con,\n  \"\n  SELECT\n    event_date,\n    COUNT(*) AS daily_events\n  FROM read_parquet('data/ga4_*.parquet')\n  GROUP BY event_date\n  ORDER BY event_date\n\"\n)\n\ndbGetQuery(\n  con,\n  \"\n  SELECT year, SUM(revenue) AS total\n  FROM read_parquet('data/sales/*.parquet', union_by_name = TRUE)\n  GROUP BY year\n  ORDER BY year\n\"\n\n# ── Join two Parquet files in a single query ───────────────────────────────────\ndbGetQuery(\n  con,\n  \"\n  SELECT\n    s.device_category,\n    s.traffic_source_medium,\n    COUNT(DISTINCT e.user_pseudo_id) AS users,\n    SUM(CASE WHEN e.event_name = 'purchase' THEN 1 ELSE 0 END) AS purchases\n  FROM read_parquet('data/ga4_flat.parquet')    AS e\n  JOIN read_parquet('data/ga4_sessions.parquet') AS s\n    ON e.user_pseudo_id = s.user_pseudo_id\n   AND e.event_date     = s.event_date\n  GROUP BY s.device_category, s.traffic_source_medium\n  ORDER BY users DESC\n\"\n)\n\ndbDisconnect(con, shutdown = TRUE)\n```\n\n\nThis is powerful — DuckDB pushes the entire query down to the file, reading only the columns and rows it needs (thanks to Parquet’s columnar layout).",
+    "crumbs": [
+      "Home",
+      "DuckDB for Marketing Analytics: From Parquet to Powerful Queries"
+    ]
+  },
+  {
+    "objectID": "duckdb.html#parttern-2.-use-duckdb-as-a-dplyr-backend-no-sql-required",
+    "href": "duckdb.html#parttern-2.-use-duckdb-as-a-dplyr-backend-no-sql-required",
+    "title": "DuckDB for Marketing Analytics: From Parquet to Powerful Queries",
+    "section": "2.3 Parttern 2. Use DuckDB as a dplyr backend (no SQL required)",
+    "text": "2.3 Parttern 2. Use DuckDB as a dplyr backend (no SQL required)\n\nIf you prefer dplyr verbs over SQL, you can register the Parquet file as a virtual table and query it lazily.\n\n\ndbplyr translates dplyr verbs into DuckDB SQL automatically:\n\n\nSimple:\n\n\n\nCode\n```{r}\n#| eval: false\ncon &lt;- dbConnect(duckdb())\n\nduckdb_register(con, \"sales\", read_parquet(\"data/sales.parquet\"))\n\ntbl(con, \"sales\") |&gt;\n  filter(year &gt;= 2022) |&gt;\n  group_by(region) |&gt;\n  summarise(total = sum(sales)) |&gt;\n  arrange(desc(total)) |&gt;\n  collect()   # only now does data enter R\n```\n\n\n\nAdvanced:\n\n\n\nCode\n```{r}\n#| eval: false\nlibrary(duckdb)\nlibrary(dplyr)\nlibrary(dbplyr)\n\ncon &lt;- dbConnect(duckdb())\n\n# ── Register Parquet file as a virtual table ───────────────────────────────────\n# This creates a view — no data is copied or loaded\nduckdb_read_csv   # (there is also this for CSV)\ndbExecute(con, \"\n  CREATE VIEW ga4_events AS\n  SELECT * FROM read_parquet('data/ga4_flat.parquet')\n\")\n\ndbExecute(con, \"\n  CREATE VIEW ga4_sessions AS\n  SELECT * FROM read_parquet('data/ga4_sessions.parquet')\n\")\n\n# ── Now use dplyr as if it were a regular data frame ──────────────────────────\nevents   &lt;- tbl(con, \"ga4_events\")\nsessions &lt;- tbl(con, \"ga4_sessions\")\n\n# dplyr query — translated to DuckDB SQL by dbplyr\ntop_events &lt;- events |&gt;\n  count(event_name, sort = TRUE) |&gt;\n  head(10) |&gt;\n  collect()    # collect() executes the query and returns a tibble\n\nprint(top_events)\n\n# Join two Parquet files using dplyr — no SQL written\ndevice_conversions &lt;- sessions |&gt;\n  select(user_pseudo_id, device_category, traffic_source_medium) |&gt;\n  left_join(\n    events |&gt;\n      filter(event_name == \"purchase\") |&gt;\n      distinct(user_pseudo_id) |&gt;\n      mutate(purchased = TRUE),\n    by = \"user_pseudo_id\"\n  ) |&gt;\n  mutate(purchased = coalesce(purchased, FALSE)) |&gt;\n  group_by(device_category, traffic_source_medium) |&gt;\n  summarise(\n    users      = n_distinct(user_pseudo_id),\n    purchasers = sum(as.integer(purchased), na.rm = TRUE),\n    cvr        = purchasers / users,\n    .groups    = \"drop\"\n  ) |&gt;\n  arrange(desc(cvr)) |&gt;\n  collect()  # only now does data enter R\n\nprint(device_conversions)\n\ndbDisconnect(con, shutdown = TRUE)\n```",
+    "crumbs": [
+      "Home",
+      "DuckDB for Marketing Analytics: From Parquet to Powerful Queries"
+    ]
+  },
+  {
+    "objectID": "duckdb.html#pattern-3.-query-an-arrow-table-with-duckdb-the-power-combination",
+    "href": "duckdb.html#pattern-3.-query-an-arrow-table-with-duckdb-the-power-combination",
+    "title": "DuckDB for Marketing Analytics: From Parquet to Powerful Queries",
+    "section": "2.4 Pattern 3. Query an Arrow Table with DuckDB (The Power Combination)",
+    "text": "2.4 Pattern 3. Query an Arrow Table with DuckDB (The Power Combination)\n\nArrow and DuckDB are designed to work together. Arrow handles file I/O and in-memory transformation; DuckDB handles querying.\n\n\nThey share data without copying using the Apache Arrow memory format.\n\n\nIf you already have an Arrow table in memory, DuckDB can query it directly — zero copying involved:\n\n\nSimple:\n\n\n\nCode\n```{r}\n#| eval: false\n\n# Create or load an Arrow table\narrow_table &lt;- read_parquet(\"data/sales.parquet\", as_data_frame = FALSE)\n\ncon &lt;- dbConnect(duckdb())\nduckdb_register_arrow(con, \"sales_arrow\", arrow_table)\n\ntbl(con, \"sales_arrow\") |&gt;\n  filter(category == \"Electronics\") |&gt;\n  summarise(avg_price = mean(price)) |&gt;\n  collect()\n```\n\n\n\nAdvanced:\n\n\n\nCode\n```{r}\n#| eval: false\n\nlibrary(arrow)\nlibrary(duckdb)\nlibrary(dplyr)\n\n# ── Step 1: Open Parquet as Arrow Dataset (lazy — nothing loaded yet) ──────────\nga4_arrow &lt;- arrow::open_dataset(\"data/ga4_flat.parquet\")\n\n# ── Step 2: Do transformations in Arrow ───────────────────────────────────────\n# Arrow is better at: filtering rows, selecting columns, type conversion\nga4_prepared &lt;- ga4_arrow |&gt;\n  filter(event_name %in% c(\"purchase\", \"add_to_cart\", \"view_item\")) |&gt;\n  select(event_date, event_name, user_pseudo_id) |&gt;\n  mutate(event_date = as.Date(event_date))\n\n# ── Step 3: Hand off to DuckDB for aggregation ────────────────────────────────\n# DuckDB is better at: GROUP BY, window functions, complex joins\ncon &lt;- dbConnect(duckdb::duckdb())\n\n# Register the Arrow object directly — ZERO data copying\nduckdb::duckdb_register_arrow(con, \"ga4_prepared\", ga4_prepared)\n\n# Now query it with full DuckDB SQL power\nresult &lt;- dbGetQuery(con, \"\n  SELECT\n    event_date,\n    event_name,\n    COUNT(DISTINCT user_pseudo_id) AS users\n  FROM ga4_prepared\n  GROUP BY event_date, event_name\n  ORDER BY event_date, event_name\n\")\n\nprint(result)\ndbDisconnect(con, shutdown = TRUE)\n\n# ── The same workflow using dplyr throughout ───────────────────────────────────\nlibrary(arrow)\nlibrary(duckdb)\nlibrary(dplyr)\n\ncon &lt;- dbConnect(duckdb::duckdb())\n\n# Arrow dataset → register with DuckDB → query with dplyr\nga4_arrow &lt;- arrow::open_dataset(\"data/ga4_flat.parquet\")\nduckdb::duckdb_register_arrow(con, \"ga4_events\", ga4_arrow)\n\nga4_params_arrow &lt;- arrow::open_dataset(\"data/ga4_event_params.parquet\")\nduckdb::duckdb_register_arrow(con, \"ga4_params\", ga4_params_arrow)\n\n# Now use pure dplyr — no SQL needed at all\n# dbplyr translates these verbs to DuckDB SQL automatically\n\n# Marketing analysis: page views by device and channel\npage_analysis &lt;- tbl(con, \"ga4_params\") |&gt;\n  filter(key == \"page_location\") |&gt;\n  rename(page_location = param_value) |&gt;\n  left_join(\n    tbl(con, \"ga4_events\") |&gt;\n      select(event_timestamp, user_pseudo_id,\n             device_category, traffic_source_medium),\n    by = c(\"event_timestamp\", \"user_pseudo_id\")\n  ) |&gt;\n  mutate(\n    page_path = regexp_replace(page_location, \"\\\\?.*$\", \"\"),\n    page_path = regexp_replace(page_path, \"https?://[^/]+\", \"\")\n  ) |&gt;\n  group_by(device_category, page_path) |&gt;\n  summarise(\n    page_views = n(),\n    users      = n_distinct(user_pseudo_id),\n    .groups    = \"drop\"\n  ) |&gt;\n  filter(page_views &gt;= 10) |&gt;\n  arrange(desc(page_views)) |&gt;\n  head(20) |&gt;\n  collect()\n\nprint(page_analysis)\ndbDisconnect(con, shutdown = TRUE)\n```",
+    "crumbs": [
+      "Home",
+      "DuckDB for Marketing Analytics: From Parquet to Powerful Queries"
+    ]
+  },
+  {
+    "objectID": "duckdb.html#pattern-4.-persistent-duckdb-database-best-for-a-course-project",
+    "href": "duckdb.html#pattern-4.-persistent-duckdb-database-best-for-a-course-project",
+    "title": "DuckDB for Marketing Analytics: From Parquet to Powerful Queries",
+    "section": "2.5 Pattern 4. Persistent DuckDB Database (Best for a Course Project)",
+    "text": "2.5 Pattern 4. Persistent DuckDB Database (Best for a Course Project)\n\nWrite your rectangled GA4 tables once into a .duckdb file. Every subsequent analysis opens this one file — no BigQuery, no Parquet management, no RAM issues:\n\n\n\nCode\n```{r}\n#| eval: false\n\nlibrary(duckdb)\nlibrary(dplyr)\nlibrary(arrow)\n\n# ── SETUP: Run once to create the database ────────────────────────────────────\ncon &lt;- dbConnect(\n  duckdb::duckdb(),\n  dbdir     = \"data/ga4.duckdb\",\n  read_only = FALSE\n)\n\n# Write tables from Parquet files — DuckDB reads and stores them\ndbExecute(con, \"\n  CREATE TABLE ga4_events AS\n  SELECT * FROM read_parquet('data/ga4_flat.parquet')\n\")\n\ndbExecute(con, \"\n  CREATE TABLE ga4_params AS\n  SELECT * FROM read_parquet('data/ga4_event_params.parquet')\n\")\n\ndbExecute(con, \"\n  CREATE TABLE ga4_sessions AS\n  SELECT * FROM read_parquet('data/ga4_sessions.parquet')\n\")\n\ndbExecute(con, \"\n  CREATE TABLE ga4_items AS\n  SELECT * FROM read_parquet('data/ga4_items.parquet')\n\")\n\n# Add indexes for faster querying\ndbExecute(con, \"CREATE INDEX idx_event_name ON ga4_events(event_name)\")\ndbExecute(con, \"CREATE INDEX idx_param_key  ON ga4_params(key)\")\ndbExecute(con, \"CREATE INDEX idx_event_date ON ga4_events(event_date)\")\n\n# Confirm what was saved\ncat(\"Tables in ga4.duckdb:\\n\")\ndbListTables(con) |&gt; print()\n\ncat(\"\\nRow counts:\\n\")\npurrr::map_df(dbListTables(con), \\(t) {\n  tibble::tibble(\n    table = t,\n    rows  = dbGetQuery(con,\n              glue::glue(\"SELECT COUNT(*) n FROM {t}\"))$n\n  )\n}) |&gt; print()\n\ncat(\"\\nFile size:\",\n    round(file.size(\"data/ga4.duckdb\") / 1024^2, 1), \"MB\\n\")\n\ndbDisconnect(con, shutdown = TRUE)\n```\n\n\n\n\nCode\n```{r}\n#| eval: false\n\n# ── ANALYSIS: Open the database for every subsequent session ──────────────────\ncon &lt;- dbConnect(\n  duckdb::duckdb(),\n  dbdir     = \"data/ga4.duckdb\",\n  read_only = TRUE    # Prevents accidental writes during analysis\n)\n\n# Lazy table references — nothing in RAM yet\nevents   &lt;- tbl(con, \"ga4_events\")\nparams   &lt;- tbl(con, \"ga4_params\")\nsessions &lt;- tbl(con, \"ga4_sessions\")\nitems    &lt;- tbl(con, \"ga4_items\")\n\n# ── Example 1: Event counts (dplyr) ───────────────────────────────────────────\nevents |&gt;\n  count(event_name, sort = TRUE) |&gt;\n  collect()\n\n# ── Example 2: Top pages (dplyr) ──────────────────────────────────────────────\nparams |&gt;\n  filter(key == \"page_location\") |&gt;\n  count(param_value, sort = TRUE) |&gt;\n  head(10) |&gt;\n  collect()\n\n# ── Example 3: Revenue by day (SQL) ───────────────────────────────────────────\ndbGetQuery(con, \"\n  SELECT\n    event_date,\n    COUNT(*)                                   AS transactions,\n    SUM(ecommerce_purchase_revenue_in_usd)     AS revenue,\n    AVG(ecommerce_purchase_revenue_in_usd)     AS avg_order_value\n  FROM ga4_events\n  WHERE event_name = 'purchase'\n  GROUP BY event_date\n  ORDER BY event_date\n\")\n\n# ── Example 4: Funnel analysis (SQL window functions) ─────────────────────────\ndbGetQuery(con, \"\n  WITH funnel AS (\n    SELECT\n      event_name,\n      COUNT(DISTINCT user_pseudo_id) AS users,\n      ROW_NUMBER() OVER (\n        ORDER BY CASE event_name\n          WHEN 'view_item'       THEN 1\n          WHEN 'add_to_cart'     THEN 2\n          WHEN 'begin_checkout'  THEN 3\n          WHEN 'purchase'        THEN 4\n        END\n      ) AS stage_order\n    FROM ga4_events\n    WHERE event_name IN ('view_item','add_to_cart',\n                         'begin_checkout','purchase')\n    GROUP BY event_name\n  )\n  SELECT\n    event_name,\n    users,\n    ROUND(100.0 * users /\n      FIRST_VALUE(users) OVER (ORDER BY stage_order), 1) AS pct_of_top\n  FROM funnel\n  ORDER BY stage_order\n\")\n\ndbDisconnect(con, shutdown = TRUE)\n```",
+    "crumbs": [
+      "Home",
+      "DuckDB for Marketing Analytics: From Parquet to Powerful Queries"
+    ]
+  }
+]
