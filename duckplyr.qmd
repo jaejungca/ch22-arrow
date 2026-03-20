@@ -1,7 +1,7 @@
 ---
 title: "Duckplyr: The Best of Both Worlds"
 subtitle: "drop-in replacement for dplyr"
-description: "This page describes benifits of using duckplyr and illustrate how to use it for GA4 data"
+description: "This page describes the benifits of using duckplyr and illustrate how to use it for GA4 data"
 categories: [Duckplyr, DuckDB, dplyr]
 order: 3
 author: "Jae Jung"
@@ -20,11 +20,11 @@ execute:
   warning: false
   message: false
   echo: fenced
-  cache: true
+  cache: false
   freeze: auto
 ---
 
-# What is duckplyr?
+# **What is duckplyr?**
 
 > duckplyr wraps DuckDB's analytical query processing engine in a dplyr-compatible API. In plain terms: it's **dplyr, but secretly powered by DuckDB under the hood.** Calling `library(duckplyr)` overwrites dplyr methods, enabling duckplyr for the entire session. Your existing dplyr code runs unchanged — you just get DuckDB's speed for free.
 >
@@ -41,7 +41,7 @@ execute:
 
 > The key insight is that duckplyr is not a wrapper around dplyr or a translation layer like dbplyr. It **reimplements dplyr's verbs** using DuckDB's execution engine directly, so the familiar code you write is executed by DuckDB under the hood — automatically, invisibly.
 
-# The Landscape: Four Tools, One Job
+# **The Landscape: Four Tools, One Job**
 
 Before comparing them, let us be precise about what each tool actually is:
 
@@ -108,7 +108,7 @@ ga4_events |> # ← same code as dplyr
   summarise(revenue = sum(revenue)) # ← result is a tibble automatically
 ```
 
-# How duckplyr Is Different from Each Tool
+# **How duckplyr Is Different from Each Tool**
 
 ## duckplyr vs dplyr
 
@@ -210,7 +210,7 @@ options(duckplyr.fallback = "error") # Error instead of falling back
 options(duckplyr.fallback = "ignore") # Silent fallback (default)
 ```
 
-# Workfolow Guide
+# **Workfolow Guide**
 
 ## Installing and Setting Up duckplyr
 
@@ -277,7 +277,7 @@ ga4_arrow <- arrow::open_dataset("data/ga4_flat.parquet")
 ga4_duck <- as_duckplyr_df(ga4_arrow)
 ```
 
-# Analyzing GA4 Data with duckplyr
+# **Analyzing GA4 Data with duckplyr**
 
 Now the practical part. Every analysis below uses **identical syntax to dplyr** but executes in DuckDB.
 
@@ -742,7 +742,7 @@ user_segments |>
   opt_stylize(style = 1)
 ```
 
-# Performance Comparison
+# **Performance Comparison**
 
 ```{r}
 #| eval: false
@@ -792,6 +792,7 @@ bench::mark(
   gt::opt_stylize(style = 1)
 ```
 
+# **When to Use Each Tool**   
 ```{r}
 #| echo: false
 tibble::tribble(

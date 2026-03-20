@@ -447,7 +447,7 @@
     "href": "duckplyr.html",
     "title": "Duckplyr: The Best of Both Worlds",
     "section": "",
-    "text": "1 What is duckplyr?\n  2 The Landscape: Four Tools, One Job\n  3 How duckplyr Is Different from Each Tool\n  \n  3.1 duckplyr vs dplyr\n  3.2 duckplyr vs DuckDB + dbplyr\n  3.3 The Fallback System — Why duckplyr Is Safe to Use\n  \n  4 Workfolow Guide\n  \n  4.1 Installing and Setting Up duckplyr\n  4.2 Reading Data into duckplyr\n  \n  5 Analyzing GA4 Data with duckplyr\n  \n  5.1 Setup\n  5.2 Analysis 1: Event Volume Overview\n  5.3 Analysis 2: Traffic Source Performance\n  5.4 Analysis 3: Page Performance from event_params\n  5.5 Analysis 4: Purchase Funnel\n  5.6 Analysis 5: E-commerce Revenue Analysis\n  5.7 Analysis 6: Product Performance (from ga4_items)\n  5.8 Analysis 7: User Segmentation\n  \n  6 Performance Comparison",
+    "text": "1 What is duckplyr?\n  2 The Landscape: Four Tools, One Job\n  3 How duckplyr Is Different from Each Tool\n  \n  3.1 duckplyr vs dplyr\n  3.2 duckplyr vs DuckDB + dbplyr\n  3.3 The Fallback System — Why duckplyr Is Safe to Use\n  \n  4 Workfolow Guide\n  \n  4.1 Installing and Setting Up duckplyr\n  4.2 Reading Data into duckplyr\n  \n  5 Analyzing GA4 Data with duckplyr\n  \n  5.1 Setup\n  5.2 Analysis 1: Event Volume Overview\n  5.3 Analysis 2: Traffic Source Performance\n  5.4 Analysis 3: Page Performance from event_params\n  5.5 Analysis 4: Purchase Funnel\n  5.6 Analysis 5: E-commerce Revenue Analysis\n  5.7 Analysis 6: Product Performance (from ga4_items)\n  5.8 Analysis 7: User Segmentation\n  \n  6 Performance Comparison\n  7 When to Use Each Tool",
     "crumbs": [
       "Home",
       "Duckplyr: The Best of Both Worlds"

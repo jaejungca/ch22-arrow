@@ -8,7 +8,7 @@
 
 <meta name="author" content="Jae Jung">
 <meta name="dcterms.date" content="2026-03-20">
-<meta name="description" content="This page describes benifits of using duckplyr and illustrate how to use it for GA4 data">
+<meta name="description" content="This page describes the benifits of using duckplyr and illustrate how to use it for GA4 data">
 
 <title>Duckplyr: The Best of Both Worlds – Arrow and DuckDB</title>
 <style>
@@ -182,20 +182,20 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
     <h2 id="toc-title">On this page</h2>
    
   <ul>
-  <li><a href="#what-is-duckplyr" id="toc-what-is-duckplyr" class="nav-link active" data-scroll-target="#what-is-duckplyr"><span class="header-section-number">1</span> What is duckplyr?</a></li>
-  <li><a href="#the-landscape-four-tools-one-job" id="toc-the-landscape-four-tools-one-job" class="nav-link" data-scroll-target="#the-landscape-four-tools-one-job"><span class="header-section-number">2</span> The Landscape: Four Tools, One Job</a></li>
-  <li><a href="#how-duckplyr-is-different-from-each-tool" id="toc-how-duckplyr-is-different-from-each-tool" class="nav-link" data-scroll-target="#how-duckplyr-is-different-from-each-tool"><span class="header-section-number">3</span> How duckplyr Is Different from Each Tool</a>
+  <li><a href="#what-is-duckplyr" id="toc-what-is-duckplyr" class="nav-link active" data-scroll-target="#what-is-duckplyr"><span class="header-section-number">1</span> <strong>What is duckplyr?</strong></a></li>
+  <li><a href="#the-landscape-four-tools-one-job" id="toc-the-landscape-four-tools-one-job" class="nav-link" data-scroll-target="#the-landscape-four-tools-one-job"><span class="header-section-number">2</span> <strong>The Landscape: Four Tools, One Job</strong></a></li>
+  <li><a href="#how-duckplyr-is-different-from-each-tool" id="toc-how-duckplyr-is-different-from-each-tool" class="nav-link" data-scroll-target="#how-duckplyr-is-different-from-each-tool"><span class="header-section-number">3</span> <strong>How duckplyr Is Different from Each Tool</strong></a>
   <ul class="collapse">
   <li><a href="#duckplyr-vs-dplyr" id="toc-duckplyr-vs-dplyr" class="nav-link" data-scroll-target="#duckplyr-vs-dplyr"><span class="header-section-number">3.1</span> duckplyr vs dplyr</a></li>
   <li><a href="#duckplyr-vs-duckdb-dbplyr" id="toc-duckplyr-vs-duckdb-dbplyr" class="nav-link" data-scroll-target="#duckplyr-vs-duckdb-dbplyr"><span class="header-section-number">3.2</span> duckplyr vs DuckDB + dbplyr</a></li>
   <li><a href="#the-fallback-system-why-duckplyr-is-safe-to-use" id="toc-the-fallback-system-why-duckplyr-is-safe-to-use" class="nav-link" data-scroll-target="#the-fallback-system-why-duckplyr-is-safe-to-use"><span class="header-section-number">3.3</span> The Fallback System — Why duckplyr Is Safe to Use</a></li>
   </ul></li>
-  <li><a href="#workfolow-guide" id="toc-workfolow-guide" class="nav-link" data-scroll-target="#workfolow-guide"><span class="header-section-number">4</span> Workfolow Guide</a>
+  <li><a href="#workfolow-guide" id="toc-workfolow-guide" class="nav-link" data-scroll-target="#workfolow-guide"><span class="header-section-number">4</span> <strong>Workfolow Guide</strong></a>
   <ul class="collapse">
   <li><a href="#installing-and-setting-up-duckplyr" id="toc-installing-and-setting-up-duckplyr" class="nav-link" data-scroll-target="#installing-and-setting-up-duckplyr"><span class="header-section-number">4.1</span> Installing and Setting Up duckplyr</a></li>
   <li><a href="#reading-data-into-duckplyr" id="toc-reading-data-into-duckplyr" class="nav-link" data-scroll-target="#reading-data-into-duckplyr"><span class="header-section-number">4.2</span> Reading Data into duckplyr</a></li>
   </ul></li>
-  <li><a href="#analyzing-ga4-data-with-duckplyr" id="toc-analyzing-ga4-data-with-duckplyr" class="nav-link" data-scroll-target="#analyzing-ga4-data-with-duckplyr"><span class="header-section-number">5</span> Analyzing GA4 Data with duckplyr</a>
+  <li><a href="#analyzing-ga4-data-with-duckplyr" id="toc-analyzing-ga4-data-with-duckplyr" class="nav-link" data-scroll-target="#analyzing-ga4-data-with-duckplyr"><span class="header-section-number">5</span> <strong>Analyzing GA4 Data with duckplyr</strong></a>
   <ul class="collapse">
   <li><a href="#setup" id="toc-setup" class="nav-link" data-scroll-target="#setup"><span class="header-section-number">5.1</span> Setup</a></li>
   <li><a href="#analysis-1-event-volume-overview" id="toc-analysis-1-event-volume-overview" class="nav-link" data-scroll-target="#analysis-1-event-volume-overview"><span class="header-section-number">5.2</span> Analysis 1: Event Volume Overview</a></li>
@@ -206,7 +206,8 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   <li><a href="#analysis-6-product-performance-from-ga4_items" id="toc-analysis-6-product-performance-from-ga4_items" class="nav-link" data-scroll-target="#analysis-6-product-performance-from-ga4_items"><span class="header-section-number">5.7</span> Analysis 6: Product Performance (from <code>ga4_items</code>)</a></li>
   <li><a href="#analysis-7-user-segmentation" id="toc-analysis-7-user-segmentation" class="nav-link" data-scroll-target="#analysis-7-user-segmentation"><span class="header-section-number">5.8</span> Analysis 7: User Segmentation</a></li>
   </ul></li>
-  <li><a href="#performance-comparison" id="toc-performance-comparison" class="nav-link" data-scroll-target="#performance-comparison"><span class="header-section-number">6</span> Performance Comparison</a></li>
+  <li><a href="#performance-comparison" id="toc-performance-comparison" class="nav-link" data-scroll-target="#performance-comparison"><span class="header-section-number">6</span> <strong>Performance Comparison</strong></a></li>
+  <li><a href="#when-to-use-each-tool" id="toc-when-to-use-each-tool" class="nav-link" data-scroll-target="#when-to-use-each-tool"><span class="header-section-number">7</span> <strong>When to Use Each Tool</strong></a></li>
   </ul>
 </nav>
     </div>
@@ -226,7 +227,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 
 <div>
   <div class="description">
-    This page describes benifits of using duckplyr and illustrate how to use it for GA4 data
+    This page describes the benifits of using duckplyr and illustrate how to use it for GA4 data
   </div>
 </div>
 
@@ -258,20 +259,20 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
     <h2 id="toc-title">On this page</h2>
    
   <ul>
-  <li><a href="#what-is-duckplyr" id="toc-what-is-duckplyr"><span class="header-section-number">1</span> What is duckplyr?</a></li>
-  <li><a href="#the-landscape-four-tools-one-job" id="toc-the-landscape-four-tools-one-job"><span class="header-section-number">2</span> The Landscape: Four Tools, One Job</a></li>
-  <li><a href="#how-duckplyr-is-different-from-each-tool" id="toc-how-duckplyr-is-different-from-each-tool"><span class="header-section-number">3</span> How duckplyr Is Different from Each Tool</a>
+  <li><a href="#what-is-duckplyr" id="toc-what-is-duckplyr"><span class="header-section-number">1</span> <strong>What is duckplyr?</strong></a></li>
+  <li><a href="#the-landscape-four-tools-one-job" id="toc-the-landscape-four-tools-one-job"><span class="header-section-number">2</span> <strong>The Landscape: Four Tools, One Job</strong></a></li>
+  <li><a href="#how-duckplyr-is-different-from-each-tool" id="toc-how-duckplyr-is-different-from-each-tool"><span class="header-section-number">3</span> <strong>How duckplyr Is Different from Each Tool</strong></a>
   <ul>
   <li><a href="#duckplyr-vs-dplyr" id="toc-duckplyr-vs-dplyr"><span class="header-section-number">3.1</span> duckplyr vs dplyr</a></li>
   <li><a href="#duckplyr-vs-duckdb-dbplyr" id="toc-duckplyr-vs-duckdb-dbplyr"><span class="header-section-number">3.2</span> duckplyr vs DuckDB + dbplyr</a></li>
   <li><a href="#the-fallback-system-why-duckplyr-is-safe-to-use" id="toc-the-fallback-system-why-duckplyr-is-safe-to-use"><span class="header-section-number">3.3</span> The Fallback System — Why duckplyr Is Safe to Use</a></li>
   </ul></li>
-  <li><a href="#workfolow-guide" id="toc-workfolow-guide"><span class="header-section-number">4</span> Workfolow Guide</a>
+  <li><a href="#workfolow-guide" id="toc-workfolow-guide"><span class="header-section-number">4</span> <strong>Workfolow Guide</strong></a>
   <ul>
   <li><a href="#installing-and-setting-up-duckplyr" id="toc-installing-and-setting-up-duckplyr"><span class="header-section-number">4.1</span> Installing and Setting Up duckplyr</a></li>
   <li><a href="#reading-data-into-duckplyr" id="toc-reading-data-into-duckplyr"><span class="header-section-number">4.2</span> Reading Data into duckplyr</a></li>
   </ul></li>
-  <li><a href="#analyzing-ga4-data-with-duckplyr" id="toc-analyzing-ga4-data-with-duckplyr"><span class="header-section-number">5</span> Analyzing GA4 Data with duckplyr</a>
+  <li><a href="#analyzing-ga4-data-with-duckplyr" id="toc-analyzing-ga4-data-with-duckplyr"><span class="header-section-number">5</span> <strong>Analyzing GA4 Data with duckplyr</strong></a>
   <ul>
   <li><a href="#setup" id="toc-setup"><span class="header-section-number">5.1</span> Setup</a></li>
   <li><a href="#analysis-1-event-volume-overview" id="toc-analysis-1-event-volume-overview"><span class="header-section-number">5.2</span> Analysis 1: Event Volume Overview</a></li>
@@ -282,11 +283,12 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   <li><a href="#analysis-6-product-performance-from-ga4_items" id="toc-analysis-6-product-performance-from-ga4_items"><span class="header-section-number">5.7</span> Analysis 6: Product Performance (from <code>ga4_items</code>)</a></li>
   <li><a href="#analysis-7-user-segmentation" id="toc-analysis-7-user-segmentation"><span class="header-section-number">5.8</span> Analysis 7: User Segmentation</a></li>
   </ul></li>
-  <li><a href="#performance-comparison" id="toc-performance-comparison"><span class="header-section-number">6</span> Performance Comparison</a></li>
+  <li><a href="#performance-comparison" id="toc-performance-comparison"><span class="header-section-number">6</span> <strong>Performance Comparison</strong></a></li>
+  <li><a href="#when-to-use-each-tool" id="toc-when-to-use-each-tool"><span class="header-section-number">7</span> <strong>When to Use Each Tool</strong></a></li>
   </ul>
 </nav>
 <section id="what-is-duckplyr" class="level1" data-number="1">
-<h1 data-number="1"><span class="header-section-number">1</span> What is duckplyr?</h1>
+<h1 data-number="1"><span class="header-section-number">1</span> <strong>What is duckplyr?</strong></h1>
 <blockquote class="blockquote">
 <p>duckplyr wraps DuckDB’s analytical query processing engine in a dplyr-compatible API. In plain terms: it’s <strong>dplyr, but secretly powered by DuckDB under the hood.</strong> Calling <code>library(duckplyr)</code> overwrites dplyr methods, enabling duckplyr for the entire session. Your existing dplyr code runs unchanged — you just get DuckDB’s speed for free.</p>
 <p>Duckplyr is a <strong>drop-in replacement for dplyr that uses DuckDB as its computational engine</strong>. It was created by the same team that built DuckDB and is designed to make DuckDB’s speed available through the exact same interface you already use for dplyr — with zero syntax changes.</p>
@@ -309,7 +311,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </blockquote>
 </section>
 <section id="the-landscape-four-tools-one-job" class="level1" data-number="2">
-<h1 data-number="2"><span class="header-section-number">2</span> The Landscape: Four Tools, One Job</h1>
+<h1 data-number="2"><span class="header-section-number">2</span> <strong>The Landscape: Four Tools, One Job</strong></h1>
 <p>Before comparing them, let us be precise about what each tool actually is:</p>
 <div class="cell">
 <details open="" class="code-fold">
@@ -380,7 +382,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </div>
 </section>
 <section id="how-duckplyr-is-different-from-each-tool" class="level1" data-number="3">
-<h1 data-number="3"><span class="header-section-number">3</span> How duckplyr Is Different from Each Tool</h1>
+<h1 data-number="3"><span class="header-section-number">3</span> <strong>How duckplyr Is Different from Each Tool</strong></h1>
 <section id="duckplyr-vs-dplyr" class="level2" data-number="3.1">
 <h2 data-number="3.1" class="anchored" data-anchor-id="duckplyr-vs-dplyr"><span class="header-section-number">3.1</span> duckplyr vs dplyr</h2>
 <div class="cell">
@@ -501,7 +503,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </section>
 </section>
 <section id="workfolow-guide" class="level1" data-number="4">
-<h1 data-number="4"><span class="header-section-number">4</span> Workfolow Guide</h1>
+<h1 data-number="4"><span class="header-section-number">4</span> <strong>Workfolow Guide</strong></h1>
 <section id="installing-and-setting-up-duckplyr" class="level2" data-number="4.1">
 <h2 data-number="4.1" class="anchored" data-anchor-id="installing-and-setting-up-duckplyr"><span class="header-section-number">4.1</span> Installing and Setting Up duckplyr</h2>
 <div class="cell">
@@ -578,7 +580,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </section>
 </section>
 <section id="analyzing-ga4-data-with-duckplyr" class="level1" data-number="5">
-<h1 data-number="5"><span class="header-section-number">5</span> Analyzing GA4 Data with duckplyr</h1>
+<h1 data-number="5"><span class="header-section-number">5</span> <strong>Analyzing GA4 Data with duckplyr</strong></h1>
 <p>Now the practical part. Every analysis below uses <strong>identical syntax to dplyr</strong> but executes in DuckDB.</p>
 <section id="setup" class="level2" data-number="5.1">
 <h2 data-number="5.1" class="anchored" data-anchor-id="setup"><span class="header-section-number">5.1</span> Setup</h2>
@@ -1082,7 +1084,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </section>
 </section>
 <section id="performance-comparison" class="level1" data-number="6">
-<h1 data-number="6"><span class="header-section-number">6</span> Performance Comparison</h1>
+<h1 data-number="6"><span class="header-section-number">6</span> <strong>Performance Comparison</strong></h1>
 <div class="cell">
 <details open="" class="code-fold">
 <summary>Code</summary>
@@ -1135,25 +1137,28 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <span id="cb17-47"><a href="#cb17-47" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </details>
 </div>
+</section>
+<section id="when-to-use-each-tool" class="level1" data-number="7">
+<h1 data-number="7"><span class="header-section-number">7</span> <strong>When to Use Each Tool</strong></h1>
 <div class="cell">
 <div class="cell-output-display">
-<div id="aqdjhtycmi" style="padding-left:0px;padding-right:0px;padding-top:10px;padding-bottom:10px;overflow-x:auto;overflow-y:auto;width:auto;height:auto;">
-<style>#aqdjhtycmi table {
+<div id="spxicbjwpu" style="padding-left:0px;padding-right:0px;padding-top:10px;padding-bottom:10px;overflow-x:auto;overflow-y:auto;width:auto;height:auto;">
+<style>#spxicbjwpu table {
   font-family: system-ui, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji';
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
 
-#aqdjhtycmi thead, #aqdjhtycmi tbody, #aqdjhtycmi tfoot, #aqdjhtycmi tr, #aqdjhtycmi td, #aqdjhtycmi th {
+#spxicbjwpu thead, #spxicbjwpu tbody, #spxicbjwpu tfoot, #spxicbjwpu tr, #spxicbjwpu td, #spxicbjwpu th {
   border-style: none;
 }
 
-#aqdjhtycmi p {
+#spxicbjwpu p {
   margin: 0;
   padding: 0;
 }
 
-#aqdjhtycmi .gt_table {
+#spxicbjwpu .gt_table {
   display: table;
   border-collapse: collapse;
   line-height: normal;
@@ -1179,12 +1184,12 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   border-left-color: #D3D3D3;
 }
 
-#aqdjhtycmi .gt_caption {
+#spxicbjwpu .gt_caption {
   padding-top: 4px;
   padding-bottom: 4px;
 }
 
-#aqdjhtycmi .gt_title {
+#spxicbjwpu .gt_title {
   color: #333333;
   font-size: 125%;
   font-weight: initial;
@@ -1196,7 +1201,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   border-bottom-width: 0;
 }
 
-#aqdjhtycmi .gt_subtitle {
+#spxicbjwpu .gt_subtitle {
   color: #333333;
   font-size: 85%;
   font-weight: initial;
@@ -1208,7 +1213,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   border-top-width: 0;
 }
 
-#aqdjhtycmi .gt_heading {
+#spxicbjwpu .gt_heading {
   background-color: #FFFFFF;
   text-align: center;
   border-bottom-color: #FFFFFF;
@@ -1220,13 +1225,13 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   border-right-color: #D3D3D3;
 }
 
-#aqdjhtycmi .gt_bottom_border {
+#spxicbjwpu .gt_bottom_border {
   border-bottom-style: solid;
   border-bottom-width: 2px;
   border-bottom-color: #0076BA;
 }
 
-#aqdjhtycmi .gt_col_headings {
+#spxicbjwpu .gt_col_headings {
   border-top-style: solid;
   border-top-width: 2px;
   border-top-color: #0076BA;
@@ -1241,7 +1246,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   border-right-color: #D3D3D3;
 }
 
-#aqdjhtycmi .gt_col_heading {
+#spxicbjwpu .gt_col_heading {
   color: #333333;
   background-color: #FFFFFF;
   font-size: 100%;
@@ -1261,7 +1266,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   overflow-x: hidden;
 }
 
-#aqdjhtycmi .gt_column_spanner_outer {
+#spxicbjwpu .gt_column_spanner_outer {
   color: #333333;
   background-color: #FFFFFF;
   font-size: 100%;
@@ -1273,15 +1278,15 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   padding-right: 4px;
 }
 
-#aqdjhtycmi .gt_column_spanner_outer:first-child {
+#spxicbjwpu .gt_column_spanner_outer:first-child {
   padding-left: 0;
 }
 
-#aqdjhtycmi .gt_column_spanner_outer:last-child {
+#spxicbjwpu .gt_column_spanner_outer:last-child {
   padding-right: 0;
 }
 
-#aqdjhtycmi .gt_column_spanner {
+#spxicbjwpu .gt_column_spanner {
   border-bottom-style: solid;
   border-bottom-width: 2px;
   border-bottom-color: #0076BA;
@@ -1293,11 +1298,11 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   width: 100%;
 }
 
-#aqdjhtycmi .gt_spanner_row {
+#spxicbjwpu .gt_spanner_row {
   border-bottom-style: hidden;
 }
 
-#aqdjhtycmi .gt_group_heading {
+#spxicbjwpu .gt_group_heading {
   padding-top: 8px;
   padding-bottom: 8px;
   padding-left: 5px;
@@ -1323,7 +1328,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   text-align: left;
 }
 
-#aqdjhtycmi .gt_empty_group_heading {
+#spxicbjwpu .gt_empty_group_heading {
   padding: 0.5px;
   color: #333333;
   background-color: #FFFFFF;
@@ -1338,15 +1343,15 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   vertical-align: middle;
 }
 
-#aqdjhtycmi .gt_from_md > :first-child {
+#spxicbjwpu .gt_from_md > :first-child {
   margin-top: 0;
 }
 
-#aqdjhtycmi .gt_from_md > :last-child {
+#spxicbjwpu .gt_from_md > :last-child {
   margin-bottom: 0;
 }
 
-#aqdjhtycmi .gt_row {
+#spxicbjwpu .gt_row {
   padding-top: 8px;
   padding-bottom: 8px;
   padding-left: 5px;
@@ -1365,7 +1370,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   overflow-x: hidden;
 }
 
-#aqdjhtycmi .gt_stub {
+#spxicbjwpu .gt_stub {
   color: #FFFFFF;
   background-color: #0076BA;
   font-size: 100%;
@@ -1378,7 +1383,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   padding-right: 5px;
 }
 
-#aqdjhtycmi .gt_stub_row_group {
+#spxicbjwpu .gt_stub_row_group {
   color: #333333;
   background-color: #FFFFFF;
   font-size: 100%;
@@ -1392,15 +1397,15 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   vertical-align: top;
 }
 
-#aqdjhtycmi .gt_row_group_first td {
+#spxicbjwpu .gt_row_group_first td {
   border-top-width: 2px;
 }
 
-#aqdjhtycmi .gt_row_group_first th {
+#spxicbjwpu .gt_row_group_first th {
   border-top-width: 2px;
 }
 
-#aqdjhtycmi .gt_summary_row {
+#spxicbjwpu .gt_summary_row {
   color: #333333;
   background-color: #FFFFFF;
   text-transform: inherit;
@@ -1410,16 +1415,16 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   padding-right: 5px;
 }
 
-#aqdjhtycmi .gt_first_summary_row {
+#spxicbjwpu .gt_first_summary_row {
   border-top-style: solid;
   border-top-color: #0076BA;
 }
 
-#aqdjhtycmi .gt_first_summary_row.thick {
+#spxicbjwpu .gt_first_summary_row.thick {
   border-top-width: 2px;
 }
 
-#aqdjhtycmi .gt_last_summary_row {
+#spxicbjwpu .gt_last_summary_row {
   padding-top: 8px;
   padding-bottom: 8px;
   padding-left: 5px;
@@ -1429,7 +1434,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   border-bottom-color: #0076BA;
 }
 
-#aqdjhtycmi .gt_grand_summary_row {
+#spxicbjwpu .gt_grand_summary_row {
   color: #333333;
   background-color: #89D3FE;
   text-transform: inherit;
@@ -1439,7 +1444,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   padding-right: 5px;
 }
 
-#aqdjhtycmi .gt_first_grand_summary_row {
+#spxicbjwpu .gt_first_grand_summary_row {
   padding-top: 8px;
   padding-bottom: 8px;
   padding-left: 5px;
@@ -1449,7 +1454,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   border-top-color: #0076BA;
 }
 
-#aqdjhtycmi .gt_last_grand_summary_row_top {
+#spxicbjwpu .gt_last_grand_summary_row_top {
   padding-top: 8px;
   padding-bottom: 8px;
   padding-left: 5px;
@@ -1459,11 +1464,11 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   border-bottom-color: #0076BA;
 }
 
-#aqdjhtycmi .gt_striped {
+#spxicbjwpu .gt_striped {
   background-color: #F4F4F4;
 }
 
-#aqdjhtycmi .gt_table_body {
+#spxicbjwpu .gt_table_body {
   border-top-style: solid;
   border-top-width: 2px;
   border-top-color: #0076BA;
@@ -1472,7 +1477,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   border-bottom-color: #0076BA;
 }
 
-#aqdjhtycmi .gt_footnotes {
+#spxicbjwpu .gt_footnotes {
   color: #333333;
   background-color: #FFFFFF;
   border-bottom-style: none;
@@ -1486,7 +1491,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   border-right-color: #D3D3D3;
 }
 
-#aqdjhtycmi .gt_footnote {
+#spxicbjwpu .gt_footnote {
   margin: 0px;
   font-size: 90%;
   padding-top: 4px;
@@ -1495,7 +1500,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   padding-right: 5px;
 }
 
-#aqdjhtycmi .gt_sourcenotes {
+#spxicbjwpu .gt_sourcenotes {
   color: #333333;
   background-color: #FFFFFF;
   border-bottom-style: none;
@@ -1509,7 +1514,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   border-right-color: #D3D3D3;
 }
 
-#aqdjhtycmi .gt_sourcenote {
+#spxicbjwpu .gt_sourcenote {
   font-size: 90%;
   padding-top: 4px;
   padding-bottom: 4px;
@@ -1517,72 +1522,72 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   padding-right: 5px;
 }
 
-#aqdjhtycmi .gt_left {
+#spxicbjwpu .gt_left {
   text-align: left;
 }
 
-#aqdjhtycmi .gt_center {
+#spxicbjwpu .gt_center {
   text-align: center;
 }
 
-#aqdjhtycmi .gt_right {
+#spxicbjwpu .gt_right {
   text-align: right;
   font-variant-numeric: tabular-nums;
 }
 
-#aqdjhtycmi .gt_font_normal {
+#spxicbjwpu .gt_font_normal {
   font-weight: normal;
 }
 
-#aqdjhtycmi .gt_font_bold {
+#spxicbjwpu .gt_font_bold {
   font-weight: bold;
 }
 
-#aqdjhtycmi .gt_font_italic {
+#spxicbjwpu .gt_font_italic {
   font-style: italic;
 }
 
-#aqdjhtycmi .gt_super {
+#spxicbjwpu .gt_super {
   font-size: 65%;
 }
 
-#aqdjhtycmi .gt_footnote_marks {
+#spxicbjwpu .gt_footnote_marks {
   font-size: 75%;
   vertical-align: 0.4em;
   position: initial;
 }
 
-#aqdjhtycmi .gt_asterisk {
+#spxicbjwpu .gt_asterisk {
   font-size: 100%;
   vertical-align: 0;
 }
 
-#aqdjhtycmi .gt_indent_1 {
+#spxicbjwpu .gt_indent_1 {
   text-indent: 5px;
 }
 
-#aqdjhtycmi .gt_indent_2 {
+#spxicbjwpu .gt_indent_2 {
   text-indent: 10px;
 }
 
-#aqdjhtycmi .gt_indent_3 {
+#spxicbjwpu .gt_indent_3 {
   text-indent: 15px;
 }
 
-#aqdjhtycmi .gt_indent_4 {
+#spxicbjwpu .gt_indent_4 {
   text-indent: 20px;
 }
 
-#aqdjhtycmi .gt_indent_5 {
+#spxicbjwpu .gt_indent_5 {
   text-indent: 25px;
 }
 
-#aqdjhtycmi .katex-display {
+#spxicbjwpu .katex-display {
   display: inline-flex !important;
   margin-bottom: 0.75em !important;
 }
 
-#aqdjhtycmi div.Reactable > div.rt-table > div.rt-thead > div.rt-tr.rt-tr-group-header > div.rt-th-group:after {
+#spxicbjwpu div.Reactable > div.rt-table > div.rt-thead > div.rt-tr.rt-tr-group-header > div.rt-th-group:after {
   height: 0px !important;
 }
 </style>
