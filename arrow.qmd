@@ -1,7 +1,7 @@
 ---
-title: "Apache Arrow and Apache Parqet"
-subtitle: "Enhance Speed with Arrow and Parquet and DuckDB"
-description: "This page describes Apache Arrow and Apache Parquet and explain how to use them effectively when dealing with big data"
+title: "Apache Arrow and Apache Parqet: Ch22 & More"
+subtitle: "Enhance Speed with Arrow and Parquet"
+description: "This page describes Apache Arrow and Apache Parquet and explain how to use them effectively when dealing with big data. It also briefly touches on how to hand off Arrow dataset to DuckDB dataset at the end of the note"
 categories: [Arrow, Parquet]
 order: 1
 author: "Jae Jung"

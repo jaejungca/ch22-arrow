@@ -56,7 +56,8 @@ It was designed from the ground up for **OLAP** (Online Analytical Processing) w
 
 **DuckDB setup**:
 
-```         
+```{r}
+#| eval: false         
 install.packages("duckdb")
 library(duckdb)
 con <- dbConnect(duckdb())   # That's it. Running in 1 second.
@@ -97,19 +98,19 @@ result <- dbGetQuery(con, "
 
 ## Why use DuckDB?
 
-**It's fast.** DuckDB uses a columnar execution engine with vectorized query processing, meaning it processes chunks of columns at a time rather than row by row. For analytical queries on large data, this is dramatically faster than base R or even many database solutions.
+1.  **It's fast.** DuckDB uses a columnar execution engine with vectorized query processing, meaning it processes chunks of columns at a time rather than row by row. For analytical queries on large data, this is dramatically faster than base R or even many database solutions.
 
-**It's serverless.** No Docker, no Postgres instance, no DBA needed. It lives inside your session like any other R package.
+2.  **It's serverless.** No Docker, no Postgres instance, no DBA needed. It lives inside your session like any other R package.
 
-**It speaks SQL fluently.** You can write standard SQL, or use it as a dplyr backend via dbplyr — so you don't need to learn a new API.
+3.  **It speaks SQL fluently.** You can write standard SQL, or use it as a dplyr backend via dbplyr — so you don't need to learn a new API.
 
-**It handles larger-than-memory data.** DuckDB can query files that don't fit in RAM by streaming and processing them in chunks, making it genuinely useful for big data workflows.
+4.  **It handles larger-than-memory data.** DuckDB can query files that don't fit in RAM by streaming and processing them in chunks, making it genuinely useful for big data workflows.
 
-**It integrates natively with Parquet and Arrow.** It can directly query `.parquet` files on disk without loading them into memory first — no import step needed.
+5.  **It integrates natively with Parquet and Arrow.** It can directly query `.parquet` files on disk without loading them into memory first — no import step needed.
 
 ## DuckDB vs Arrow vs Parquet
 
-These three are complementary, not competing. Understanding the role of each is important:
+> These three are complementary, not competing. Understanding the role of each is important:
 
 |   | **Parquet** | **Arrow** | **DuckDB** |
 |------------------|------------------|------------------|------------------|
@@ -124,7 +125,7 @@ These three are complementary, not competing. Understanding the role of each is 
 | Speed (analytics) | N/A (Storage only) | Very fast | Extremely fast |
 | Best for | Archiving & sharing data | In-memory transformation: e.g., Wrangling in R/Python | Complex queries, joins, aggregations |
 
-The typical mental model is:
+> The typical mental model is:
 
 -   **Parquet** is where your data *lives* (on disk, compressed, efficient)
 
@@ -132,13 +133,166 @@ The typical mental model is:
 
 -   **DuckDB** is how you *query* it with full SQL power, with or without loading into memory
 
+::: callout-tip
 They work beautifully together — DuckDB can read Arrow tables directly and query Parquet files on disk, and you can pass results back to Arrow or collect into R.
+:::
+
+# Setup: Connecting to BigQuery
+
+## Authentication and Connection
+
+::: callout-important
+## Before You Begin
+
+You need a **Google Cloud Platform (GCP) account** with a project that has billing enabled. Querying the public dataset is free in terms of data costs (you won't be charged for the data itself), but GCP bills for query processing. Small queries on this dataset cost fractions of a cent.
+
+1.  Go to [console.cloud.google.com](https://console.cloud.google.com)
+2.  Create a project (or use an existing one)
+3.  Enable the BigQuery API for that project
+4.  Copy your **Project ID** — you'll need it below
+:::
+
+```{r}
+#| label: connection
+#| eval: false
+
+# ── Replace with your GCP Project ID ─────────────────────────────────────────
+# Either set the environment variable: usethis::edit_r_environ()
+# and add: GCP_PROJECT_ID=your-actual-project-id
+# Or assign directly (less portable):
+billing_project <- "GCP_PROJECT_ID"
+
+# ── Authenticate ──────────────────────────────────────────────────────────────
+# First run: opens a browser for OAuth. Subsequent runs: uses cached token.
+# In Positron IDE, if the browser redirect fails, add: use_oob = TRUE
+bq_auth()
+# bq_auth(use_oob = TRUE)  # Uncomment if you see an OAuth redirect error
+
+# ── Connect to the public GA4 dataset ─────────────────────────────────────────
+con <- dbConnect(
+  bigrquery::bigquery(),
+  project = "bigquery-public-data",
+  dataset = "ga4_obfuscated_sample_ecommerce",
+  billing = billing_project
+)
+
+# Verify connection: list available tables
+dbListTables(con)
+```
+
+## Downloading and Caching the Data
+
+> GA4 tables are large. For this workshop we download **one week of events** (\~150,000 rows) once, then save locally to avoid re-querying BigQuery on every render. 
+
+```{r}
+#| label: download-data
+#| eval: false
+
+# ── Run this chunk ONCE. It saves data locally. ───────────────────────────────
+dir.create("data", showWarnings = FALSE)
+
+query_result <- bq_project_query(
+  billing_project,
+  "SELECT
+     event_date,
+     event_timestamp,
+     event_name,
+     event_params,
+     user_pseudo_id,
+     device,
+     geo,
+     traffic_source,
+     ecommerce,
+     items
+   FROM `bigquery-public-data.ga4_obfuscated_sample_ecommerce.events_*`
+   WHERE _TABLE_SUFFIX BETWEEN '20210101' AND '20210107'" # 90 days of data
+)
+
+# A tibble data
+ga4_raw <- query_result |>
+  bq_table_download(
+    bigint = "numeric", # Convert INT64 to R numeric (sufficient for most analyses)
+    page_size = 1000 # Download in batches of 10k rows
+  )
+```
+
+:::callout-tip
+Since the data is relatively small size, we have three options to save the data as you can see below
+
+-   RDS, 
+-   One Parquet file, 
+-   Partitioned Parquet files.
+:::
+
+### Option 1: Saving it as RDS file
+
+```{r}
+#| label: save-rds
+#| eval: false
+saveRDS(ga4_raw, "data/ga4_raw.rds")
+message("Saved ", nrow(ga4_raw), " rows to data/ga4_raw.rds")
+```
+
+> **Note**: RDS stands for R Data Serialization
+
+```{r}
+#| label: load-rds
+#| eval: false
+
+# ── Load from local cache (use this for all subsequent analyses) ──────────────
+ga4 <- readRDS("data/ga4_raw.rds")
+```
+
+### Option 2: Saving as a single Parquet file
+
+```{r}
+#| label: save-parquet
+#| eval: false
+
+library(arrow)
+
+write_parquet(ga4_raw, "data/ga4_raw.parquet")
+message("Saved to data/ga4_raw.parquet")
+```
+```{r}
+#| label: load-parquet
+#| eval: false
+
+ga4 <- read_parquet("data/ga4_raw.parquet")
+```
+
+### Options 3: Saving as Partitioned Parquet
+
+> Also no iteration needed — write_dataset() handles the partitioning automatically:
+```{r}
+#| label: save-partitioned
+#| eval: false
+
+library(arrow)
+library(dplyr)
+
+ga4_raw |>
+  group_by(event_date) |>
+  write_dataset("data/ga4_parquet", format = "parquet")
+
+message("Saved partitioned Parquet to data/ga4_parquet/")
+```
+
+> **Note**: `write_dataset()` automatically creates one subfolder per `event_date`,
+> e.g. `data/ga4_parquet/event_date=20210101/part-0.parquet`
+
+```{r}
+#| label: load-partitioned
+#| eval: false
+
+ga4 <- open_dataset("data/ga4_parquet/")
+```
 
 # How DuckDB Works with Arrow and Parquet
 
-There are **four integration patterns**, each suited to different situations:
+> There are **four integration patterns**, each suited to different situations:
 
-## Setup
+**Setup:**
 
 ```{{r}}
 library(duckdb)
@@ -148,15 +302,17 @@ library(dplyr)
 
 ## Pattern 1. Query a Parquet file directly with DuckDB (no loading into R)
 
--   The most direct approach — point DuckDB at a Parquet file and query it with SQL, no loading required:
+-   The most direct approach — point DuckDB at a `Parquet` file and query it with SQL, no loading required:
 
--   DuckDB can scan Parquet files on disk using SQL — nothing enters R memory until you `collect()`.
+-   DuckDB can scan Parquet files on disk using `SQL` — nothing enters R memory until you `collect()`.
 
--   **Simple**:
+### Simple:
 
 ```{r}
 #| eval: false
 
+library(duckdb)
+library(DBI)
 con <- dbConnect(duckdb())
 
 # Register and query a parquet file directly
@@ -168,7 +324,7 @@ dbGetQuery(con, "
 ")
 ```
 
--   **Advanced**:
+### Advanced:
 
 ```{r}
 #| eval: false
@@ -176,17 +332,6 @@ dbGetQuery(con, "
 library(duckdb)
 library(DBI)
 con <- dbConnect(duckdb())
-
-# Register and query a parquet file directly
-dbGetQuery(
-  con,
-  "
-  SELECT region, SUM(sales) AS total_sales
-  FROM read_parquet('data/sales.parquet')
-  GROUP BY region
-  ORDER BY total_sales DESC
-"
-)
 
 # ── Query a single Parquet file ────────────────────────────────────────────────
 dbGetQuery(
@@ -247,18 +392,23 @@ dbGetQuery(
 dbDisconnect(con, shutdown = TRUE)
 ```
 
-This is powerful — DuckDB pushes the entire query down to the file, reading only the columns and rows it needs (thanks to Parquet's columnar layout).
+> This is powerful — DuckDB pushes the entire query down to the file, reading only the columns and rows it needs (thanks to Parquet's columnar layout).
 
 ## Parttern 2. Use DuckDB as a dplyr backend (no SQL required)
 
 > If you prefer dplyr verbs over SQL, you can register the **Parquet file** as a **virtual table** and query it lazily.
-
+>
 > `dbplyr` translates dplyr verbs into DuckDB SQL automatically:
 
--   **Simple**:
+### Simple:
 
 ```{r}
 #| eval: false
+library(duckdb)
+library(dplyr)
+library(dbplyr)
+library(DBI)
+
 con <- dbConnect(duckdb())
 
 duckdb_register(con, "sales", read_parquet("data/sales.parquet"))
@@ -271,7 +421,7 @@ tbl(con, "sales") |>
   collect()   # only now does data enter R
 ```
 
--   **Advanced**:
+### Advanced:
 
 ```{r}
 #| eval: false
@@ -285,6 +435,7 @@ con <- dbConnect(duckdb())
 # ── Register Parquet file as a virtual table ───────────────────────────────────
 # This creates a view — no data is copied or loaded
 duckdb_read_csv   # (there is also this for CSV)
+
 dbExecute(con, "
   CREATE VIEW ga4_events AS
   SELECT * FROM read_parquet('data/ga4_flat.parquet')
@@ -337,15 +488,18 @@ dbDisconnect(con, shutdown = TRUE)
 ## Pattern 3. Query an Arrow Table with DuckDB (The Power Combination)
 
 > Arrow and DuckDB are designed to work together. Arrow handles file I/O and in-memory transformation; DuckDB handles querying.
-
+>
 > They share data without copying, using the Apache Arrow memory format.
-
+>
 > If you already have an Arrow table in memory, DuckDB can query it directly — zero copying involved:
 
--   **Simple**:
+### Simple:
 
 ```{r}
 #| eval: false
+library(arrow)
+library(duckdb)
+library(dplyr)
 
 # Create or load an Arrow table
 arrow_table <- read_parquet("data/sales.parquet", as_data_frame = FALSE)
@@ -359,7 +513,7 @@ tbl(con, "sales_arrow") |>
   collect()
 ```
 
--   **Advanced**:
+### Advanced:
 
 ```{r}
 #| eval: false
@@ -648,3 +802,593 @@ grViz("
 ```
 
 **Parquet is your warehouse, Arrow is your forklift, DuckDB is your analyst.** Each does its job, and they hand off to each other seamlessly.
+
+# `open_dataset` vs. `read_parquet` functions
+
+## The core difference
+
+> `open_dataset()` is for **many files or a folder** — it creates a lazy connection without loading anything into memory. `read_parquet()` is for **a single file** — it reads the file directly, by default into R memory.
+>
+> **The One-Sentence Description**:
+
+```{{r}}
+# read_parquet()  — loads data INTO RAM immediately, gives you a tibble
+# open_dataset()  — creates a POINTER to data on disk, loads nothing yet
+```
+
+\> Everything else flows from this single difference. \> \> **What Each Function Actually Does**:
+
+## `read_parquet()` — Eager Loading
+
+```{r}
+#| eval: false
+library(arrow)
+
+# read_parquet() works like read.csv() or readRDS()
+# It reads the file immediately and returns a tibble in memory
+
+ga4_data <- arrow::read_parquet("data/ga4_flat.parquet")
+
+# After this line:
+# ✓ All data is in RAM
+# ✓ ga4_data is a regular tibble
+# ✓ You can use it without Arrow at all — it's just a data frame
+# ✗ If the file is larger than RAM — this fails or crashes R
+
+class(ga4_data)
+#> [1] "tbl_df"     "tbl"        "data.frame"
+# ← a regular tibble, no Arrow in sight after loading
+
+object.size(ga4_data) |> format(units = "MB")
+#> "187.4 MB"   ← sitting in your RAM right now
+```
+
+## `open_dataset()` — Lazy Loading
+
+```{r}
+#| eval: false
+library(arrow)
+
+# open_dataset() works like a database connection
+# It reads the file METADATA only and returns an Arrow Dataset object
+# No actual data rows are loaded until you explicitly ask for them
+
+ga4_dataset <- arrow::open_dataset("data/ga4_flat.parquet")
+
+# After this line:
+# ✓ Metadata is read (schema, number of rows, column types)
+# ✓ You can query it immediately with dplyr verbs
+# ✓ Works on files larger than RAM
+# ✗ ga4_dataset is NOT a tibble — it is an Arrow Dataset object
+
+class(ga4_dataset)
+#> [1] "FileSystemDataset" "Dataset" "ArrowObject" "R6"
+# ← an Arrow Dataset — NOT a data frame yet
+
+object.size(ga4_dataset) |> format(units = "KB")
+#> "4.2 KB"    ← almost nothing in RAM — just the metadata pointer
+```
+
+## Side-by-Side Comparison
+
+```{r}
+#| eval: false
+library(arrow)
+library(dplyr)
+
+# ── Same question asked both ways ─────────────────────────────────────────────
+# "What are the top 5 event types by count?"
+
+# ── read_parquet() approach ───────────────────────────────────────────────────
+# Step 1: Load EVERYTHING into RAM (even columns we don't need)
+ga4_tibble <- read_parquet("data/ga4_flat.parquet")
+# Step 2: Then filter in R
+ga4_tibble |>
+  count(event_name, sort = TRUE) |>
+  slice_head(n = 5)
+
+# ── open_dataset() approach ───────────────────────────────────────────────────
+# Step 1: Open a pointer (nothing loaded)
+ga4_ds <- open_dataset("data/ga4_flat.parquet")
+# Step 2: Build a query (still nothing loaded)
+query <- ga4_ds |>
+  count(event_name, sort = TRUE) |>
+  slice_head(n = 5)
+# Step 3: Execute — Arrow reads ONLY the event_name column
+query |> collect()
+
+# Both produce identical results
+# But open_dataset() used a fraction of the RAM
+```
+
+## The Key Concept: Lazy vs Eager Evaluation
+
+```{r}
+#| eval: false
+library(arrow)
+library(dplyr)
+
+ga4_ds <- open_dataset("data/ga4_flat.parquet")
+
+# ── Every dplyr verb on an Arrow Dataset is LAZY ─────────────────────────────
+# Nothing happens when you call these — they just build a query plan
+
+step1 <- ga4_ds |> filter(event_name == "purchase")
+step2 <- step1  |> select(event_date, user_pseudo_id,
+                            ecommerce_purchase_revenue_in_usd)
+step3 <- step2  |> group_by(event_date)
+step4 <- step3  |> summarise(revenue = sum(ecommerce_purchase_revenue_in_usd,
+                                            na.rm = TRUE))
+
+# At this point: ZERO rows have been read from disk
+# step4 is just a description of what to do
+
+# ── collect() EXECUTES the query ─────────────────────────────────────────────
+# Only now does Arrow read from disk — and only the columns it needs
+result <- step4 |> collect()
+
+# Arrow read: event_name, event_date, user_pseudo_id,
+#             ecommerce_purchase_revenue_in_usd
+# Arrow skipped: every other column in the file
+# This is called "column pruning" — a massive RAM saving
+
+# ── You can inspect the query plan before executing ───────────────────────────
+ga4_ds |>
+  filter(event_name == "purchase") |>
+  group_by(event_date) |>
+  summarise(revenue = sum(ecommerce_purchase_revenue_in_usd,
+                          na.rm = TRUE)) |>
+  explain()    # Shows Arrow's execution plan — no data read yet
+```
+
+## The Biggest Difference: Multiple Files
+
+This is where `open_dataset()` becomes **dramatically** more powerful.
+`read_parquet()` reads one file. `open_dataset()` reads many files as
+if they were one:
+
+```{r}
+#| eval: false
+library(arrow)
+
+# ── Scenario: GA4 data saved as one Parquet file per day ─────────────────────
+# data/
+#   ga4_20201101.parquet
+#   ga4_20201102.parquet
+#   ga4_20201103.parquet
+#   ... (365 files)
+
+# ── read_parquet(): must read files one at a time ─────────────────────────────
+library(purrr)
+
+# Cumbersome — load all files and bind them
+all_files <- list.files("data", pattern = "ga4_\\d{8}.parquet",
+                         full.names = TRUE)
+
+ga4_all <- all_files |>
+  map(\(f) read_parquet(f)) |>
+  list_rbind()
+# Loads ALL files into RAM simultaneously
+# If 365 files × 50 MB each = 18 GB — crashes R
+
+# ── open_dataset(): treats ALL files as one dataset ──────────────────────────
+ga4_all <- open_dataset("data/")   # Point at the folder, not a file
+# OR be more specific:
+ga4_all <- open_dataset(
+  sources = list.files("data", pattern = "ga4_\\d{8}.parquet",
+                        full.names = TRUE)
+)
+
+# Now query across ALL 365 days as if it were one table
+# Arrow reads only the files and columns needed to answer your query
+ga4_all |>
+  filter(event_date >= "2021-01-01",
+         event_date <= "2021-01-31") |>
+  count(event_name) |>
+  collect()
+# Arrow only opens January files — skips the other 334 files entirely
+```
+
+## Hive-Partitioned Datasets — The Most Powerful Pattern
+
+```{r}
+#| eval: false
+library(arrow)
+library(dplyr)
+
+# ── Save GA4 data in Hive partition format ────────────────────────────────────
+# Hive partitioning stores data in folders named key=value
+# This lets open_dataset() skip entire folders based on filter conditions
+
+ga4_tibble <- readRDS("data/ga4_raw.rds") |>
+  mutate(
+    year  = lubridate::year(lubridate::ymd(event_date)),
+    month = lubridate::month(lubridate::ymd(event_date))
+  )
+
+# Write partitioned dataset
+arrow::write_dataset(
+  ga4_tibble,
+  path             = "data/ga4_partitioned",
+  format           = "parquet",
+  partitioning     = c("year", "month"),   # Partition by year and month
+  compression      = "snappy"
+)
+
+# Creates this folder structure:
+# data/ga4_partitioned/
+#   year=2020/
+#     month=11/
+#       part-0.parquet
+#     month=12/
+#       part-0.parquet
+#   year=2021/
+#     month=1/
+#       part-0.parquet
+#     month=2/
+#       part-0.parquet
+
+# ── open_dataset() understands Hive partitioning automatically ────────────────
+ga4_partitioned <- open_dataset(
+  "data/ga4_partitioned",
+  partitioning = c("year", "month")   # Tell Arrow how it is partitioned
+)
+
+# Query January 2021 — Arrow reads ONLY year=2021/month=1/ folder
+jan_2021 <- ga4_partitioned |>
+  filter(year == 2021, month == 1) |>
+  count(event_name) |>
+  collect()
+
+# Arrow skipped every other year= and month= folder
+# This is called "partition pruning" — can be 100x faster on large datasets
+
+# ── Verify the schema includes partition columns ──────────────────────────────
+ga4_partitioned$schema
+#> Schema
+#> event_date: string
+#> event_name: string
+#> user_pseudo_id: string
+#> ...
+#> year: int32      ← added automatically from folder name
+#> month: int32     ← added automatically from folder name
+```
+
+## Comparison table
+
+|   | `open_dataset()` | `read_parquet()` |
+|------------------------|------------------------|------------------------|
+| Input | Folder, multiple files, or single file | Single file only |
+| Loads into memory? | No — lazy connection | Yes by default |
+| Returns | Arrow Dataset object | R dataframe or Arrow Table |
+| Partitioned folders? | Yes, auto-detects partitions | No |
+| Multiple file formats? | Yes (Parquet, CSV, Arrow) | Parquet only |
+| Use with dplyr? | Yes, lazily | Yes, but already in memory |
+| Best for | Large, partitioned, multi-file data | Small-to-medium single files |
+
+
+### Detailed Feature Comparison Table
+
+```{r}
+#| echo: false
+tibble::tribble(
+  ~Feature,                        ~read_parquet,              ~open_dataset,
+  "Returns",                       "tibble (in RAM)",           "Arrow Dataset (pointer)",
+  "Data loaded immediately",       "Yes — all of it",           "No — metadata only",
+  "Works on single file",          "Yes",                       "Yes",
+  "Works on multiple files",       "One at a time",             "Yes — all as one table",
+  "Works on a folder",             "No",                        "Yes",
+  "Hive partitioning support",     "No",                        "Yes",
+  "Column pruning",                "No — loads all columns",    "Yes — loads only needed columns",
+  "Partition pruning",             "No",                        "Yes — skips irrelevant files",
+  "Larger-than-RAM files",         "No — will crash",           "Yes — streams from disk",
+  "dplyr verbs work",              "Yes — immediately",         "Yes — lazily until collect()",
+  "collect() required",            "No — already a tibble",     "Yes — to get a tibble",
+  "Schema inspection",             "After loading",             "Before loading",
+  "Compression formats",           "All Arrow supports",        "All Arrow supports",
+  "Best for",                      "Small-medium files",        "Large or multiple files"
+) |>
+  gt::gt() |>
+  gt::tab_header(
+    title    = "read_parquet() vs open_dataset()",
+    subtitle = "Complete feature comparison"
+  ) |>
+  gt::cols_label(
+    Feature       = "Feature",
+    read_parquet  = "read_parquet()",
+    open_dataset  = "open_dataset()"
+  ) |>
+  gt::tab_style(
+    style     = gt::cell_fill(color = "#e8f5e9"),
+    locations = gt::cells_body(
+      rows = Feature %in% c(
+        "Larger-than-RAM files",
+        "Works on multiple files",
+        "Hive partitioning support",
+        "Column pruning",
+        "Partition pruning"
+      )
+    )
+  ) |>
+  gt::tab_style(
+    style     = gt::cell_text(weight = "bold"),
+    locations = gt::cells_column_labels()
+  ) |>
+  gt::opt_stylize(style = 1)
+```
+
+## Similarities — What They Share
+
+```{r}
+#| eval: false
+library(arrow)
+library(dplyr)
+
+# ── Both read Parquet format ──────────────────────────────────────────────────
+# Both understand snappy, gzip, zstd, lz4 compression
+# Both read the same column types: string, int32, float64, bool, date, etc.
+
+# ── Both work with dplyr verbs ────────────────────────────────────────────────
+# (open_dataset lazily, read_parquet eagerly)
+result_rp <- read_parquet("data/ga4_flat.parquet") |>
+  filter(event_name == "purchase") |>
+  count(event_date)
+
+result_od <- open_dataset("data/ga4_flat.parquet") |>
+  filter(event_name == "purchase") |>
+  count(event_date) |>
+  collect()
+
+# Results are identical
+identical(result_rp, result_od)
+#> TRUE
+
+# ── Both support column selection ─────────────────────────────────────────────
+# read Parquet — use col_select to avoid loading unused columns
+ga4_small_rp <- read_parquet(
+  "data/ga4_flat.parquet",
+  col_select = c("event_date", "event_name", "user_pseudo_id")
+)
+
+# open_dataset — use select() lazily
+ga4_small_od <- open_dataset("data/ga4_flat.parquet") |>
+  select(event_date, event_name, user_pseudo_id) |>
+  collect()
+
+# ── Both can read multiple formats ────────────────────────────────────────────
+# Parquet, Arrow IPC (feather), CSV, JSON, ORC
+
+# read_parquet is Parquet-specific, but open_dataset handles all:
+open_dataset("data/ga4.csv",    format = "csv")
+open_dataset("data/ga4.feather", format = "feather")
+open_dataset("data/ga4.parquet", format = "parquet")  # default
+
+# ── Both support schema inspection ────────────────────────────────────────────
+# read_parquet schema (after loading)
+read_parquet("data/ga4_flat.parquet") |> glimpse()
+
+# open_dataset schema (before loading anything)
+open_dataset("data/ga4_flat.parquet")$schema
+#> Schema
+#> event_date: string
+#> event_name: string
+#> user_pseudo_id: string
+#> device_category: string
+#> ...
+```
+
+## Practical GA4 Workflows
+
+### Workflow 1: `read_parquet()` for Quick Exploration
+
+```{r}
+#| eval: false
+library(arrow)
+library(dplyr)
+
+# You just created a small processed file and want to inspect it
+# File is 15 MB — perfectly fine to load into RAM
+
+ga4_items <- read_parquet("data/ga4_items.parquet")
+
+# Now it is just a tibble — use any R function freely
+summary(ga4_items$price_in_usd)
+hist(ga4_items$quantity)
+View(ga4_items)
+
+# No collect() needed anywhere
+ga4_items |>
+  filter(item_category == "Apparel") |>
+  arrange(desc(price_in_usd)) |>
+  head(10)
+```
+
+### Workflow 2: `open_dataset()` for Large Event Params
+
+```{r}
+#| eval: false
+library(arrow)
+library(dplyr)
+
+# event_params unrolled is very large — open_dataset is safer
+ga4_params <- open_dataset("data/ga4_event_params.parquet")
+
+# Check size without loading
+ga4_params$schema          # Column names and types
+nrow(ga4_params)           # Row count — reads metadata only, instant
+
+# Query only what you need — Arrow loads only 2 columns from disk
+page_views <- ga4_params |>
+  filter(
+    event_name  == "page_view",
+    key         == "page_location"
+  ) |>
+  select(event_date, user_pseudo_id, param_value) |>
+  collect()   # Only now does data enter RAM — just the filtered subset
+
+nrow(page_views)   # Much smaller than the full params file
+```
+
+### Workflow 3: `open_dataset()` Across All GA4 Daily Files
+
+```{r}
+#| eval: false
+library(arrow)
+library(dplyr)
+library(lubridate)
+
+# GA4 exports one file per day — open_dataset handles all of them
+# Save each day as its own Parquet file first:
+
+# data/ga4_daily/
+#   ga4_20201101.parquet
+#   ga4_20201102.parquet
+#   ... etc
+
+# Open all daily files as one unified dataset
+ga4_all <- open_dataset(
+  sources = list.files(
+    "data/ga4_daily",
+    pattern    = "\\.parquet$",
+    full.names = TRUE
+  )
+)
+
+cat("Total rows across all files:", nrow(ga4_all), "\n")
+cat("Schema:\n")
+print(ga4_all$schema)
+
+# Query across the full date range — Arrow only reads what is needed
+monthly_summary <- ga4_all |>
+  mutate(
+    event_date = as.Date(event_date),
+    month      = floor_date(event_date, "month")
+  ) |>
+  group_by(month, event_name) |>
+  summarise(
+    events = n(),
+    users  = n_distinct(user_pseudo_id),
+    .groups = "drop"
+  ) |>
+  collect()
+
+monthly_summary |>
+  filter(event_name %in% c("page_view", "purchase",
+                             "add_to_cart")) |>
+  ggplot2::ggplot(
+    ggplot2::aes(x = month, y = events,
+                  colour = event_name,
+                  group  = event_name)
+  ) +
+  ggplot2::geom_line(linewidth = 1.1) +
+  ggplot2::geom_point(size = 2.5) +
+  ggplot2::scale_y_continuous(labels = scales::comma) +
+  ggplot2::scale_x_date(date_labels = "%b %Y") +
+  ggplot2::labs(
+    title  = "Monthly Event Trends",
+    x      = NULL,
+    y      = "Events",
+    colour = "Event Type"
+  ) +
+  ggplot2::theme_minimal(base_size = 13)
+```
+
+### Workflow 4: Combining Both in One Pipeline
+
+```{r}
+#| eval: false
+library(arrow)
+library(dplyr)
+
+# Common pattern: open_dataset for the large file, read_parquet for small ones
+# Then join them
+
+# Large file — use open_dataset (lazy)
+ga4_params <- open_dataset("data/ga4_event_params.parquet")
+
+# Small lookup file — use read_parquet (eager, it's tiny)
+page_categories <- read_parquet("data/page_categories.parquet")
+# This is a small reference table: page_path → category
+# Fine to have in RAM as a regular tibble
+
+# Extract page locations from the large params file lazily
+page_data <- ga4_params |>
+  filter(key == "page_location") |>
+  select(event_date, user_pseudo_id, param_value) |>
+  rename(page_url = param_value) |>
+  mutate(
+    page_path = arrow_string_replace_regex(
+      page_url,
+      "^https?://[^/]+|\\?.*$", ""
+    )
+  ) |>
+  collect()   # Now bring into RAM — filtered to just page views
+
+# Join with the small lookup table (both in RAM now)
+page_data |>
+  left_join(page_categories, by = "page_path") |>
+  count(category, sort = TRUE)
+```
+
+### Workflow 5: `open_dataset()` with DuckDB — The Full Stack
+
+```{r}
+#| eval: false
+library(arrow)
+library(duckdb)
+library(dplyr)
+
+# open_dataset creates Arrow Dataset objects
+# DuckDB can query Arrow objects directly — zero data copying
+
+ga4_events_ds <- open_dataset("data/ga4_flat.parquet")
+ga4_params_ds <- open_dataset("data/ga4_event_params.parquet")
+
+# Register Arrow datasets with DuckDB
+con <- dbConnect(duckdb::duckdb())
+duckdb::duckdb_register_arrow(con, "events", ga4_events_ds)
+duckdb::duckdb_register_arrow(con, "params", ga4_params_ds)
+
+# Now use DuckDB SQL on top of Arrow Datasets
+# Data stays in Arrow format — no copying between systems
+DBI::dbGetQuery(con, "
+  SELECT
+    e.event_date,
+    e.device_category,
+    COUNT(DISTINCT e.user_pseudo_id)           AS users,
+    SUM(e.ecommerce_purchase_revenue_in_usd)   AS revenue
+  FROM events e
+  WHERE e.event_name = 'purchase'
+  GROUP BY e.event_date, e.device_category
+  ORDER BY e.event_date, revenue DESC
+")
+
+DBI::dbDisconnect(con, shutdown = TRUE)
+```
+
+## Which to use for GA4 data?
+
+
+```{{r}}
+# Ask these questions in order:
+
+# 1. How big is the file?
+#    < 500 MB and fits in RAM  → read_parquet() is fine
+#    > 500 MB or close to RAM  → open_dataset()
+
+# 2. How many files?
+#    One file                  → either works
+#    Multiple files or folder  → open_dataset() only
+
+# 3. How many columns do you need?
+#    Most or all columns       → read_parquet() is simpler
+#    Only a few columns        → open_dataset() (column pruning saves RAM)
+
+# 4. Are you exploring or producing?
+#    Exploring unknown data    → read_parquet() (View(), summary(), hist())
+#    Building analysis pipeline → open_dataset() (lazy, memory-efficient)
+
+# 5. Do you need the result as a tibble immediately?
+#    Yes                       → read_parquet()
+#    No — you will filter first → open_dataset() + collect()
+```
