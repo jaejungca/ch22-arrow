@@ -291,11 +291,19 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <p>duckplyr wraps DuckDB’s analytical query processing engine in a dplyr-compatible API. In plain terms: it’s <strong>dplyr, but secretly powered by DuckDB under the hood.</strong> Calling <code>library(duckplyr)</code> overwrites dplyr methods, enabling duckplyr for the entire session. Your existing dplyr code runs unchanged — you just get DuckDB’s speed for free.</p>
 <p>Duckplyr is a <strong>drop-in replacement for dplyr that uses DuckDB as its computational engine</strong>. It was created by the same team that built DuckDB and is designed to make DuckDB’s speed available through the exact same interface you already use for dplyr — with zero syntax changes.</p>
 </blockquote>
-<pre class="{r}}"><code># The elevator pitch:
-# dplyr   = friendly syntax, moderate speed, RAM-limited
-# DuckDB  = fast engine, requires SQL or dbplyr setup, RAM-independent
-# duckplyr = friendly syntax + fast engine + RAM-independent
-#            ↑ you get all three at once</code></pre>
+<div class="cell">
+<details open="" class="code-fold">
+<summary>Code</summary>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb1"><pre class="sourceCode markdown code-with-copy"><code class="sourceCode markdown"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="co">#| eval: false</span></span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="co"># The elevator pitch:</span></span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a><span class="co"># dplyr   = friendly syntax, moderate speed, RAM-limited</span></span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a><span class="co"># DuckDB  = fast engine, requires SQL or dbplyr setup, RAM-independent</span></span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a><span class="co"># duckplyr = friendly syntax + fast engine + RAM-independent</span></span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a><span class="co">#            ↑ you get all three at once</span></span>
+<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</details>
+</div>
 <blockquote class="blockquote">
 <p>The key insight is that duckplyr is not a wrapper around dplyr or a translation layer like dbplyr. It <strong>reimplements dplyr’s verbs</strong> using DuckDB’s execution engine directly, so the familiar code you write is executed by DuckDB under the hood — automatically, invisibly.</p>
 </blockquote>
@@ -303,213 +311,270 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <section id="the-landscape-four-tools-one-job" class="level1" data-number="2">
 <h1 data-number="2"><span class="header-section-number">2</span> The Landscape: Four Tools, One Job</h1>
 <p>Before comparing them, let us be precise about what each tool actually is:</p>
-<pre class="{r}}"><code># All four answer the question: "how do I manipulate tabular data in R?"
-# They differ in WHERE computation happens and HOW you write the code
-
-# ── dplyr ─────────────────────────────────────────────────────────────────────
-# Computation: R's in-memory engine
-# Interface:   dplyr verbs
-# Data must:   fit in RAM
-# Speed:       moderate
-
-library(dplyr)
-ga4_events |&gt;
-  filter(event_name == "purchase") |&gt;
-  group_by(event_date) |&gt;
-  summarise(revenue = sum(revenue))
-
-# ── DuckDB (via DBI) ──────────────────────────────────────────────────────────
-# Computation: DuckDB engine
-# Interface:   SQL strings
-# Data must:   NOT need to fit in RAM
-# Speed:       very fast
-
-library(DBI)
-library(duckdb)
-dbGetQuery(
-  con,
-  "
-  SELECT event_date, SUM(revenue) AS revenue
-  FROM ga4_events
-  WHERE event_name = 'purchase'
-  GROUP BY event_date
-"
-)
-
-# ── DuckDB (via dbplyr) ───────────────────────────────────────────────────────
-# Computation: DuckDB engine
-# Interface:   dplyr verbs (translated to SQL by dbplyr)
-# Data must:   NOT need to fit in RAM
-# Speed:       very fast
-# Catch:       not all dplyr verbs translate perfectly
-
-library(dbplyr)
-tbl(con, "ga4_events") |&gt;
-  filter(event_name == "purchase") |&gt;
-  group_by(event_date) |&gt;
-  summarise(revenue = sum(revenue)) |&gt;
-  collect()
-
-# ── duckplyr ─────────────────────────────────────────────────────────────────
-# Computation: DuckDB engine
-# Interface:   dplyr verbs (NATIVE — not translated)
-# Data must:   NOT need to fit in RAM
-# Speed:       very fast
-# Catch:       falls back to dplyr when needed (gracefully)
-
-library(duckplyr)
-ga4_events |&gt; # ← same code as dplyr
-  filter(event_name == "purchase") |&gt; # ← no con object needed
-  group_by(event_date) |&gt; # ← no collect() needed
-  summarise(revenue = sum(revenue)) # ← result is a tibble automatically</code></pre>
+<div class="cell">
+<details open="" class="code-fold">
+<summary>Code</summary>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb2"><pre class="sourceCode markdown code-with-copy"><code class="sourceCode markdown"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a><span class="co">#| eval: false</span></span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a><span class="co"># All four answer the question: "how do I manipulate tabular data in R?"</span></span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a><span class="co"># They differ in WHERE computation happens and HOW you write the code</span></span>
+<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a><span class="co"># ── dplyr ─────────────────────────────────────────────────────────────────────</span></span>
+<span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a><span class="co"># Computation: R's in-memory engine</span></span>
+<span id="cb2-8"><a href="#cb2-8" aria-hidden="true" tabindex="-1"></a><span class="co"># Interface:   dplyr verbs</span></span>
+<span id="cb2-9"><a href="#cb2-9" aria-hidden="true" tabindex="-1"></a><span class="co"># Data must:   fit in RAM</span></span>
+<span id="cb2-10"><a href="#cb2-10" aria-hidden="true" tabindex="-1"></a><span class="co"># Speed:       moderate</span></span>
+<span id="cb2-11"><a href="#cb2-11" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-12"><a href="#cb2-12" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(dplyr)</span>
+<span id="cb2-13"><a href="#cb2-13" aria-hidden="true" tabindex="-1"></a>ga4_events <span class="sc">|&gt;</span></span>
+<span id="cb2-14"><a href="#cb2-14" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(event_name <span class="sc">==</span> <span class="st">"purchase"</span>) <span class="sc">|&gt;</span></span>
+<span id="cb2-15"><a href="#cb2-15" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(event_date) <span class="sc">|&gt;</span></span>
+<span id="cb2-16"><a href="#cb2-16" aria-hidden="true" tabindex="-1"></a>  <span class="fu">summarise</span>(<span class="at">revenue =</span> <span class="fu">sum</span>(revenue))</span>
+<span id="cb2-17"><a href="#cb2-17" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-18"><a href="#cb2-18" aria-hidden="true" tabindex="-1"></a><span class="co"># ── DuckDB (via DBI) ──────────────────────────────────────────────────────────</span></span>
+<span id="cb2-19"><a href="#cb2-19" aria-hidden="true" tabindex="-1"></a><span class="co"># Computation: DuckDB engine</span></span>
+<span id="cb2-20"><a href="#cb2-20" aria-hidden="true" tabindex="-1"></a><span class="co"># Interface:   SQL strings</span></span>
+<span id="cb2-21"><a href="#cb2-21" aria-hidden="true" tabindex="-1"></a><span class="co"># Data must:   NOT need to fit in RAM</span></span>
+<span id="cb2-22"><a href="#cb2-22" aria-hidden="true" tabindex="-1"></a><span class="co"># Speed:       very fast</span></span>
+<span id="cb2-23"><a href="#cb2-23" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-24"><a href="#cb2-24" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(DBI)</span>
+<span id="cb2-25"><a href="#cb2-25" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(duckdb)</span>
+<span id="cb2-26"><a href="#cb2-26" aria-hidden="true" tabindex="-1"></a><span class="fu">dbGetQuery</span>(</span>
+<span id="cb2-27"><a href="#cb2-27" aria-hidden="true" tabindex="-1"></a>  con,</span>
+<span id="cb2-28"><a href="#cb2-28" aria-hidden="true" tabindex="-1"></a>  <span class="st">"</span></span>
+<span id="cb2-29"><a href="#cb2-29" aria-hidden="true" tabindex="-1"></a><span class="st">  SELECT event_date, SUM(revenue) AS revenue</span></span>
+<span id="cb2-30"><a href="#cb2-30" aria-hidden="true" tabindex="-1"></a><span class="st">  FROM ga4_events</span></span>
+<span id="cb2-31"><a href="#cb2-31" aria-hidden="true" tabindex="-1"></a><span class="st">  WHERE event_name = 'purchase'</span></span>
+<span id="cb2-32"><a href="#cb2-32" aria-hidden="true" tabindex="-1"></a><span class="st">  GROUP BY event_date</span></span>
+<span id="cb2-33"><a href="#cb2-33" aria-hidden="true" tabindex="-1"></a><span class="st">"</span></span>
+<span id="cb2-34"><a href="#cb2-34" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb2-35"><a href="#cb2-35" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-36"><a href="#cb2-36" aria-hidden="true" tabindex="-1"></a><span class="co"># ── DuckDB (via dbplyr) ───────────────────────────────────────────────────────</span></span>
+<span id="cb2-37"><a href="#cb2-37" aria-hidden="true" tabindex="-1"></a><span class="co"># Computation: DuckDB engine</span></span>
+<span id="cb2-38"><a href="#cb2-38" aria-hidden="true" tabindex="-1"></a><span class="co"># Interface:   dplyr verbs (translated to SQL by dbplyr)</span></span>
+<span id="cb2-39"><a href="#cb2-39" aria-hidden="true" tabindex="-1"></a><span class="co"># Data must:   NOT need to fit in RAM</span></span>
+<span id="cb2-40"><a href="#cb2-40" aria-hidden="true" tabindex="-1"></a><span class="co"># Speed:       very fast</span></span>
+<span id="cb2-41"><a href="#cb2-41" aria-hidden="true" tabindex="-1"></a><span class="co"># Catch:       not all dplyr verbs translate perfectly</span></span>
+<span id="cb2-42"><a href="#cb2-42" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-43"><a href="#cb2-43" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(dbplyr)</span>
+<span id="cb2-44"><a href="#cb2-44" aria-hidden="true" tabindex="-1"></a><span class="fu">tbl</span>(con, <span class="st">"ga4_events"</span>) <span class="sc">|&gt;</span></span>
+<span id="cb2-45"><a href="#cb2-45" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(event_name <span class="sc">==</span> <span class="st">"purchase"</span>) <span class="sc">|&gt;</span></span>
+<span id="cb2-46"><a href="#cb2-46" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(event_date) <span class="sc">|&gt;</span></span>
+<span id="cb2-47"><a href="#cb2-47" aria-hidden="true" tabindex="-1"></a>  <span class="fu">summarise</span>(<span class="at">revenue =</span> <span class="fu">sum</span>(revenue)) <span class="sc">|&gt;</span></span>
+<span id="cb2-48"><a href="#cb2-48" aria-hidden="true" tabindex="-1"></a>  <span class="fu">collect</span>()</span>
+<span id="cb2-49"><a href="#cb2-49" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-50"><a href="#cb2-50" aria-hidden="true" tabindex="-1"></a><span class="co"># ── duckplyr ─────────────────────────────────────────────────────────────────</span></span>
+<span id="cb2-51"><a href="#cb2-51" aria-hidden="true" tabindex="-1"></a><span class="co"># Computation: DuckDB engine</span></span>
+<span id="cb2-52"><a href="#cb2-52" aria-hidden="true" tabindex="-1"></a><span class="co"># Interface:   dplyr verbs (NATIVE — not translated)</span></span>
+<span id="cb2-53"><a href="#cb2-53" aria-hidden="true" tabindex="-1"></a><span class="co"># Data must:   NOT need to fit in RAM</span></span>
+<span id="cb2-54"><a href="#cb2-54" aria-hidden="true" tabindex="-1"></a><span class="co"># Speed:       very fast</span></span>
+<span id="cb2-55"><a href="#cb2-55" aria-hidden="true" tabindex="-1"></a><span class="co"># Catch:       falls back to dplyr when needed (gracefully)</span></span>
+<span id="cb2-56"><a href="#cb2-56" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-57"><a href="#cb2-57" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(duckplyr)</span>
+<span id="cb2-58"><a href="#cb2-58" aria-hidden="true" tabindex="-1"></a>ga4_events <span class="sc">|&gt;</span> <span class="co"># ← same code as dplyr</span></span>
+<span id="cb2-59"><a href="#cb2-59" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(event_name <span class="sc">==</span> <span class="st">"purchase"</span>) <span class="sc">|&gt;</span> <span class="co"># ← no con object needed</span></span>
+<span id="cb2-60"><a href="#cb2-60" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(event_date) <span class="sc">|&gt;</span> <span class="co"># ← no collect() needed</span></span>
+<span id="cb2-61"><a href="#cb2-61" aria-hidden="true" tabindex="-1"></a>  <span class="fu">summarise</span>(<span class="at">revenue =</span> <span class="fu">sum</span>(revenue)) <span class="co"># ← result is a tibble automatically</span></span>
+<span id="cb2-62"><a href="#cb2-62" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</details>
+</div>
 </section>
 <section id="how-duckplyr-is-different-from-each-tool" class="level1" data-number="3">
 <h1 data-number="3"><span class="header-section-number">3</span> How duckplyr Is Different from Each Tool</h1>
 <section id="duckplyr-vs-dplyr" class="level2" data-number="3.1">
 <h2 data-number="3.1" class="anchored" data-anchor-id="duckplyr-vs-dplyr"><span class="header-section-number">3.1</span> duckplyr vs dplyr</h2>
-<pre class="{r}}"><code># ── What changes: ─────────────────────────────────────────────────────────────
-#   library(dplyr)    →   library(duckplyr)
-#   That's it. Seriously.
-
-# ── What stays the same: ──────────────────────────────────────────────────────
-#   All verb names: filter, select, mutate, group_by, summarise,
-#                   arrange, join, slice, rename, distinct...
-#   All syntax: pipes, quasiquotation, across(), where()...
-#   All output: tibbles, same column names, same data types
-
-# ── What is different under the hood: ─────────────────────────────────────────
-#   dplyr    executes in R's vector engine
-#   duckplyr executes in DuckDB's columnar engine
-
-# ── Performance difference: ───────────────────────────────────────────────────
-# For small data (&lt; 100k rows): negligible, sometimes dplyr is faster
-# For large data (&gt; 1M rows):   duckplyr is 10-100x faster
-# For larger-than-RAM data:     dplyr fails, duckplyr works</code></pre>
+<div class="cell">
+<details open="" class="code-fold">
+<summary>Code</summary>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb3"><pre class="sourceCode markdown code-with-copy"><code class="sourceCode markdown"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a><span class="co">#| eval: false</span></span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a><span class="co"># ── What changes: ─────────────────────────────────────────────────────────────</span></span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a><span class="co">#   library(dplyr)    →   library(duckplyr)</span></span>
+<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a><span class="co">#   That's it. Seriously.</span></span>
+<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a><span class="co"># ── What stays the same: ──────────────────────────────────────────────────────</span></span>
+<span id="cb3-8"><a href="#cb3-8" aria-hidden="true" tabindex="-1"></a><span class="co">#   All verb names: filter, select, mutate, group_by, summarise,</span></span>
+<span id="cb3-9"><a href="#cb3-9" aria-hidden="true" tabindex="-1"></a><span class="co">#                   arrange, join, slice, rename, distinct...</span></span>
+<span id="cb3-10"><a href="#cb3-10" aria-hidden="true" tabindex="-1"></a><span class="co">#   All syntax: pipes, quasiquotation, across(), where()...</span></span>
+<span id="cb3-11"><a href="#cb3-11" aria-hidden="true" tabindex="-1"></a><span class="co">#   All output: tibbles, same column names, same data types</span></span>
+<span id="cb3-12"><a href="#cb3-12" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-13"><a href="#cb3-13" aria-hidden="true" tabindex="-1"></a><span class="co"># ── What is different under the hood: ─────────────────────────────────────────</span></span>
+<span id="cb3-14"><a href="#cb3-14" aria-hidden="true" tabindex="-1"></a><span class="co">#   dplyr    executes in R's vector engine</span></span>
+<span id="cb3-15"><a href="#cb3-15" aria-hidden="true" tabindex="-1"></a><span class="co">#   duckplyr executes in DuckDB's columnar engine</span></span>
+<span id="cb3-16"><a href="#cb3-16" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-17"><a href="#cb3-17" aria-hidden="true" tabindex="-1"></a><span class="co"># ── Performance difference: ───────────────────────────────────────────────────</span></span>
+<span id="cb3-18"><a href="#cb3-18" aria-hidden="true" tabindex="-1"></a><span class="co"># For small data (&lt; 100k rows): negligible, sometimes dplyr is faster</span></span>
+<span id="cb3-19"><a href="#cb3-19" aria-hidden="true" tabindex="-1"></a><span class="co"># For large data (&gt; 1M rows):   duckplyr is 10-100x faster</span></span>
+<span id="cb3-20"><a href="#cb3-20" aria-hidden="true" tabindex="-1"></a><span class="co"># For larger-than-RAM data:     dplyr fails, duckplyr works</span></span>
+<span id="cb3-21"><a href="#cb3-21" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</details>
+</div>
 </section>
 <section id="duckplyr-vs-duckdb-dbplyr" class="level2" data-number="3.2">
 <h2 data-number="3.2" class="anchored" data-anchor-id="duckplyr-vs-duckdb-dbplyr"><span class="header-section-number">3.2</span> duckplyr vs DuckDB + dbplyr</h2>
-<pre class="{r}}"><code># ── DuckDB + dbplyr requires: ─────────────────────────────────────────────────
-# 1. Create a connection object
-con &lt;- dbConnect(duckdb::duckdb(), "data/ga4.duckdb")
-# 2. Create table references
-events &lt;- tbl(con, "ga4_events")
-# 3. Write your query
-result &lt;- events |&gt;
-  filter(...) |&gt;
-  summarise(...) |&gt;
-  # 4. Explicitly collect results
-  collect()
-# 5. Remember to disconnect
-dbDisconnect(con, shutdown = TRUE)
-
-# ── duckplyr requires: ────────────────────────────────────────────────────────
-# 1. Load the library
-library(duckplyr)
-# 2. Write your query (same as dplyr)
-result &lt;- ga4_events |&gt; filter(...) |&gt; summarise(...)
-# That's it — no connection, no collect(), no disconnect
-
-# ── The translation gap: ──────────────────────────────────────────────────────
-# dbplyr TRANSLATES dplyr to SQL — some verbs have no SQL equivalent
-# duckplyr REIMPLEMENTS dplyr using DuckDB — much more complete coverage
-
-# Example: dbplyr cannot translate some R functions
-tbl(con, "ga4_events") |&gt;
-  mutate(path = stringr::str_remove(page_url, "\\?.*$")) |&gt;
-  collect()
-#&gt; Error: str_remove() is not supported in SQL translation
-
-# duckplyr handles it natively
-ga4_events |&gt;
-  mutate(path = stringr::str_remove(page_url, "\\?.*$"))
-#&gt; Works — DuckDB handles the regex directly</code></pre>
+<div class="cell">
+<details open="" class="code-fold">
+<summary>Code</summary>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb4"><pre class="sourceCode markdown code-with-copy"><code class="sourceCode markdown"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a><span class="co">#| eval: false</span></span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a><span class="co"># ── DuckDB + dbplyr requires: ─────────────────────────────────────────────────</span></span>
+<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a><span class="co"># 1. Create a connection object</span></span>
+<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a>con <span class="ot">&lt;-</span> <span class="fu">dbConnect</span>(duckdb<span class="sc">::</span><span class="fu">duckdb</span>(), <span class="st">"data/ga4.duckdb"</span>)</span>
+<span id="cb4-6"><a href="#cb4-6" aria-hidden="true" tabindex="-1"></a><span class="co"># 2. Create table references</span></span>
+<span id="cb4-7"><a href="#cb4-7" aria-hidden="true" tabindex="-1"></a>events <span class="ot">&lt;-</span> <span class="fu">tbl</span>(con, <span class="st">"ga4_events"</span>)</span>
+<span id="cb4-8"><a href="#cb4-8" aria-hidden="true" tabindex="-1"></a><span class="co"># 3. Write your query</span></span>
+<span id="cb4-9"><a href="#cb4-9" aria-hidden="true" tabindex="-1"></a>result <span class="ot">&lt;-</span> events <span class="sc">|&gt;</span></span>
+<span id="cb4-10"><a href="#cb4-10" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(...) <span class="sc">|&gt;</span></span>
+<span id="cb4-11"><a href="#cb4-11" aria-hidden="true" tabindex="-1"></a>  <span class="fu">summarise</span>(...) <span class="sc">|&gt;</span></span>
+<span id="cb4-12"><a href="#cb4-12" aria-hidden="true" tabindex="-1"></a>  <span class="co"># 4. Explicitly collect results</span></span>
+<span id="cb4-13"><a href="#cb4-13" aria-hidden="true" tabindex="-1"></a>  <span class="fu">collect</span>()</span>
+<span id="cb4-14"><a href="#cb4-14" aria-hidden="true" tabindex="-1"></a><span class="co"># 5. Remember to disconnect</span></span>
+<span id="cb4-15"><a href="#cb4-15" aria-hidden="true" tabindex="-1"></a><span class="fu">dbDisconnect</span>(con, <span class="at">shutdown =</span> <span class="cn">TRUE</span>)</span>
+<span id="cb4-16"><a href="#cb4-16" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-17"><a href="#cb4-17" aria-hidden="true" tabindex="-1"></a><span class="co"># ── duckplyr requires: ────────────────────────────────────────────────────────</span></span>
+<span id="cb4-18"><a href="#cb4-18" aria-hidden="true" tabindex="-1"></a><span class="co"># 1. Load the library</span></span>
+<span id="cb4-19"><a href="#cb4-19" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(duckplyr)</span>
+<span id="cb4-20"><a href="#cb4-20" aria-hidden="true" tabindex="-1"></a><span class="co"># 2. Write your query (same as dplyr)</span></span>
+<span id="cb4-21"><a href="#cb4-21" aria-hidden="true" tabindex="-1"></a>result <span class="ot">&lt;-</span> ga4_events <span class="sc">|&gt;</span> <span class="fu">filter</span>(...) <span class="sc">|&gt;</span> <span class="fu">summarise</span>(...)</span>
+<span id="cb4-22"><a href="#cb4-22" aria-hidden="true" tabindex="-1"></a><span class="co"># That's it — no connection, no collect(), no disconnect</span></span>
+<span id="cb4-23"><a href="#cb4-23" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-24"><a href="#cb4-24" aria-hidden="true" tabindex="-1"></a><span class="co"># ── The translation gap: ──────────────────────────────────────────────────────</span></span>
+<span id="cb4-25"><a href="#cb4-25" aria-hidden="true" tabindex="-1"></a><span class="co"># dbplyr TRANSLATES dplyr to SQL — some verbs have no SQL equivalent</span></span>
+<span id="cb4-26"><a href="#cb4-26" aria-hidden="true" tabindex="-1"></a><span class="co"># duckplyr REIMPLEMENTS dplyr using DuckDB — much more complete coverage</span></span>
+<span id="cb4-27"><a href="#cb4-27" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-28"><a href="#cb4-28" aria-hidden="true" tabindex="-1"></a><span class="co"># Example: dbplyr cannot translate some R functions</span></span>
+<span id="cb4-29"><a href="#cb4-29" aria-hidden="true" tabindex="-1"></a><span class="fu">tbl</span>(con, <span class="st">"ga4_events"</span>) <span class="sc">|&gt;</span></span>
+<span id="cb4-30"><a href="#cb4-30" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">path =</span> stringr<span class="sc">::</span><span class="fu">str_remove</span>(page_url, <span class="st">"</span><span class="sc">\\</span><span class="st">?.*$"</span>)) <span class="sc">|&gt;</span></span>
+<span id="cb4-31"><a href="#cb4-31" aria-hidden="true" tabindex="-1"></a>  <span class="fu">collect</span>()</span>
+<span id="cb4-32"><a href="#cb4-32" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; Error: str_remove() is not supported in SQL translation</span></span>
+<span id="cb4-33"><a href="#cb4-33" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-34"><a href="#cb4-34" aria-hidden="true" tabindex="-1"></a><span class="co"># duckplyr handles it natively</span></span>
+<span id="cb4-35"><a href="#cb4-35" aria-hidden="true" tabindex="-1"></a>ga4_events <span class="sc">|&gt;</span></span>
+<span id="cb4-36"><a href="#cb4-36" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">path =</span> stringr<span class="sc">::</span><span class="fu">str_remove</span>(page_url, <span class="st">"</span><span class="sc">\\</span><span class="st">?.*$"</span>))</span>
+<span id="cb4-37"><a href="#cb4-37" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; Works — DuckDB handles the regex directly</span></span>
+<span id="cb4-38"><a href="#cb4-38" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</details>
+</div>
 </section>
 <section id="the-fallback-system-why-duckplyr-is-safe-to-use" class="level2" data-number="3.3">
 <h2 data-number="3.3" class="anchored" data-anchor-id="the-fallback-system-why-duckplyr-is-safe-to-use"><span class="header-section-number">3.3</span> The Fallback System — Why duckplyr Is Safe to Use</h2>
 <p>This is duckplyr’s most important design feature. When it encounters something it cannot execute in DuckDB, it <strong>silently falls back to dplyr</strong> rather than throwing an error:</p>
-<pre class="{r}}"><code>library(duckplyr)
-
-# duckplyr executes this in DuckDB (fast path)
-result1 &lt;- ga4_events |&gt;
-  filter(event_name == "purchase") |&gt;
-  group_by(event_date) |&gt;
-  summarise(n = n())
-# → executed by DuckDB engine ✓
-
-# duckplyr cannot handle this custom R function in DuckDB
-my_custom_function &lt;- function(x) paste0("[", x, "]")
-
-result2 &lt;- ga4_events |&gt;
-  mutate(labeled = my_custom_function(event_name))
-# → falls back to dplyr silently ✓ (no error, correct result)
-
-# You can monitor fallbacks to understand your code
-duckplyr::fallback_sitrep()
-# Reports which operations fell back and why</code></pre>
-<pre class="{r}}"><code># Control fallback behaviour explicitly
-options(duckplyr.fallback = "warn") # Warn when falling back
-options(duckplyr.fallback = "error") # Error instead of falling back
-options(duckplyr.fallback = "ignore") # Silent fallback (default)</code></pre>
+<div class="cell">
+<details open="" class="code-fold">
+<summary>Code</summary>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb5"><pre class="sourceCode markdown code-with-copy"><code class="sourceCode markdown"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a><span class="co">#| eval: false</span></span>
+<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(duckplyr)</span>
+<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a><span class="co"># duckplyr executes this in DuckDB (fast path)</span></span>
+<span id="cb5-6"><a href="#cb5-6" aria-hidden="true" tabindex="-1"></a>result1 <span class="ot">&lt;-</span> ga4_events <span class="sc">|&gt;</span></span>
+<span id="cb5-7"><a href="#cb5-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(event_name <span class="sc">==</span> <span class="st">"purchase"</span>) <span class="sc">|&gt;</span></span>
+<span id="cb5-8"><a href="#cb5-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(event_date) <span class="sc">|&gt;</span></span>
+<span id="cb5-9"><a href="#cb5-9" aria-hidden="true" tabindex="-1"></a>  <span class="fu">summarise</span>(<span class="at">n =</span> <span class="fu">n</span>())</span>
+<span id="cb5-10"><a href="#cb5-10" aria-hidden="true" tabindex="-1"></a><span class="co"># → executed by DuckDB engine ✓</span></span>
+<span id="cb5-11"><a href="#cb5-11" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-12"><a href="#cb5-12" aria-hidden="true" tabindex="-1"></a><span class="co"># duckplyr cannot handle this custom R function in DuckDB</span></span>
+<span id="cb5-13"><a href="#cb5-13" aria-hidden="true" tabindex="-1"></a>my_custom_function <span class="ot">&lt;-</span> <span class="cf">function</span>(x) <span class="fu">paste0</span>(<span class="st">"["</span>, x, <span class="st">"]"</span>)</span>
+<span id="cb5-14"><a href="#cb5-14" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-15"><a href="#cb5-15" aria-hidden="true" tabindex="-1"></a>result2 <span class="ot">&lt;-</span> ga4_events <span class="sc">|&gt;</span></span>
+<span id="cb5-16"><a href="#cb5-16" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">labeled =</span> <span class="fu">my_custom_function</span>(event_name))</span>
+<span id="cb5-17"><a href="#cb5-17" aria-hidden="true" tabindex="-1"></a><span class="co"># → falls back to dplyr silently ✓ (no error, correct result)</span></span>
+<span id="cb5-18"><a href="#cb5-18" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-19"><a href="#cb5-19" aria-hidden="true" tabindex="-1"></a><span class="co"># You can monitor fallbacks to understand your code</span></span>
+<span id="cb5-20"><a href="#cb5-20" aria-hidden="true" tabindex="-1"></a>duckplyr<span class="sc">::</span><span class="fu">fallback_sitrep</span>()</span>
+<span id="cb5-21"><a href="#cb5-21" aria-hidden="true" tabindex="-1"></a><span class="co"># Reports which operations fell back and why</span></span>
+<span id="cb5-22"><a href="#cb5-22" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</details>
+</div>
+<div class="cell">
+<details open="" class="code-fold">
+<summary>Code</summary>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb6"><pre class="sourceCode markdown code-with-copy"><code class="sourceCode markdown"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a><span class="co">#| eval: false</span></span>
+<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a><span class="co"># Control fallback behaviour explicitly</span></span>
+<span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a><span class="fu">options</span>(<span class="at">duckplyr.fallback =</span> <span class="st">"warn"</span>) <span class="co"># Warn when falling back</span></span>
+<span id="cb6-5"><a href="#cb6-5" aria-hidden="true" tabindex="-1"></a><span class="fu">options</span>(<span class="at">duckplyr.fallback =</span> <span class="st">"error"</span>) <span class="co"># Error instead of falling back</span></span>
+<span id="cb6-6"><a href="#cb6-6" aria-hidden="true" tabindex="-1"></a><span class="fu">options</span>(<span class="at">duckplyr.fallback =</span> <span class="st">"ignore"</span>) <span class="co"># Silent fallback (default)</span></span>
+<span id="cb6-7"><a href="#cb6-7" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</details>
+</div>
 </section>
 </section>
 <section id="workfolow-guide" class="level1" data-number="4">
 <h1 data-number="4"><span class="header-section-number">4</span> Workfolow Guide</h1>
 <section id="installing-and-setting-up-duckplyr" class="level2" data-number="4.1">
 <h2 data-number="4.1" class="anchored" data-anchor-id="installing-and-setting-up-duckplyr"><span class="header-section-number">4.1</span> Installing and Setting Up duckplyr</h2>
-<pre class="{r}}"><code># ── Install ───────────────────────────────────────────────────────────────────
-install.packages("duckplyr")
-
-# ── Two ways to use it ────────────────────────────────────────────────────────
-
-# Option A: Load alongside dplyr (duckplyr methods take precedence)
-library(dplyr)
-library(duckplyr)
-# Now dplyr verbs on data frames use DuckDB automatically
-
-# Option B: Use as a complete dplyr replacement
-library(duckplyr)
-# Masks dplyr functions — everything goes through DuckDB
-# This is the recommended approach
-
-# ── Check version ─────────────────────────────────────────────────────────────
-packageVersion("duckplyr") # Should be &gt;= 0.4.0
-
-# ── Opt in to telemetry or out ────────────────────────────────────────────────
-duckplyr::duckplyr_telemetry_set(FALSE) # Disable usage reporting</code></pre>
+<div class="cell">
+<details open="" class="code-fold">
+<summary>Code</summary>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb7"><pre class="sourceCode markdown code-with-copy"><code class="sourceCode markdown"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a><span class="co">#| eval: false</span></span>
+<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a><span class="co"># ── Install ───────────────────────────────────────────────────────────────────</span></span>
+<span id="cb7-5"><a href="#cb7-5" aria-hidden="true" tabindex="-1"></a><span class="fu">install.packages</span>(<span class="st">"duckplyr"</span>)</span>
+<span id="cb7-6"><a href="#cb7-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-7"><a href="#cb7-7" aria-hidden="true" tabindex="-1"></a><span class="co"># ── Two ways to use it ────────────────────────────────────────────────────────</span></span>
+<span id="cb7-8"><a href="#cb7-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-9"><a href="#cb7-9" aria-hidden="true" tabindex="-1"></a><span class="co"># Option A: Load alongside dplyr (duckplyr methods take precedence)</span></span>
+<span id="cb7-10"><a href="#cb7-10" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(dplyr)</span>
+<span id="cb7-11"><a href="#cb7-11" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(duckplyr)</span>
+<span id="cb7-12"><a href="#cb7-12" aria-hidden="true" tabindex="-1"></a><span class="co"># Now dplyr verbs on data frames use DuckDB automatically</span></span>
+<span id="cb7-13"><a href="#cb7-13" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-14"><a href="#cb7-14" aria-hidden="true" tabindex="-1"></a><span class="co"># Option B: Use as a complete dplyr replacement</span></span>
+<span id="cb7-15"><a href="#cb7-15" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(duckplyr)</span>
+<span id="cb7-16"><a href="#cb7-16" aria-hidden="true" tabindex="-1"></a><span class="co"># Masks dplyr functions — everything goes through DuckDB</span></span>
+<span id="cb7-17"><a href="#cb7-17" aria-hidden="true" tabindex="-1"></a><span class="co"># This is the recommended approach</span></span>
+<span id="cb7-18"><a href="#cb7-18" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-19"><a href="#cb7-19" aria-hidden="true" tabindex="-1"></a><span class="co"># ── Check version ─────────────────────────────────────────────────────────────</span></span>
+<span id="cb7-20"><a href="#cb7-20" aria-hidden="true" tabindex="-1"></a><span class="fu">packageVersion</span>(<span class="st">"duckplyr"</span>) <span class="co"># Should be &gt;= 0.4.0</span></span>
+<span id="cb7-21"><a href="#cb7-21" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-22"><a href="#cb7-22" aria-hidden="true" tabindex="-1"></a><span class="co"># ── Opt in to telemetry or out ────────────────────────────────────────────────</span></span>
+<span id="cb7-23"><a href="#cb7-23" aria-hidden="true" tabindex="-1"></a>duckplyr<span class="sc">::</span><span class="fu">duckplyr_telemetry_set</span>(<span class="cn">FALSE</span>) <span class="co"># Disable usage reporting</span></span>
+<span id="cb7-24"><a href="#cb7-24" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</details>
+</div>
 </section>
 <section id="reading-data-into-duckplyr" class="level2" data-number="4.2">
 <h2 data-number="4.2" class="anchored" data-anchor-id="reading-data-into-duckplyr"><span class="header-section-number">4.2</span> Reading Data into duckplyr</h2>
 <p>duckplyr has native methods for reading Parquet and CSV files directly:</p>
-<pre class="{r}}"><code>library(duckplyr)
-library(arrow)
-
-# ── Method 1: From a tibble already in memory ─────────────────────────────────
-ga4_tibble &lt;- readRDS("data/ga4_raw.rds")
-
-# Convert tibble to duckplyr frame (enables DuckDB execution)
-ga4_duck &lt;- as_duckplyr_df(ga4_tibble)
-class(ga4_duck)
-#&gt; [1] "duckplyr_df" "tbl_df" "tbl" "data.frame"
-
-# ── Method 2: Read Parquet directly — most powerful approach ──────────────────
-# No RAM used — DuckDB streams from disk as needed
-ga4_events &lt;- duckplyr::df_from_parquet("data/ga4_flat.parquet")
-ga4_params &lt;- duckplyr::df_from_parquet("data/ga4_event_params.parquet")
-ga4_sessions &lt;- duckplyr::df_from_parquet("data/ga4_sessions.parquet")
-ga4_items &lt;- duckplyr::df_from_parquet("data/ga4_items.parquet")
-
-# Each of these is a duckplyr_df — a lazy reference to the Parquet file
-# Nothing is loaded into RAM until you need actual values
-class(ga4_events)
-#&gt; [1] "duckplyr_df" "tbl_df" "tbl" "data.frame"
-
-# ── Method 3: Read multiple Parquet files with wildcard ───────────────────────
-# Perfect for GA4's one-file-per-day pattern
-ga4_all_days &lt;- duckplyr::df_from_parquet("data/ga4_day_*.parquet")
-
-# ── Method 4: From Arrow dataset ──────────────────────────────────────────────
-ga4_arrow &lt;- arrow::open_dataset("data/ga4_flat.parquet")
-ga4_duck &lt;- as_duckplyr_df(ga4_arrow)</code></pre>
+<div class="cell">
+<details open="" class="code-fold">
+<summary>Code</summary>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb8"><pre class="sourceCode markdown code-with-copy"><code class="sourceCode markdown"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
+<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a><span class="co">#| eval: false</span></span>
+<span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(duckplyr)</span>
+<span id="cb8-4"><a href="#cb8-4" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(arrow)</span>
+<span id="cb8-5"><a href="#cb8-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-6"><a href="#cb8-6" aria-hidden="true" tabindex="-1"></a><span class="co"># ── Method 1: From a tibble already in memory ─────────────────────────────────</span></span>
+<span id="cb8-7"><a href="#cb8-7" aria-hidden="true" tabindex="-1"></a>ga4_tibble <span class="ot">&lt;-</span> <span class="fu">readRDS</span>(<span class="st">"data/ga4_raw.rds"</span>)</span>
+<span id="cb8-8"><a href="#cb8-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-9"><a href="#cb8-9" aria-hidden="true" tabindex="-1"></a><span class="co"># Convert tibble to duckplyr frame (enables DuckDB execution)</span></span>
+<span id="cb8-10"><a href="#cb8-10" aria-hidden="true" tabindex="-1"></a>ga4_duck <span class="ot">&lt;-</span> <span class="fu">as_duckplyr_df</span>(ga4_tibble)</span>
+<span id="cb8-11"><a href="#cb8-11" aria-hidden="true" tabindex="-1"></a><span class="fu">class</span>(ga4_duck)</span>
+<span id="cb8-12"><a href="#cb8-12" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; [1] "duckplyr_df" "tbl_df" "tbl" "data.frame"</span></span>
+<span id="cb8-13"><a href="#cb8-13" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-14"><a href="#cb8-14" aria-hidden="true" tabindex="-1"></a><span class="co"># ── Method 2: Read Parquet directly — most powerful approach ──────────────────</span></span>
+<span id="cb8-15"><a href="#cb8-15" aria-hidden="true" tabindex="-1"></a><span class="co"># No RAM used — DuckDB streams from disk as needed</span></span>
+<span id="cb8-16"><a href="#cb8-16" aria-hidden="true" tabindex="-1"></a>ga4_events <span class="ot">&lt;-</span> duckplyr<span class="sc">::</span><span class="fu">df_from_parquet</span>(<span class="st">"data/ga4_flat.parquet"</span>)</span>
+<span id="cb8-17"><a href="#cb8-17" aria-hidden="true" tabindex="-1"></a>ga4_params <span class="ot">&lt;-</span> duckplyr<span class="sc">::</span><span class="fu">df_from_parquet</span>(<span class="st">"data/ga4_event_params.parquet"</span>)</span>
+<span id="cb8-18"><a href="#cb8-18" aria-hidden="true" tabindex="-1"></a>ga4_sessions <span class="ot">&lt;-</span> duckplyr<span class="sc">::</span><span class="fu">df_from_parquet</span>(<span class="st">"data/ga4_sessions.parquet"</span>)</span>
+<span id="cb8-19"><a href="#cb8-19" aria-hidden="true" tabindex="-1"></a>ga4_items <span class="ot">&lt;-</span> duckplyr<span class="sc">::</span><span class="fu">df_from_parquet</span>(<span class="st">"data/ga4_items.parquet"</span>)</span>
+<span id="cb8-20"><a href="#cb8-20" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-21"><a href="#cb8-21" aria-hidden="true" tabindex="-1"></a><span class="co"># Each of these is a duckplyr_df — a lazy reference to the Parquet file</span></span>
+<span id="cb8-22"><a href="#cb8-22" aria-hidden="true" tabindex="-1"></a><span class="co"># Nothing is loaded into RAM until you need actual values</span></span>
+<span id="cb8-23"><a href="#cb8-23" aria-hidden="true" tabindex="-1"></a><span class="fu">class</span>(ga4_events)</span>
+<span id="cb8-24"><a href="#cb8-24" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; [1] "duckplyr_df" "tbl_df" "tbl" "data.frame"</span></span>
+<span id="cb8-25"><a href="#cb8-25" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-26"><a href="#cb8-26" aria-hidden="true" tabindex="-1"></a><span class="co"># ── Method 3: Read multiple Parquet files with wildcard ───────────────────────</span></span>
+<span id="cb8-27"><a href="#cb8-27" aria-hidden="true" tabindex="-1"></a><span class="co"># Perfect for GA4's one-file-per-day pattern</span></span>
+<span id="cb8-28"><a href="#cb8-28" aria-hidden="true" tabindex="-1"></a>ga4_all_days <span class="ot">&lt;-</span> duckplyr<span class="sc">::</span><span class="fu">df_from_parquet</span>(<span class="st">"data/ga4_day_*.parquet"</span>)</span>
+<span id="cb8-29"><a href="#cb8-29" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-30"><a href="#cb8-30" aria-hidden="true" tabindex="-1"></a><span class="co"># ── Method 4: From Arrow dataset ──────────────────────────────────────────────</span></span>
+<span id="cb8-31"><a href="#cb8-31" aria-hidden="true" tabindex="-1"></a>ga4_arrow <span class="ot">&lt;-</span> arrow<span class="sc">::</span><span class="fu">open_dataset</span>(<span class="st">"data/ga4_flat.parquet"</span>)</span>
+<span id="cb8-32"><a href="#cb8-32" aria-hidden="true" tabindex="-1"></a>ga4_duck <span class="ot">&lt;-</span> <span class="fu">as_duckplyr_df</span>(ga4_arrow)</span>
+<span id="cb8-33"><a href="#cb8-33" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</details>
+</div>
 </section>
 </section>
 <section id="analyzing-ga4-data-with-duckplyr" class="level1" data-number="5">
@@ -1072,23 +1137,23 @@ ga4_duck &lt;- as_duckplyr_df(ga4_arrow)</code></pre>
 </div>
 <div class="cell">
 <div class="cell-output-display">
-<div id="drxpbtnrap" style="padding-left:0px;padding-right:0px;padding-top:10px;padding-bottom:10px;overflow-x:auto;overflow-y:auto;width:auto;height:auto;">
-<style>#drxpbtnrap table {
+<div id="aqdjhtycmi" style="padding-left:0px;padding-right:0px;padding-top:10px;padding-bottom:10px;overflow-x:auto;overflow-y:auto;width:auto;height:auto;">
+<style>#aqdjhtycmi table {
   font-family: system-ui, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji';
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
 
-#drxpbtnrap thead, #drxpbtnrap tbody, #drxpbtnrap tfoot, #drxpbtnrap tr, #drxpbtnrap td, #drxpbtnrap th {
+#aqdjhtycmi thead, #aqdjhtycmi tbody, #aqdjhtycmi tfoot, #aqdjhtycmi tr, #aqdjhtycmi td, #aqdjhtycmi th {
   border-style: none;
 }
 
-#drxpbtnrap p {
+#aqdjhtycmi p {
   margin: 0;
   padding: 0;
 }
 
-#drxpbtnrap .gt_table {
+#aqdjhtycmi .gt_table {
   display: table;
   border-collapse: collapse;
   line-height: normal;
@@ -1114,12 +1179,12 @@ ga4_duck &lt;- as_duckplyr_df(ga4_arrow)</code></pre>
   border-left-color: #D3D3D3;
 }
 
-#drxpbtnrap .gt_caption {
+#aqdjhtycmi .gt_caption {
   padding-top: 4px;
   padding-bottom: 4px;
 }
 
-#drxpbtnrap .gt_title {
+#aqdjhtycmi .gt_title {
   color: #333333;
   font-size: 125%;
   font-weight: initial;
@@ -1131,7 +1196,7 @@ ga4_duck &lt;- as_duckplyr_df(ga4_arrow)</code></pre>
   border-bottom-width: 0;
 }
 
-#drxpbtnrap .gt_subtitle {
+#aqdjhtycmi .gt_subtitle {
   color: #333333;
   font-size: 85%;
   font-weight: initial;
@@ -1143,7 +1208,7 @@ ga4_duck &lt;- as_duckplyr_df(ga4_arrow)</code></pre>
   border-top-width: 0;
 }
 
-#drxpbtnrap .gt_heading {
+#aqdjhtycmi .gt_heading {
   background-color: #FFFFFF;
   text-align: center;
   border-bottom-color: #FFFFFF;
@@ -1155,13 +1220,13 @@ ga4_duck &lt;- as_duckplyr_df(ga4_arrow)</code></pre>
   border-right-color: #D3D3D3;
 }
 
-#drxpbtnrap .gt_bottom_border {
+#aqdjhtycmi .gt_bottom_border {
   border-bottom-style: solid;
   border-bottom-width: 2px;
   border-bottom-color: #0076BA;
 }
 
-#drxpbtnrap .gt_col_headings {
+#aqdjhtycmi .gt_col_headings {
   border-top-style: solid;
   border-top-width: 2px;
   border-top-color: #0076BA;
@@ -1176,7 +1241,7 @@ ga4_duck &lt;- as_duckplyr_df(ga4_arrow)</code></pre>
   border-right-color: #D3D3D3;
 }
 
-#drxpbtnrap .gt_col_heading {
+#aqdjhtycmi .gt_col_heading {
   color: #333333;
   background-color: #FFFFFF;
   font-size: 100%;
@@ -1196,7 +1261,7 @@ ga4_duck &lt;- as_duckplyr_df(ga4_arrow)</code></pre>
   overflow-x: hidden;
 }
 
-#drxpbtnrap .gt_column_spanner_outer {
+#aqdjhtycmi .gt_column_spanner_outer {
   color: #333333;
   background-color: #FFFFFF;
   font-size: 100%;
@@ -1208,15 +1273,15 @@ ga4_duck &lt;- as_duckplyr_df(ga4_arrow)</code></pre>
   padding-right: 4px;
 }
 
-#drxpbtnrap .gt_column_spanner_outer:first-child {
+#aqdjhtycmi .gt_column_spanner_outer:first-child {
   padding-left: 0;
 }
 
-#drxpbtnrap .gt_column_spanner_outer:last-child {
+#aqdjhtycmi .gt_column_spanner_outer:last-child {
   padding-right: 0;
 }
 
-#drxpbtnrap .gt_column_spanner {
+#aqdjhtycmi .gt_column_spanner {
   border-bottom-style: solid;
   border-bottom-width: 2px;
   border-bottom-color: #0076BA;
@@ -1228,11 +1293,11 @@ ga4_duck &lt;- as_duckplyr_df(ga4_arrow)</code></pre>
   width: 100%;
 }
 
-#drxpbtnrap .gt_spanner_row {
+#aqdjhtycmi .gt_spanner_row {
   border-bottom-style: hidden;
 }
 
-#drxpbtnrap .gt_group_heading {
+#aqdjhtycmi .gt_group_heading {
   padding-top: 8px;
   padding-bottom: 8px;
   padding-left: 5px;
@@ -1258,7 +1323,7 @@ ga4_duck &lt;- as_duckplyr_df(ga4_arrow)</code></pre>
   text-align: left;
 }
 
-#drxpbtnrap .gt_empty_group_heading {
+#aqdjhtycmi .gt_empty_group_heading {
   padding: 0.5px;
   color: #333333;
   background-color: #FFFFFF;
@@ -1273,15 +1338,15 @@ ga4_duck &lt;- as_duckplyr_df(ga4_arrow)</code></pre>
   vertical-align: middle;
 }
 
-#drxpbtnrap .gt_from_md > :first-child {
+#aqdjhtycmi .gt_from_md > :first-child {
   margin-top: 0;
 }
 
-#drxpbtnrap .gt_from_md > :last-child {
+#aqdjhtycmi .gt_from_md > :last-child {
   margin-bottom: 0;
 }
 
-#drxpbtnrap .gt_row {
+#aqdjhtycmi .gt_row {
   padding-top: 8px;
   padding-bottom: 8px;
   padding-left: 5px;
@@ -1300,7 +1365,7 @@ ga4_duck &lt;- as_duckplyr_df(ga4_arrow)</code></pre>
   overflow-x: hidden;
 }
 
-#drxpbtnrap .gt_stub {
+#aqdjhtycmi .gt_stub {
   color: #FFFFFF;
   background-color: #0076BA;
   font-size: 100%;
@@ -1313,7 +1378,7 @@ ga4_duck &lt;- as_duckplyr_df(ga4_arrow)</code></pre>
   padding-right: 5px;
 }
 
-#drxpbtnrap .gt_stub_row_group {
+#aqdjhtycmi .gt_stub_row_group {
   color: #333333;
   background-color: #FFFFFF;
   font-size: 100%;
@@ -1327,15 +1392,15 @@ ga4_duck &lt;- as_duckplyr_df(ga4_arrow)</code></pre>
   vertical-align: top;
 }
 
-#drxpbtnrap .gt_row_group_first td {
+#aqdjhtycmi .gt_row_group_first td {
   border-top-width: 2px;
 }
 
-#drxpbtnrap .gt_row_group_first th {
+#aqdjhtycmi .gt_row_group_first th {
   border-top-width: 2px;
 }
 
-#drxpbtnrap .gt_summary_row {
+#aqdjhtycmi .gt_summary_row {
   color: #333333;
   background-color: #FFFFFF;
   text-transform: inherit;
@@ -1345,16 +1410,16 @@ ga4_duck &lt;- as_duckplyr_df(ga4_arrow)</code></pre>
   padding-right: 5px;
 }
 
-#drxpbtnrap .gt_first_summary_row {
+#aqdjhtycmi .gt_first_summary_row {
   border-top-style: solid;
   border-top-color: #0076BA;
 }
 
-#drxpbtnrap .gt_first_summary_row.thick {
+#aqdjhtycmi .gt_first_summary_row.thick {
   border-top-width: 2px;
 }
 
-#drxpbtnrap .gt_last_summary_row {
+#aqdjhtycmi .gt_last_summary_row {
   padding-top: 8px;
   padding-bottom: 8px;
   padding-left: 5px;
@@ -1364,7 +1429,7 @@ ga4_duck &lt;- as_duckplyr_df(ga4_arrow)</code></pre>
   border-bottom-color: #0076BA;
 }
 
-#drxpbtnrap .gt_grand_summary_row {
+#aqdjhtycmi .gt_grand_summary_row {
   color: #333333;
   background-color: #89D3FE;
   text-transform: inherit;
@@ -1374,7 +1439,7 @@ ga4_duck &lt;- as_duckplyr_df(ga4_arrow)</code></pre>
   padding-right: 5px;
 }
 
-#drxpbtnrap .gt_first_grand_summary_row {
+#aqdjhtycmi .gt_first_grand_summary_row {
   padding-top: 8px;
   padding-bottom: 8px;
   padding-left: 5px;
@@ -1384,7 +1449,7 @@ ga4_duck &lt;- as_duckplyr_df(ga4_arrow)</code></pre>
   border-top-color: #0076BA;
 }
 
-#drxpbtnrap .gt_last_grand_summary_row_top {
+#aqdjhtycmi .gt_last_grand_summary_row_top {
   padding-top: 8px;
   padding-bottom: 8px;
   padding-left: 5px;
@@ -1394,11 +1459,11 @@ ga4_duck &lt;- as_duckplyr_df(ga4_arrow)</code></pre>
   border-bottom-color: #0076BA;
 }
 
-#drxpbtnrap .gt_striped {
+#aqdjhtycmi .gt_striped {
   background-color: #F4F4F4;
 }
 
-#drxpbtnrap .gt_table_body {
+#aqdjhtycmi .gt_table_body {
   border-top-style: solid;
   border-top-width: 2px;
   border-top-color: #0076BA;
@@ -1407,7 +1472,7 @@ ga4_duck &lt;- as_duckplyr_df(ga4_arrow)</code></pre>
   border-bottom-color: #0076BA;
 }
 
-#drxpbtnrap .gt_footnotes {
+#aqdjhtycmi .gt_footnotes {
   color: #333333;
   background-color: #FFFFFF;
   border-bottom-style: none;
@@ -1421,7 +1486,7 @@ ga4_duck &lt;- as_duckplyr_df(ga4_arrow)</code></pre>
   border-right-color: #D3D3D3;
 }
 
-#drxpbtnrap .gt_footnote {
+#aqdjhtycmi .gt_footnote {
   margin: 0px;
   font-size: 90%;
   padding-top: 4px;
@@ -1430,7 +1495,7 @@ ga4_duck &lt;- as_duckplyr_df(ga4_arrow)</code></pre>
   padding-right: 5px;
 }
 
-#drxpbtnrap .gt_sourcenotes {
+#aqdjhtycmi .gt_sourcenotes {
   color: #333333;
   background-color: #FFFFFF;
   border-bottom-style: none;
@@ -1444,7 +1509,7 @@ ga4_duck &lt;- as_duckplyr_df(ga4_arrow)</code></pre>
   border-right-color: #D3D3D3;
 }
 
-#drxpbtnrap .gt_sourcenote {
+#aqdjhtycmi .gt_sourcenote {
   font-size: 90%;
   padding-top: 4px;
   padding-bottom: 4px;
@@ -1452,72 +1517,72 @@ ga4_duck &lt;- as_duckplyr_df(ga4_arrow)</code></pre>
   padding-right: 5px;
 }
 
-#drxpbtnrap .gt_left {
+#aqdjhtycmi .gt_left {
   text-align: left;
 }
 
-#drxpbtnrap .gt_center {
+#aqdjhtycmi .gt_center {
   text-align: center;
 }
 
-#drxpbtnrap .gt_right {
+#aqdjhtycmi .gt_right {
   text-align: right;
   font-variant-numeric: tabular-nums;
 }
 
-#drxpbtnrap .gt_font_normal {
+#aqdjhtycmi .gt_font_normal {
   font-weight: normal;
 }
 
-#drxpbtnrap .gt_font_bold {
+#aqdjhtycmi .gt_font_bold {
   font-weight: bold;
 }
 
-#drxpbtnrap .gt_font_italic {
+#aqdjhtycmi .gt_font_italic {
   font-style: italic;
 }
 
-#drxpbtnrap .gt_super {
+#aqdjhtycmi .gt_super {
   font-size: 65%;
 }
 
-#drxpbtnrap .gt_footnote_marks {
+#aqdjhtycmi .gt_footnote_marks {
   font-size: 75%;
   vertical-align: 0.4em;
   position: initial;
 }
 
-#drxpbtnrap .gt_asterisk {
+#aqdjhtycmi .gt_asterisk {
   font-size: 100%;
   vertical-align: 0;
 }
 
-#drxpbtnrap .gt_indent_1 {
+#aqdjhtycmi .gt_indent_1 {
   text-indent: 5px;
 }
 
-#drxpbtnrap .gt_indent_2 {
+#aqdjhtycmi .gt_indent_2 {
   text-indent: 10px;
 }
 
-#drxpbtnrap .gt_indent_3 {
+#aqdjhtycmi .gt_indent_3 {
   text-indent: 15px;
 }
 
-#drxpbtnrap .gt_indent_4 {
+#aqdjhtycmi .gt_indent_4 {
   text-indent: 20px;
 }
 
-#drxpbtnrap .gt_indent_5 {
+#aqdjhtycmi .gt_indent_5 {
   text-indent: 25px;
 }
 
-#drxpbtnrap .katex-display {
+#aqdjhtycmi .katex-display {
   display: inline-flex !important;
   margin-bottom: 0.75em !important;
 }
 
-#drxpbtnrap div.Reactable > div.rt-table > div.rt-thead > div.rt-tr.rt-tr-group-header > div.rt-th-group:after {
+#aqdjhtycmi div.Reactable > div.rt-table > div.rt-thead > div.rt-tr.rt-tr-group-header > div.rt-th-group:after {
   height: 0px !important;
 }
 </style>

@@ -30,7 +30,8 @@ execute:
 >
 > Duckplyr is a **drop-in replacement for dplyr that uses DuckDB as its computational engine**. It was created by the same team that built DuckDB and is designed to make DuckDB's speed available through the exact same interface you already use for dplyr — with zero syntax changes.
 
-```{r}}
+```{r}
+#| eval: false
 # The elevator pitch:
 # dplyr   = friendly syntax, moderate speed, RAM-limited
 # DuckDB  = fast engine, requires SQL or dbplyr setup, RAM-independent
@@ -44,7 +45,8 @@ execute:
 
 Before comparing them, let us be precise about what each tool actually is:
 
-```{r}}
+```{r}
+#| eval: false
 # All four answer the question: "how do I manipulate tabular data in R?"
 # They differ in WHERE computation happens and HOW you write the code
 
@@ -110,7 +112,8 @@ ga4_events |> # ← same code as dplyr
 
 ## duckplyr vs dplyr
 
-```{r}}
+```{r}
+#| eval: false
 # ── What changes: ─────────────────────────────────────────────────────────────
 #   library(dplyr)    →   library(duckplyr)
 #   That's it. Seriously.
@@ -133,7 +136,8 @@ ga4_events |> # ← same code as dplyr
 
 ## duckplyr vs DuckDB + dbplyr
 
-```{r}}
+```{r}
+#| eval: false
 # ── DuckDB + dbplyr requires: ─────────────────────────────────────────────────
 # 1. Create a connection object
 con <- dbConnect(duckdb::duckdb(), "data/ga4.duckdb")
@@ -175,7 +179,8 @@ ga4_events |>
 
 This is duckplyr's most important design feature. When it encounters something it cannot execute in DuckDB, it **silently falls back to dplyr** rather than throwing an error:
 
-```{r}}
+```{r}
+#| eval: false
 library(duckplyr)
 
 # duckplyr executes this in DuckDB (fast path)
@@ -197,7 +202,8 @@ duckplyr::fallback_sitrep()
 # Reports which operations fell back and why
 ```
 
-```{r}}
+```{r}
+#| eval: false
 # Control fallback behaviour explicitly
 options(duckplyr.fallback = "warn") # Warn when falling back
 options(duckplyr.fallback = "error") # Error instead of falling back
@@ -208,7 +214,9 @@ options(duckplyr.fallback = "ignore") # Silent fallback (default)
 
 ## Installing and Setting Up duckplyr
 
-```{r}}
+```{r}
+#| eval: false
+
 # ── Install ───────────────────────────────────────────────────────────────────
 install.packages("duckplyr")
 
@@ -235,7 +243,8 @@ duckplyr::duckplyr_telemetry_set(FALSE) # Disable usage reporting
 
 duckplyr has native methods for reading Parquet and CSV files directly:
 
-```{r}}
+```{r}
+#| eval: false
 library(duckplyr)
 library(arrow)
 
