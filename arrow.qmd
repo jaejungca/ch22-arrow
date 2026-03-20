@@ -21,7 +21,6 @@ execute:
   echo: fenced
   cache: true
   freeze: auto
-
 ---
 
 # Introduction to Arrow
@@ -603,8 +602,7 @@ There was not a huge gain in speed beween one parquet file and partitioning.
 
 ## Comparisons with more filtering
 
-::::: columns
-
+:::::: columns
 ::: {.column width="49%"}
 ### Partitioned Parquet Files + Arrow + dplyr
 
@@ -629,8 +627,7 @@ open_dataset(sources = seattle_parquet_part, format = "parquet") |>
 ```
 :::
 
-:::{.column width="2%"}
-
+::: {.column width="2%"}
 :::
 
 ::: {.column width="49%"}
@@ -650,13 +647,13 @@ seattle_csv |>
 ```
 
 **Output**:
+
 ```         
    user  system elapsed 
   13.33    5.89   14.75
 ```
 :::
-
-:::::
+::::::
 
 # Partitioning topic in Ch22
 

@@ -3,7 +3,8 @@
     "listing": "/index.html",
     "items": [
       "/arrow.html",
-      "/duckdb.html"
+      "/duckdb.html",
+      "/duckplyr.html"
     ]
   }
 ]

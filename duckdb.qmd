@@ -59,7 +59,7 @@ It was designed from the ground up for **OLAP** (Online Analytical Processing) w
 ```         
 install.packages("duckdb")
 library(duckdb)
-con <- dbConnect(duckdb::duckdb())   # That's it. Running in 1 second.
+con <- dbConnect(duckdb())   # That's it. Running in 1 second.
 ```
 
 ### 2. It Is Shockingly Fast
@@ -114,8 +114,8 @@ These three are complementary, not competing. Understanding the role of each is 
 |   | **Parquet** | **Arrow** | **DuckDB** |
 |------------------|------------------|------------------|------------------|
 | What is it? | File format (How data is stored on disk) | In-memory format + compute engine (a toolkit): how data is held in RAM and processed | A query engine (how you ask questions of data) |
-| Lives where? | Disk | RAM | RAM + disk  (processes from disk) |
-| Primary role | Store data efficiently | Process data in memory | Query data with SQL/dplyr" |
+| Lives where? | Disk | RAM | RAM + disk (processes from disk) |
+| Primary role | Store data efficiently | Process data in memory | Query data with SQL/dplyr |
 | Reads Parquet | IS Parquet | Yes — natively | Yes — directly |
 | SQL support | No | Limited (via DuckDB) | Full SQL |
 | dplyr support | Via arrow package | Yes — first class" | Yes — via dbplyr |
@@ -152,7 +152,7 @@ library(dplyr)
 
 -   DuckDB can scan Parquet files on disk using SQL — nothing enters R memory until you `collect()`.
 
--  **Simple**:
+-   **Simple**:
 
 ```{r}
 #| eval: false
@@ -168,7 +168,7 @@ dbGetQuery(con, "
 ")
 ```
 
--  **Advanced**:
+-   **Advanced**:
 
 ```{r}
 #| eval: false
@@ -255,7 +255,7 @@ This is powerful — DuckDB pushes the entire query down to the file, reading on
 
 > `dbplyr` translates dplyr verbs into DuckDB SQL automatically:
 
--  **Simple**:
+-   **Simple**:
 
 ```{r}
 #| eval: false
@@ -271,12 +271,14 @@ tbl(con, "sales") |>
   collect()   # only now does data enter R
 ```
 
--  **Advanced**:
+-   **Advanced**:
+
 ```{r}
 #| eval: false
 library(duckdb)
 library(dplyr)
 library(dbplyr)
+library(DBI)
 
 con <- dbConnect(duckdb())
 
@@ -334,13 +336,14 @@ dbDisconnect(con, shutdown = TRUE)
 
 ## Pattern 3. Query an Arrow Table with DuckDB (The Power Combination)
 
-> Arrow and DuckDB are designed to work together. Arrow handles file I/O and in-memory transformation; DuckDB handles querying. 
+> Arrow and DuckDB are designed to work together. Arrow handles file I/O and in-memory transformation; DuckDB handles querying.
 
-> They share data without copying using the Apache Arrow memory format.
+> They share data without copying, using the Apache Arrow memory format.
 
 > If you already have an Arrow table in memory, DuckDB can query it directly — zero copying involved:
 
--  **Simple**:
+-   **Simple**:
+
 ```{r}
 #| eval: false
 
@@ -356,7 +359,7 @@ tbl(con, "sales_arrow") |>
   collect()
 ```
 
-- **Advanced**:
+-   **Advanced**:
 
 ```{r}
 #| eval: false
@@ -377,10 +380,10 @@ ga4_prepared <- ga4_arrow |>
 
 # ── Step 3: Hand off to DuckDB for aggregation ────────────────────────────────
 # DuckDB is better at: GROUP BY, window functions, complex joins
-con <- dbConnect(duckdb::duckdb())
+con <- dbConnect(duckdb())
 
 # Register the Arrow object directly — ZERO data copying
-duckdb::duckdb_register_arrow(con, "ga4_prepared", ga4_prepared)
+duckdb_register_arrow(con, "ga4_prepared", ga4_prepared)
 
 # Now query it with full DuckDB SQL power
 result <- dbGetQuery(con, "
@@ -579,7 +582,7 @@ dbDisconnect(con, shutdown = TRUE)
 
 # How the Three Tools Form a Complete Stack
 
-```
+```         
 # The complete GA4 analytics stack:
 
 # ┌─────────────────────────────────────────────────────────────┐
@@ -613,7 +616,6 @@ dbDisconnect(con, shutdown = TRUE)
 # Arrow   = the loading dock (moves data efficiently)
 # DuckDB  = the analyst (asks and answers questions)
 # Parquet = the filing system (stores data efficiently)
-
 ```
 
 # The Big Picture Workflow

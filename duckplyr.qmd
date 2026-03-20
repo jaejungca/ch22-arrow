@@ -1,0 +1,816 @@
+---
+title: "Duckplyr: The Best of Both Worlds"
+subtitle: "drop-in replacement for dplyr"
+description: "This page describes benifits of using duckplyr and illustrate how to use it for GA4 data"
+categories: [Duckplyr, DuckDB, dplyr]
+order: 3
+author: "Jae Jung"
+date: today
+format: 
+    html:
+        theme: cosmo
+        toc: true
+        toc-depth: 3
+        toc-expand: 1
+        code-fold: show
+        toc-location: right-body
+        number-sections: true
+        #embed-resources: true
+execute:
+  warning: false
+  message: false
+  echo: fenced
+  cache: true
+  freeze: auto
+---
+
+# What is duckplyr?
+
+> duckplyr wraps DuckDB's analytical query processing engine in a dplyr-compatible API. In plain terms: it's **dplyr, but secretly powered by DuckDB under the hood.** Calling `library(duckplyr)` overwrites dplyr methods, enabling duckplyr for the entire session. Your existing dplyr code runs unchanged — you just get DuckDB's speed for free.
+>
+> Duckplyr is a **drop-in replacement for dplyr that uses DuckDB as its computational engine**. It was created by the same team that built DuckDB and is designed to make DuckDB's speed available through the exact same interface you already use for dplyr — with zero syntax changes.
+
+```{r}}
+# The elevator pitch:
+# dplyr   = friendly syntax, moderate speed, RAM-limited
+# DuckDB  = fast engine, requires SQL or dbplyr setup, RAM-independent
+# duckplyr = friendly syntax + fast engine + RAM-independent
+#            ↑ you get all three at once
+```
+
+> The key insight is that duckplyr is not a wrapper around dplyr or a translation layer like dbplyr. It **reimplements dplyr's verbs** using DuckDB's execution engine directly, so the familiar code you write is executed by DuckDB under the hood — automatically, invisibly.
+
+# The Landscape: Four Tools, One Job
+
+Before comparing them, let us be precise about what each tool actually is:
+
+```{r}}
+# All four answer the question: "how do I manipulate tabular data in R?"
+# They differ in WHERE computation happens and HOW you write the code
+
+# ── dplyr ─────────────────────────────────────────────────────────────────────
+# Computation: R's in-memory engine
+# Interface:   dplyr verbs
+# Data must:   fit in RAM
+# Speed:       moderate
+
+library(dplyr)
+ga4_events |>
+  filter(event_name == "purchase") |>
+  group_by(event_date) |>
+  summarise(revenue = sum(revenue))
+
+# ── DuckDB (via DBI) ──────────────────────────────────────────────────────────
+# Computation: DuckDB engine
+# Interface:   SQL strings
+# Data must:   NOT need to fit in RAM
+# Speed:       very fast
+
+library(DBI)
+library(duckdb)
+dbGetQuery(
+  con,
+  "
+  SELECT event_date, SUM(revenue) AS revenue
+  FROM ga4_events
+  WHERE event_name = 'purchase'
+  GROUP BY event_date
+"
+)
+
+# ── DuckDB (via dbplyr) ───────────────────────────────────────────────────────
+# Computation: DuckDB engine
+# Interface:   dplyr verbs (translated to SQL by dbplyr)
+# Data must:   NOT need to fit in RAM
+# Speed:       very fast
+# Catch:       not all dplyr verbs translate perfectly
+
+library(dbplyr)
+tbl(con, "ga4_events") |>
+  filter(event_name == "purchase") |>
+  group_by(event_date) |>
+  summarise(revenue = sum(revenue)) |>
+  collect()
+
+# ── duckplyr ─────────────────────────────────────────────────────────────────
+# Computation: DuckDB engine
+# Interface:   dplyr verbs (NATIVE — not translated)
+# Data must:   NOT need to fit in RAM
+# Speed:       very fast
+# Catch:       falls back to dplyr when needed (gracefully)
+
+library(duckplyr)
+ga4_events |> # ← same code as dplyr
+  filter(event_name == "purchase") |> # ← no con object needed
+  group_by(event_date) |> # ← no collect() needed
+  summarise(revenue = sum(revenue)) # ← result is a tibble automatically
+```
+
+# How duckplyr Is Different from Each Tool
+
+## duckplyr vs dplyr
+
+```{r}}
+# ── What changes: ─────────────────────────────────────────────────────────────
+#   library(dplyr)    →   library(duckplyr)
+#   That's it. Seriously.
+
+# ── What stays the same: ──────────────────────────────────────────────────────
+#   All verb names: filter, select, mutate, group_by, summarise,
+#                   arrange, join, slice, rename, distinct...
+#   All syntax: pipes, quasiquotation, across(), where()...
+#   All output: tibbles, same column names, same data types
+
+# ── What is different under the hood: ─────────────────────────────────────────
+#   dplyr    executes in R's vector engine
+#   duckplyr executes in DuckDB's columnar engine
+
+# ── Performance difference: ───────────────────────────────────────────────────
+# For small data (< 100k rows): negligible, sometimes dplyr is faster
+# For large data (> 1M rows):   duckplyr is 10-100x faster
+# For larger-than-RAM data:     dplyr fails, duckplyr works
+```
+
+## duckplyr vs DuckDB + dbplyr
+
+```{r}}
+# ── DuckDB + dbplyr requires: ─────────────────────────────────────────────────
+# 1. Create a connection object
+con <- dbConnect(duckdb::duckdb(), "data/ga4.duckdb")
+# 2. Create table references
+events <- tbl(con, "ga4_events")
+# 3. Write your query
+result <- events |>
+  filter(...) |>
+  summarise(...) |>
+  # 4. Explicitly collect results
+  collect()
+# 5. Remember to disconnect
+dbDisconnect(con, shutdown = TRUE)
+
+# ── duckplyr requires: ────────────────────────────────────────────────────────
+# 1. Load the library
+library(duckplyr)
+# 2. Write your query (same as dplyr)
+result <- ga4_events |> filter(...) |> summarise(...)
+# That's it — no connection, no collect(), no disconnect
+
+# ── The translation gap: ──────────────────────────────────────────────────────
+# dbplyr TRANSLATES dplyr to SQL — some verbs have no SQL equivalent
+# duckplyr REIMPLEMENTS dplyr using DuckDB — much more complete coverage
+
+# Example: dbplyr cannot translate some R functions
+tbl(con, "ga4_events") |>
+  mutate(path = stringr::str_remove(page_url, "\\?.*$")) |>
+  collect()
+#> Error: str_remove() is not supported in SQL translation
+
+# duckplyr handles it natively
+ga4_events |>
+  mutate(path = stringr::str_remove(page_url, "\\?.*$"))
+#> Works — DuckDB handles the regex directly
+```
+
+## The Fallback System — Why duckplyr Is Safe to Use
+
+This is duckplyr's most important design feature. When it encounters something it cannot execute in DuckDB, it **silently falls back to dplyr** rather than throwing an error:
+
+```{r}}
+library(duckplyr)
+
+# duckplyr executes this in DuckDB (fast path)
+result1 <- ga4_events |>
+  filter(event_name == "purchase") |>
+  group_by(event_date) |>
+  summarise(n = n())
+# → executed by DuckDB engine ✓
+
+# duckplyr cannot handle this custom R function in DuckDB
+my_custom_function <- function(x) paste0("[", x, "]")
+
+result2 <- ga4_events |>
+  mutate(labeled = my_custom_function(event_name))
+# → falls back to dplyr silently ✓ (no error, correct result)
+
+# You can monitor fallbacks to understand your code
+duckplyr::fallback_sitrep()
+# Reports which operations fell back and why
+```
+
+```{r}}
+# Control fallback behaviour explicitly
+options(duckplyr.fallback = "warn") # Warn when falling back
+options(duckplyr.fallback = "error") # Error instead of falling back
+options(duckplyr.fallback = "ignore") # Silent fallback (default)
+```
+
+# Workfolow Guide
+
+## Installing and Setting Up duckplyr
+
+```{r}}
+# ── Install ───────────────────────────────────────────────────────────────────
+install.packages("duckplyr")
+
+# ── Two ways to use it ────────────────────────────────────────────────────────
+
+# Option A: Load alongside dplyr (duckplyr methods take precedence)
+library(dplyr)
+library(duckplyr)
+# Now dplyr verbs on data frames use DuckDB automatically
+
+# Option B: Use as a complete dplyr replacement
+library(duckplyr)
+# Masks dplyr functions — everything goes through DuckDB
+# This is the recommended approach
+
+# ── Check version ─────────────────────────────────────────────────────────────
+packageVersion("duckplyr") # Should be >= 0.4.0
+
+# ── Opt in to telemetry or out ────────────────────────────────────────────────
+duckplyr::duckplyr_telemetry_set(FALSE) # Disable usage reporting
+```
+
+## Reading Data into duckplyr
+
+duckplyr has native methods for reading Parquet and CSV files directly:
+
+```{r}}
+library(duckplyr)
+library(arrow)
+
+# ── Method 1: From a tibble already in memory ─────────────────────────────────
+ga4_tibble <- readRDS("data/ga4_raw.rds")
+
+# Convert tibble to duckplyr frame (enables DuckDB execution)
+ga4_duck <- as_duckplyr_df(ga4_tibble)
+class(ga4_duck)
+#> [1] "duckplyr_df" "tbl_df" "tbl" "data.frame"
+
+# ── Method 2: Read Parquet directly — most powerful approach ──────────────────
+# No RAM used — DuckDB streams from disk as needed
+ga4_events <- duckplyr::df_from_parquet("data/ga4_flat.parquet")
+ga4_params <- duckplyr::df_from_parquet("data/ga4_event_params.parquet")
+ga4_sessions <- duckplyr::df_from_parquet("data/ga4_sessions.parquet")
+ga4_items <- duckplyr::df_from_parquet("data/ga4_items.parquet")
+
+# Each of these is a duckplyr_df — a lazy reference to the Parquet file
+# Nothing is loaded into RAM until you need actual values
+class(ga4_events)
+#> [1] "duckplyr_df" "tbl_df" "tbl" "data.frame"
+
+# ── Method 3: Read multiple Parquet files with wildcard ───────────────────────
+# Perfect for GA4's one-file-per-day pattern
+ga4_all_days <- duckplyr::df_from_parquet("data/ga4_day_*.parquet")
+
+# ── Method 4: From Arrow dataset ──────────────────────────────────────────────
+ga4_arrow <- arrow::open_dataset("data/ga4_flat.parquet")
+ga4_duck <- as_duckplyr_df(ga4_arrow)
+```
+
+# Analyzing GA4 Data with duckplyr
+
+Now the practical part. Every analysis below uses **identical syntax to dplyr** but executes in DuckDB.
+
+## Setup
+
+```{r}
+#| eval: false
+library(duckplyr)
+library(dplyr)
+library(tidyr)
+library(ggplot2)
+library(scales)
+library(gt)
+library(glue)
+library(lubridate)
+library(stringr)
+library(forcats)
+
+# Load all GA4 tables as duckplyr frames (lazy — nothing in RAM yet)
+ga4_events <- duckplyr::df_from_parquet("data/ga4_flat.parquet")
+ga4_params <- duckplyr::df_from_parquet("data/ga4_event_params.parquet")
+ga4_sessions <- duckplyr::df_from_parquet("data/ga4_sessions.parquet")
+ga4_items <- duckplyr::df_from_parquet("data/ga4_items.parquet")
+
+# Confirm they are duckplyr frames
+cat("ga4_events class:  ", class(ga4_events)[1], "\n")
+cat("ga4_params class:  ", class(ga4_params)[1], "\n")
+
+# Peek at available columns
+glimpse(ga4_events)
+glimpse(ga4_params)
+
+```
+
+## Analysis 1: Event Volume Overview
+
+```{r}
+#| eval: false
+
+# ── Identical to dplyr — but DuckDB executes it ───────────────────────────────
+event_summary <- ga4_events |>
+  group_by(event_name) |>
+  summarise(
+    total_events = n(),
+    unique_users = n_distinct(user_pseudo_id),
+    unique_days = n_distinct(event_date),
+    events_per_day = round(total_events / unique_days, 1),
+    .groups = "drop"
+  ) |>
+  arrange(desc(total_events))
+
+# Result is already a tibble — no collect() needed
+event_summary |>
+  gt() |>
+  tab_header(
+    title = "GA4 Event Summary",
+    subtitle = "Computed by DuckDB via duckplyr"
+  ) |>
+  fmt_number(columns = c(total_events, unique_users), decimals = 0) |>
+  fmt_number(columns = events_per_day, decimals = 1) |>
+  cols_label(
+    event_name = "Event",
+    total_events = "Total Events",
+    unique_users = "Unique Users",
+    unique_days = "Days",
+    events_per_day = "Events/Day"
+  ) |>
+  opt_stylize(style = 1)
+```
+
+## Analysis 2: Traffic Source Performance
+
+```{r}
+#| eval: false
+
+# ── Join sessions with purchase events ────────────────────────────────────────
+# duckplyr handles joins the same as dplyr
+purchasers <- ga4_events |>
+  filter(event_name == "purchase") |>
+  distinct(user_pseudo_id) |>
+  mutate(purchased = TRUE)
+
+traffic_performance <- ga4_sessions |>
+  mutate(
+    channel = case_when(
+      is.na(traffic_source_medium) |
+        traffic_source_medium == "(none)" ~ "Direct",
+      traffic_source_medium == "organic" ~ "Organic Search",
+      traffic_source_medium %in% c("cpc", "ppc") ~ "Paid Search",
+      str_detect(traffic_source_medium, "email") ~ "Email",
+      str_detect(traffic_source_medium, "social") ~ "Social",
+      TRUE ~ str_to_title(traffic_source_medium)
+    )
+  ) |>
+  group_by(channel) |>
+  summarise(
+    sessions = n(),
+    unique_users = n_distinct(user_pseudo_id),
+    .groups = "drop"
+  ) |>
+  left_join(
+    ga4_sessions |>
+      mutate(
+        channel = case_when(
+          is.na(traffic_source_medium) |
+            traffic_source_medium == "(none)" ~ "Direct",
+          traffic_source_medium == "organic" ~ "Organic Search",
+          traffic_source_medium %in% c("cpc", "ppc") ~ "Paid Search",
+          str_detect(traffic_source_medium, "email") ~ "Email",
+          str_detect(traffic_source_medium, "social") ~ "Social",
+          TRUE ~ str_to_title(traffic_source_medium)
+        )
+      ) |>
+      select(user_pseudo_id, channel) |>
+      left_join(purchasers, by = "user_pseudo_id") |>
+      group_by(channel) |>
+      summarise(
+        converters = sum(as.integer(!is.na(purchased)), na.rm = TRUE),
+        .groups = "drop"
+      ),
+    by = "channel"
+  ) |>
+  mutate(
+    cvr = converters / unique_users,
+    sessions_pct = sessions / sum(sessions)
+  ) |>
+  arrange(desc(sessions))
+
+traffic_performance |>
+  gt() |>
+  tab_header(title = "Traffic Channel Performance") |>
+  fmt_number(columns = c(sessions, unique_users, converters), decimals = 0) |>
+  fmt_percent(columns = c(cvr, sessions_pct), decimals = 1) |>
+  cols_label(
+    channel = "Channel",
+    sessions = "Sessions",
+    unique_users = "Users",
+    converters = "Buyers",
+    cvr = "CVR",
+    sessions_pct = "% of Sessions"
+  ) |>
+  data_color(
+    columns = cvr,
+    method = "numeric",
+    palette = c("#ffffff", "#43a04740")
+  ) |>
+  opt_stylize(style = 1)
+```
+
+## Analysis 3: Page Performance from `event_params`
+
+```{r}
+#| eval: false
+
+# ── Work directly with the long-format params table ───────────────────────────
+# duckplyr reads the Parquet file and filters on disk — no RAM spike
+
+top_pages <- ga4_params |>
+  filter(
+    event_name == "page_view",
+    key == "page_location",
+    !is.na(param_value)
+  ) |>
+  mutate(
+    # Parse URL path — duckplyr passes regex to DuckDB
+    page_path = str_remove(param_value, "^https?://[^/]+"),
+    page_path = str_remove(page_path, "\\?.*$"),
+    page_path = str_remove(page_path, "#.*$"),
+    page_path = if_else(page_path == "" | is.na(page_path), "/", page_path),
+    # Categorise by section
+    section = case_when(
+      page_path == "/" ~ "Home",
+      str_detect(page_path, "^/google\\+re|/store") ~ "Store",
+      str_detect(page_path, "^/product") ~ "Products",
+      str_detect(page_path, "^/basket|/cart") ~ "Cart",
+      str_detect(page_path, "^/checkout") ~ "Checkout",
+      TRUE ~ "Other"
+    )
+  ) |>
+  group_by(section, page_path) |>
+  summarise(
+    page_views = n(),
+    unique_users = n_distinct(user_pseudo_id),
+    .groups = "drop"
+  ) |>
+  arrange(desc(page_views)) |>
+  slice_head(n = 20)
+
+# Visualise
+top_pages |>
+  slice_head(n = 15) |>
+  mutate(
+    page_path = str_trunc(page_path, 40),
+    page_path = fct_reorder(page_path, page_views)
+  ) |>
+  ggplot(aes(x = page_path, y = page_views, fill = section)) +
+  geom_col(width = 0.7) +
+  geom_text(
+    aes(label = comma(page_views)),
+    hjust = -0.15,
+    size = 3.5
+  ) +
+  coord_flip() +
+  scale_y_continuous(
+    labels = comma,
+    expand = expansion(mult = c(0, 0.18))
+  ) +
+  scale_fill_brewer(palette = "Set2", name = "Section") +
+  labs(
+    title = "Top 15 Pages by Page Views",
+    subtitle = "Computed via duckplyr on Parquet — no full load into RAM",
+    x = NULL,
+    y = "Page Views"
+  ) +
+  theme_minimal(base_size = 13) +
+  theme(legend.position = "bottom")
+```
+
+## Analysis 4: Purchase Funnel
+
+```{r}
+#| eval: false
+
+# ── Funnel stages ─────────────────────────────────────────────────────────────
+funnel_stages <- c(
+  "view_item",
+  "add_to_cart",
+  "begin_checkout",
+  "add_payment_info",
+  "purchase"
+)
+
+funnel_labels <- c(
+  "view_item" = "View Item",
+  "add_to_cart" = "Add to Cart",
+  "begin_checkout" = "Begin Checkout",
+  "add_payment_info" = "Add Payment",
+  "purchase" = "Purchase"
+)
+
+# ── Count users at each stage using duckplyr ──────────────────────────────────
+funnel_data <- ga4_events |>
+  filter(event_name %in% funnel_stages) |>
+  group_by(event_name) |>
+  summarise(
+    users = n_distinct(user_pseudo_id),
+    .groups = "drop"
+  ) |>
+  mutate(
+    stage_label = recode(event_name, !!!funnel_labels),
+    stage_order = match(event_name, funnel_stages)
+  ) |>
+  arrange(stage_order) |>
+  mutate(
+    pct_of_top = users / max(users),
+    pct_prev = users / lag(users),
+    drop_off = 1 - pct_prev
+  )
+
+# ── Visualise ─────────────────────────────────────────────────────────────────
+funnel_data |>
+  mutate(stage_label = fct_inorder(stage_label)) |>
+  ggplot(aes(x = stage_label, y = users, fill = pct_of_top)) +
+  geom_col(width = 0.7, show.legend = FALSE) +
+  geom_text(
+    aes(label = glue("{comma(users)}\n{percent(pct_of_top, accuracy=0.1)}")),
+    vjust = -0.4,
+    size = 3.8,
+    lineheight = 0.85
+  ) +
+  geom_text(
+    data = funnel_data |> filter(!is.na(drop_off)),
+    aes(
+      x = stage_order - 0.5,
+      y = max(funnel_data$users) * 0.6,
+      label = glue("▼{percent(drop_off, accuracy=1)}")
+    ),
+    colour = "#e53935",
+    size = 3.5
+  ) +
+  scale_fill_gradient(low = "#bbdefb", high = "#1565c0") +
+  scale_y_continuous(
+    labels = comma,
+    expand = expansion(mult = c(0, 0.2))
+  ) +
+  labs(
+    title = "Purchase Funnel",
+    subtitle = "duckplyr: DuckDB engine, dplyr syntax",
+    x = NULL,
+    y = "Unique Users"
+  ) +
+  theme_minimal(base_size = 13) +
+  theme(axis.text.x = element_text(size = 11))
+```
+
+## Analysis 5: E-commerce Revenue Analysis
+
+```{r}
+#| eval: false
+
+# ── Daily revenue with 7-day rolling average ──────────────────────────────────
+# duckplyr supports window functions natively
+daily_revenue <- ga4_events |>
+  filter(event_name == "purchase") |>
+  group_by(event_date) |>
+  summarise(
+    transactions = n(),
+    revenue = sum(ecommerce_purchase_revenue_in_usd, na.rm = TRUE),
+    aov = mean(ecommerce_purchase_revenue_in_usd, na.rm = TRUE),
+    unique_buyers = n_distinct(user_pseudo_id),
+    .groups = "drop"
+  ) |>
+  arrange(event_date) |>
+  mutate(
+    event_date = as.Date(event_date),
+    # 7-day rolling average — duckplyr handles this via DuckDB window functions
+    revenue_7day = slider::slide_dbl(
+      revenue,
+      mean,
+      .before = 6,
+      .complete = FALSE
+    )
+  )
+
+# ── Revenue chart ─────────────────────────────────────────────────────────────
+daily_revenue |>
+  ggplot(aes(x = event_date)) +
+  geom_col(aes(y = revenue), fill = "#90caf9", width = 0.8, alpha = 0.7) +
+  geom_line(aes(y = revenue_7day), colour = "#1565c0", linewidth = 1.2) +
+  geom_point(aes(y = revenue_7day), colour = "#1565c0", size = 2) +
+  scale_x_date(date_labels = "%b %d", date_breaks = "1 week") +
+  scale_y_continuous(labels = dollar) +
+  labs(
+    title = "Daily Revenue with 7-Day Rolling Average",
+    subtitle = "Bars = daily revenue · Line = 7-day rolling average",
+    x = NULL,
+    y = "Revenue (USD)"
+  ) +
+  theme_minimal(base_size = 13)
+```
+
+## Analysis 6: Product Performance (from `ga4_items`)
+
+```{r}
+#| eval: false
+
+# ── Top products and categories ────────────────────────────────────────────────
+product_performance <- ga4_items |>
+  filter(!is.na(item_name)) |>
+  group_by(item_category, item_name) |>
+  summarise(
+    units_sold = sum(quantity, na.rm = TRUE),
+    revenue = sum(item_revenue_in_usd, na.rm = TRUE),
+    transactions = n_distinct(event_timestamp),
+    avg_price = mean(price_in_usd, na.rm = TRUE),
+    .groups = "drop"
+  ) |>
+  arrange(desc(revenue))
+
+# Category rollup
+category_summary <- product_performance |>
+  group_by(item_category) |>
+  summarise(
+    products = n_distinct(item_name),
+    revenue = sum(revenue),
+    units = sum(units_sold),
+    .groups = "drop"
+  ) |>
+  mutate(
+    revenue_pct = revenue / sum(revenue),
+    item_category = fct_reorder(item_category, revenue)
+  ) |>
+  arrange(desc(revenue))
+
+category_summary |>
+  gt() |>
+  tab_header(title = "Revenue by Product Category") |>
+  fmt_number(columns = c(products, units), decimals = 0) |>
+  fmt_currency(columns = revenue, currency = "USD") |>
+  fmt_percent(columns = revenue_pct, decimals = 1) |>
+  cols_label(
+    item_category = "Category",
+    products = "Products",
+    revenue = "Revenue",
+    units = "Units Sold",
+    revenue_pct = "Revenue Share"
+  ) |>
+  data_color(
+    columns = revenue,
+    method = "numeric",
+    palette = c("#e3f2fd", "#1565c0")
+  ) |>
+  opt_stylize(style = 1)
+```
+
+## Analysis 7: User Segmentation
+
+```{r}
+#| eval: false
+
+# ── New vs returning user behaviour ───────────────────────────────────────────
+user_segments <- ga4_params |>
+  filter(key == "ga_session_number") |>
+  mutate(
+    session_number = as.integer(param_value),
+    user_type = if_else(session_number == 1, "New User", "Returning User")
+  ) |>
+  group_by(user_pseudo_id, user_type) |>
+  summarise(
+    sessions = n_distinct(param_value),
+    .groups = "drop"
+  ) |>
+  # Join to purchase data
+  left_join(
+    ga4_events |>
+      filter(event_name == "purchase") |>
+      group_by(user_pseudo_id) |>
+      summarise(
+        purchases = n(),
+        revenue = sum(ecommerce_purchase_revenue_in_usd, na.rm = TRUE),
+        .groups = "drop"
+      ),
+    by = "user_pseudo_id"
+  ) |>
+  mutate(
+    purchased = !is.na(purchases),
+    purchases = replace_na(purchases, 0L),
+    revenue = replace_na(revenue, 0)
+  ) |>
+  group_by(user_type) |>
+  summarise(
+    total_users = n(),
+    buyers = sum(purchased),
+    cvr = buyers / total_users,
+    total_revenue = sum(revenue),
+    avg_revenue = mean(revenue),
+    total_sessions = sum(sessions),
+    avg_sessions = mean(sessions),
+    .groups = "drop"
+  )
+
+user_segments |>
+  gt() |>
+  tab_header(
+    title = "New vs Returning User Behaviour",
+    subtitle = "Session and revenue analysis via duckplyr"
+  ) |>
+  fmt_number(columns = c(total_users, buyers, total_sessions), decimals = 0) |>
+  fmt_percent(columns = cvr, decimals = 1) |>
+  fmt_currency(columns = c(total_revenue, avg_revenue), currency = "USD") |>
+  fmt_number(columns = avg_sessions, decimals = 1) |>
+  cols_label(
+    user_type = "User Type",
+    total_users = "Users",
+    buyers = "Buyers",
+    cvr = "CVR",
+    total_revenue = "Total Revenue",
+    avg_revenue = "Avg. Revenue/User",
+    total_sessions = "Sessions",
+    avg_sessions = "Avg. Sessions"
+  ) |>
+  opt_stylize(style = 1)
+```
+
+# Performance Comparison
+
+```{r}
+#| eval: false
+#install.packages("bench")
+#install.packages("duckplyr")
+#install.packages("dplyr")
+library(bench)
+library(duckplyr)
+library(dplyr)
+
+# Load data both ways for fair comparison
+ga4_tibble <- readRDS("data/ga4_raw.rds")
+ga4_duck <- duckplyr::df_from_parquet("data/ga4_flat.parquet")
+
+# ── Benchmark the same query both ways ───────────────────────────────────────
+bench::mark(
+  dplyr = {
+    ga4_tibble |>
+      filter(event_name == "purchase") |>
+      group_by(event_date) |>
+      summarise(
+        revenue = sum(ecommerce_purchase_revenue_in_usd, na.rm = TRUE),
+        n = n(),
+        .groups = "drop"
+      )
+  },
+  duckplyr = {
+    ga4_duck |>
+      filter(event_name == "purchase") |>
+      group_by(event_date) |>
+      summarise(
+        revenue = sum(ecommerce_purchase_revenue_in_usd, na.rm = TRUE),
+        n = n(),
+        .groups = "drop"
+      )
+  },
+  iterations = 5,
+  check = FALSE
+) |>
+  select(expression, median, mem_alloc) |>
+  mutate(
+    median = as.character(round(as.numeric(median), 3)),
+    mem_alloc = as.character(mem_alloc)
+  ) |>
+  gt::gt() |>
+  gt::tab_header(title = "dplyr vs duckplyr Performance") |>
+  gt::opt_stylize(style = 1)
+```
+
+```{r}
+#| echo: false
+tibble::tribble(
+  ~Situation                            , ~Best_Tool           , ~Why                  ,
+  "Data fits in RAM, quick exploration" , "dplyr"              , "Familiar, no setup"  ,
+  "Data fits in RAM, need more speed"   , "duckplyr"           , "Same code, faster"   ,
+  "Data too large for RAM"              , "duckplyr"           , "Streams from disk"   ,
+  "Reading Parquet files"               , "duckplyr"           , "df_from_parquet()"   ,
+  "Need SQL window functions"           , "duckplyr or DuckDB" , "Both handle it"      ,
+  "Complex multi-table SQL joins"       , "DuckDB (SQL)"       , "SQL clearer here"    ,
+  "Sharing code with Python users"      , "DuckDB + Arrow"     , "Parquet interop"     ,
+  "Teaching beginners"                  , "duckplyr"           , "No new syntax"       ,
+  "Production pipeline"                 , "duckplyr"           , "Speed + simplicity"  ,
+  "Custom R functions in mutate()"      , "dplyr fallback"     , "duckplyr falls back"
+) |>
+  gt::gt() |>
+  gt::tab_header(
+    title = "Tool Selection Guide",
+    subtitle = "dplyr vs duckplyr vs DuckDB"
+  ) |>
+  gt::cols_label(
+    Situation = "Situation",
+    Best_Tool = "Best Tool",
+    Why = "Reason"
+  ) |>
+  gt::tab_style(
+    style = gt::cell_fill(color = "#e8f5e9"),
+    locations = gt::cells_body(rows = Best_Tool == "duckplyr")
+  ) |>
+  gt::opt_stylize(style = 1)
+```
