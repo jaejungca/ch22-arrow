@@ -92,23 +92,23 @@ The data acquisition notebook on this site uses rectangling briefly to prepare r
 
 ### Data Access
 
-`bigrquery` · `DBI`
+[`bigrquery`](https://bigrquery.r-dbi.org) · [`DBI`](https://dbi.r-dbi.org)
 
 ### Data Storage & Querying
 
-`arrow` · `duckdb` · `duckplyr` · `dbplyr`
+[`arrow`](https://arrow.apache.org/docs/r/) · [`duckdb`](https://duckdb.org/docs/api/r) · [`duckplyr`](https://duckplyr.tidyverse.org) · [`dbplyr`](https://dbplyr.tidyverse.org)
 
 ### Data Wrangling
 
-`dplyr` · `purrr` · `stringr` · `lubridate`
+[`dplyr`](https://dplyr.tidyverse.org) · [`purrr`](https://purrr.tidyverse.org) · [`stringr`](https://stringr.tidyverse.org) · [`lubridate`](https://lubridate.tidyverse.org)
 
 ### Visualisation & Reporting
 
-`ggplot2` · `scales` · `gt` · `glue`
+[`ggplot2`](https://ggplot2.tidyverse.org) · [`scales`](https://scales.r-lib.org) · [`gt`](https://gt.rstudio.com) · [`glue`](https://glue.tidyverse.org)
 
 ### Workflow & Utilities
 
-`R` · `Quarto` · `fs` · `cli`
+[`fs`](https://fs.r-lib.org) · [`cli`](https://cli.r-lib.org)
 
 ------------------------------------------------------------------------
 
@@ -117,7 +117,7 @@ The data acquisition notebook on this site uses rectangling briefly to prepare r
 
 **If you are new to this material**, start with Notebook 1 and work through them in order. Each notebook builds directly on the previous one.
 
-**If you are looking for a specific topic**, look at the category tags shown on each notebook card below. Each card displays the tools and concepts covered in that notebook.
+**To search by title or keyword**, use the search bar above the notebook cards.
 
 **If you want to follow along in R**, you will need:
 
