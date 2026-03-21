@@ -2,8 +2,13 @@
 title: "Duckplyr: The Best of Both Worlds"
 subtitle: "drop-in replacement for dplyr"
 description: "This page describes the benifits of using duckplyr and illustrate how to use it for GA4 data"
-categories: [Duckplyr, DuckDB, dplyr]
-order: 3
+categories:
+  - duckplyr
+  - DuckDB
+  - dplyr
+  - Big Data
+  - GA4
+order: 4
 author: "Jae Jung"
 date: today
 format: 

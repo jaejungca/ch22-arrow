@@ -1,0 +1,1367 @@
+---
+title: "Data Acquisition Guide for GA4 Public Data"
+subtitle: "90 days of GA4 data in multiple formats"
+description: "This guide walks through the complete process of downloading
+  three months of GA4 public event data from BigQuery and saving it in
+  multiple formats — raw RDS, flat Parquet, and Hive-partitioned Parquet —
+  so that all subsequent analyses run entirely from local files without
+  requiring a BigQuery connection."
+categories:
+  - Data Acquisition
+  - GA4
+  - Parquet
+  - Hive Partitioning
+  - Rectangling
+  - bigrquery
+  - Arrow
+  - DBI
+order: 2
+author: "Jae Jung"
+date: today
+format: 
+    html:
+        toc: true
+        toc-depth: 3
+        toc-expand: 1
+        code-fold: show
+        toc-location: right-body
+        number-sections: true
+        #embed-resources: true
+execute:
+  warning: false
+  message: false
+  echo: fenced
+  cache: true
+  freeze: auto
+---
+
+## Overview {.unnumbered}
+
+This notebook walks through the **one-time process** of downloading three
+months of GA4 public event data from Google BigQuery and saving it in
+multiple local formats. Once this process completes, every other notebook
+in this course loads data from your local machine — no BigQuery connection,
+no query costs, no waiting.
+
+::: {.callout-important}
+## Run This Notebook Only Once
+
+The code in this notebook downloads data from BigQuery. Once it completes
+successfully, **do not run it again**. All subsequent notebooks load from
+your local files using the patterns shown at the end of this guide.
+
+Total download time: approximately **20–40 minutes** depending on your
+internet connection.
+:::
+
+### What You Will Have When This Is Done
+
+After running this notebook you will have the following folder structure
+in your project directory:
+
+```
+data/
+├── ga4_raw/                         ← Raw nested .rds (one per day, 90 files)
+│   ├── ga4_20201101.rds
+│   ├── ga4_20201102.rds
+│   └── ...
+├── ga4_parquet/                     ← Flat Parquet (one per day, 90 files)
+│   ├── ga4_20201101.parquet
+│   ├── ga4_20201102.parquet
+│   └── ...
+├── ga4_parquet_params/              ← Event params Parquet (one per day)
+│   ├── params_20201101.parquet
+│   └── ...
+├── ga4_parquet_items/               ← Items Parquet (purchase days only)
+│   ├── items_20201101.parquet
+│   └── ...
+├── ga4_partitioned/                 ← Hive-partitioned events dataset
+│   ├── year=2020/
+│   │   ├── month=11/
+│   │   └── month=12/
+│   └── year=2021/
+│       └── month=1/
+├── ga4_params_partitioned/          ← Hive-partitioned params dataset
+└── ga4_items_partitioned/           ← Hive-partitioned items dataset
+```
+
+### Why Three Formats?
+
+| Format | Where Used in This Course |
+|--------|--------------------------|
+| `ga4_raw/*.rds` | Teaching rectangling — preserves nested list-columns |
+| `ga4_parquet/*.parquet` | Single-day analyses, learning `read_parquet()` |
+| `ga4_partitioned/` | Multi-day analyses, learning `open_dataset()` |
+| `ga4_params_partitioned/` | Event parameter analysis with Arrow and DuckDB |
+| `ga4_items_partitioned/` | E-commerce and product analysis |
+
+---
+
+## Prerequisites
+
+### Required Packages
+
+```{r}
+#| label: install-packages
+#| eval: false
+#| cache: false
+
+# Run this chunk once if you have not installed these packages yet.
+# After installing, you do not need to run it again.
+install.packages(c(
+  "bigrquery", # BigQuery connection and querying
+  "DBI", # Standard database interface
+  "dplyr", # Data manipulation
+  "tidyr", # Rectangling nested columns
+  "purrr", # Iteration over lists and vectors
+  "arrow", # Parquet read/write and Arrow datasets
+  "lubridate", # Date and time handling
+  "glue", # String interpolation
+  "fs", # File system operations
+  "cli", # Formatted console messages
+  "stringr", # String manipulation
+  "scales" # Number formatting
+))
+```
+
+```{r}
+#| label: load-packages
+#| cache: false
+
+library(bigrquery)
+library(DBI)
+library(dplyr)
+library(tidyr)
+library(purrr)
+library(arrow)
+library(lubridate)
+library(glue)
+library(fs)
+library(cli)
+library(stringr)
+library(scales)
+```
+
+### Google Cloud Platform Account Setup
+
+::: {.callout-important}
+## Action Required: GCP Account Setup
+
+You need a Google Cloud Platform account before running any code in this
+notebook. Follow these steps if you do not have one:
+
+**Step 1 — Create an account**
+Go to [console.cloud.google.com](https://console.cloud.google.com) and
+sign in with your Google account. A Gmail account works.
+
+**Step 2 — Create a project**
+
+- Click the project selector dropdown at the top of the page
+- Click **New Project**
+- Give it any name (e.g., `"marketing-analytics"`)
+- Click **Create** and wait for the project to be created
+
+**Step 3 — Find your Project ID**
+
+- Your Project ID appears under the project name in the dashboard
+- It looks like: `"marketing-analytics-391408"`
+- It is **not** the same as the project name — it includes numbers
+- Copy it — you will paste it into the code below
+
+**Step 4 — Enable the BigQuery API**
+
+- Go to: [console.cloud.google.com/apis/library/bigquery.googleapis.com](https://console.cloud.google.com/apis/library/bigquery.googleapis.com)
+- Confirm your new project is selected in the top navigation bar
+- Click **Enable**
+- Wait approximately 60 seconds
+
+**Step 5 — Set up billing**
+
+- Go to: [console.cloud.google.com/billing](https://console.cloud.google.com/billing)
+- Link a credit card to your account
+- **Cost**: Querying the public GA4 dataset costs approximately
+  \$0.00–\$0.05 for the entire 90-day download. Google also provides
+  \$300 in free credits to all new accounts.
+:::
+
+### Set Your Project ID
+
+::: {.callout-warning}
+## You Must Complete This Step Before Running Anything Else
+
+Replace `"your-actual-project-id"` in the code chunk below with your
+real GCP Project ID. The notebook will stop immediately with a clear
+error message if you forget.
+:::
+
+```{r}
+#| label: set-project-id
+#| eval: false
+
+# ── Replace this string with your actual GCP Project ID ──────────────────────
+# Example: "marketing-analytics-391408"
+BILLING_PROJECT <- "your-actual-project-id" # ← CHANGE THIS LINE
+
+# ── Validate ──────────────────────────────────────────────────────────────────
+if (BILLING_PROJECT == "your-actual-project-id") {
+  stop(
+    "\n",
+    "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n",
+    "  ACTION REQUIRED\n",
+    "\n",
+    "  You must replace 'your-actual-project-id' with your\n",
+    "  real GCP Project ID before running this notebook.\n",
+    "\n",
+    "  Find it at: console.cloud.google.com\n",
+    "  It looks like: 'my-project-name-391408'\n",
+    "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n"
+  )
+}
+
+if (nchar(trimws(BILLING_PROJECT)) == 0) {
+  stop("BILLING_PROJECT cannot be an empty string.")
+}
+
+cli::cli_alert_success("Billing project set to: {.val {BILLING_PROJECT}}")
+```
+
+---
+
+## Connect to BigQuery
+
+### Authenticate with Google
+
+```{r}
+#| label: authenticate
+#| eval: false
+#| cache: false
+
+# This opens a browser window asking you to sign in with your Google account.
+# After signing in once, your credentials are cached — you will not need
+# to do this every time you open R.
+#
+# use_oob = TRUE works reliably in Positron and RStudio when the
+# automatic browser redirect does not complete correctly.
+
+bq_auth(use_oob = TRUE)
+
+# Confirm which account you are authenticated as
+cli::cli_alert_info("Authenticated as: {.val {bq_user()}}")
+```
+
+::: {.callout-note}
+## What Does `bq_auth()` Do?
+
+`bq_auth()` handles the OAuth2 authentication handshake between R and
+Google. It opens your browser, asks you to grant R permission to access
+your Google Cloud account, and then caches the resulting token locally.
+On subsequent R sessions, the cached token is used automatically — you
+will only see the browser prompt on your first run.
+:::
+
+### Establish the Connection
+
+```{r}
+#| label: connect
+#| eval: false
+
+# ── Connect to the public GA4 dataset ─────────────────────────────────────────
+# project  = where the PUBLIC data lives (always "bigquery-public-data")
+# dataset  = the specific GA4 dataset name (must be exact — case sensitive)
+# billing  = YOUR project (this is what gets charged for query processing)
+
+con <- dbConnect(
+  bigrquery::bigquery(),
+  project = "bigquery-public-data",
+  dataset = "ga4_obfuscated_sample_ecommerce",
+  billing = BILLING_PROJECT
+)
+
+# ── Verify the connection ─────────────────────────────────────────────────────
+available_tables <- dbListTables(con)
+
+cli::cli_alert_success(
+  "Connected. {.val {length(available_tables)}} tables available."
+)
+cli::cli_alert_info(
+  "Date range: {.val {head(available_tables, 1)}} to
+  {.val {tail(available_tables, 1)}}"
+)
+```
+
+::: {.callout-note}
+## About the Public Dataset
+
+The dataset `ga4_obfuscated_sample_ecommerce` is provided by Google and
+contains real event data from the
+[Google Merchandise Store](https://shop.merch.google) — an actual
+e-commerce site selling Google-branded products. User identifiers have
+been obfuscated for privacy. The data covers **November 2020 through
+January 2022**, stored as one BigQuery table per day in the format
+`events_YYYYMMDD`.
+:::
+
+---
+
+## Understand the Data
+
+Before downloading 90 days of data, take a moment to understand the
+structure and volume of what you are working with.
+
+### Schema Inspection
+
+```{r}
+#| label: inspect-schema
+#| eval: false
+
+# ── Inspect the schema of a single day ────────────────────────────────────────
+# tbl() creates a lazy reference — nothing is downloaded yet
+sample_tbl <- tbl(con, "events_20201101")
+
+# glimpse() fetches a small sample to show column names and types
+glimpse(sample_tbl)
+```
+
+::: {.callout-note}
+## What You Will See in the Schema
+
+The schema shows several column types that are new if you are used to
+flat CSV files:
+
+| Column | Type | Notes |
+|--------|------|-------|
+| `event_date` | `STRING` | Format `"YYYYMMDD"` — not a date type |
+| `event_timestamp` | `INT64` | Microseconds since Unix epoch |
+| `event_params` | `RECORD REPEATED` | Array of key-value structs |
+| `device` | `RECORD` | Nested struct with device attributes |
+| `geo` | `RECORD` | Nested struct with location attributes |
+| `items` | `RECORD REPEATED` | Array of purchased item structs |
+
+These nested columns are why we need the rectangling techniques taught
+in the previous notebook.
+:::
+
+### Check Row Counts Per Day
+
+```{r}
+#| label: check-row-counts
+#| eval: false
+
+# ── Sample a few days to understand data volume ────────────────────────────────
+sample_dates <- c(
+  "events_20201101", # Start of dataset
+  "events_20201201", # One month in
+  "events_20210101" # Two months in
+)
+
+day_sizes <- sample_dates |>
+  map_df(\(tbl_name) {
+    n <- tbl(con, tbl_name) |>
+      summarise(n = n()) |>
+      collect() |>
+      pull(n)
+    tibble(
+      table = tbl_name,
+      date = ymd(str_extract(tbl_name, "\\d{8}")),
+      row_count = n
+    )
+  })
+
+day_sizes |>
+  mutate(row_count = scales::comma(row_count)) |>
+  knitr::kable(
+    col.names = c("Table", "Date", "Row Count"),
+    caption = "Sample row counts by day"
+  )
+
+cli::cli_alert_info(
+  "Estimated total rows for 90 days: ~{scales::comma(mean(day_sizes$row_count) * 90)}"
+)
+```
+
+### Plan the Download
+
+```{r}
+#| label: plan-download
+#| eval: false
+
+# ── Define the three months to download ───────────────────────────────────────
+# November 2020, December 2020, January 2021
+download_dates <- seq.Date(
+  from = as.Date("2020-11-01"),
+  to = as.Date("2021-01-31"),
+  by = "day"
+)
+
+# Format as BigQuery table name suffixes (YYYYMMDD)
+date_strings <- format(download_dates, "%Y%m%d")
+table_names <- paste0("events_", date_strings)
+
+# ── Cross-check against tables that actually exist in BigQuery ────────────────
+target_tables <- table_names[table_names %in% available_tables]
+missing_tables <- table_names[!table_names %in% available_tables]
+
+cli::cli_h2("Download Plan")
+cli::cli_alert_info("Dates requested:   {length(date_strings)}")
+cli::cli_alert_success("Tables confirmed:  {length(target_tables)}")
+
+if (length(missing_tables) > 0) {
+  cli::cli_alert_warning(
+    "Tables not found:  {length(missing_tables)} (will be skipped)"
+  )
+  cat("Missing:", paste(missing_tables, collapse = ", "), "\n")
+}
+
+cat("\n")
+cli::cli_bullets(c(
+  "*" = "Tables to download: {length(target_tables)}",
+  "*" = "Estimated rows:     ~{scales::comma(length(target_tables) * 35000)}",
+  "*" = "Estimated time:     20-40 minutes",
+  "*" = "Estimated storage:  300-500 MB total (all formats)"
+))
+```
+
+---
+
+## Create the Folder Structure
+
+```{r}
+#| label: create-folders
+
+# ── Create all required directories ───────────────────────────────────────────
+# fs::dir_create() is safer than base R dir.create() — it does not error
+# if the folder already exists, and creates nested folders automatically
+
+dirs_to_create <- c(
+  "data",
+  "data/ga4_raw",
+  "data/ga4_parquet",
+  "data/ga4_parquet_params",
+  "data/ga4_parquet_items",
+  "data/ga4_partitioned",
+  "data/ga4_params_partitioned",
+  "data/ga4_items_partitioned"
+)
+
+walk(dirs_to_create, \(d) {
+  fs::dir_create(d, recurse = TRUE)
+})
+
+cli::cli_alert_success("All data directories created.")
+
+# ── Confirm they exist ────────────────────────────────────────────────────────
+dirs_to_create |>
+  keep(fs::dir_exists) |>
+  walk(\(d) cli::cli_alert_info("  {d}"))
+```
+
+---
+
+## Define Rectangling Helper Functions
+
+GA4 data arrives from BigQuery with nested columns — arrays of structs and
+structs of structs. The functions below flatten each type of nested column
+into a form that can be saved as Parquet. These are applied to each day's
+data immediately after download.
+
+::: {.callout-note}
+## Why Define These Before Downloading?
+
+Parquet files cannot store R list-columns (nested data). We must flatten
+the nested columns before saving to Parquet. Defining the helper
+functions here keeps the download loop clean and readable.
+If you need a refresher on why GA4 data is nested and how rectangling
+works, refer to the previous notebook in this series.
+:::
+
+### Struct Flattening Helper
+
+```{r}
+#| label: helper-flatten-structs
+
+#' Flatten all struct (RECORD) columns in a GA4 day's data
+#'
+#' Applies unnest_wider() to device, geo, traffic_source, and ecommerce.
+#' Also adds derived date/time columns useful for partitioning and analysis.
+#'
+#' @param data A tibble downloaded from one GA4 BigQuery table
+#' @return A flat tibble with no list-columns from struct fields
+
+flatten_structs <- function(data) {
+  # Identify which struct columns are present
+  # (not all days have all columns)
+  struct_cols <- c("device", "geo", "traffic_source", "ecommerce")
+  present <- struct_cols[struct_cols %in% names(data)]
+
+  result <- data |>
+    # Remove list-columns that cannot go to Parquet
+    # (event_params and items are handled by separate functions)
+    select(-any_of(c("event_params", "items")))
+
+  # Unnest each present struct column
+  for (col in present) {
+    result <- result |>
+      unnest_wider(
+        !!rlang::sym(col),
+        names_sep = "_" # Prefix: device_category, geo_country, etc.
+      )
+  }
+
+  # Add derived columns for partitioning and convenience
+  result |>
+    mutate(
+      event_date_parsed = ymd(event_date),
+      year = year(event_date_parsed),
+      month = month(event_date_parsed),
+      day = day(event_date_parsed),
+      event_dt = as.POSIXct(
+        as.numeric(event_timestamp) / 1e6,
+        origin = "1970-01-01",
+        tz = "UTC"
+      )
+    ) |>
+    select(-event_date_parsed)
+}
+```
+
+### Event Params Flattening Helper
+
+```{r}
+#| label: helper-flatten-params
+
+#' Flatten the event_params repeated RECORD column
+#'
+#' GA4 stores event parameters as an array of key-value structs where
+#' the value is itself a struct with four typed sub-fields (string, int,
+#' float, double). This function applies the three-stage pipeline:
+#'   Stage 1: unnest_longer() — one row per parameter
+#'   Stage 2: unnest_wider()  — expand key and value sub-fields
+#'   Stage 3: coalesce()      — consolidate four value types into one
+#'
+#' The result is kept in LONG format (one row per parameter per event)
+#' because pivot_wider() to fully wide format can produce thousands of
+#' columns across 90 days of data.
+#'
+#' @param data A tibble downloaded from one GA4 BigQuery table
+#' @return A long tibble: event_date, event_timestamp, event_name,
+#'         user_pseudo_id, key, param_value — or NULL if no params exist
+
+flatten_event_params <- function(data) {
+  # Guard: check column exists
+  if (!"event_params" %in% names(data)) {
+    return(NULL)
+  }
+
+  # Guard: check at least some rows have params
+  has_params <- !all(map_lgl(data$event_params, is.null))
+  if (!has_params) {
+    return(NULL)
+  }
+
+  result <- data |>
+    select(
+      event_date,
+      event_timestamp,
+      event_name,
+      user_pseudo_id,
+      event_params
+    ) |>
+    # Stage 1: Expand array — one row per parameter per event
+    unnest_longer(event_params) |>
+    # Stage 2a: Expand struct — get key and value columns
+    unnest_wider(event_params) |>
+    # Stage 2b: Expand value sub-struct — get typed value columns
+    unnest_wider(value, names_sep = "_") |>
+    # Stage 3: Consolidate four typed value columns into one
+    mutate(
+      param_value = coalesce(
+        value_string_value,
+        as.character(value_int_value),
+        as.character(value_float_value),
+        as.character(value_double_value)
+      )
+    ) |>
+    select(
+      event_date,
+      event_timestamp,
+      event_name,
+      user_pseudo_id,
+      key,
+      param_value
+    )
+
+  if (nrow(result) == 0) {
+    return(NULL)
+  }
+  result
+}
+```
+
+### Items Flattening Helper
+
+```{r}
+#| label: helper-flatten-items
+
+#' Flatten the items repeated RECORD column
+#'
+#' The items column contains e-commerce line items as an array of named
+#' structs. Unlike event_params, each item struct has named fields
+#' (item_id, item_name, price, quantity, etc.) so a simple
+#' unnest_longer() + unnest_wider() pipeline is sufficient.
+#'
+#' @param data A tibble downloaded from one GA4 BigQuery table
+#' @return A flat tibble with one row per item per purchase event,
+#'         or NULL if no purchase events exist in this day's data
+
+flatten_items <- function(data) {
+  # Guard: check column exists
+  if (!"items" %in% names(data)) {
+    return(NULL)
+  }
+
+  # Only purchase events have items
+  purchase_data <- data |>
+    filter(event_name == "purchase") |>
+    select(event_date, event_timestamp, user_pseudo_id, items)
+
+  if (nrow(purchase_data) == 0) {
+    return(NULL)
+  }
+
+  # Guard: check at least some purchases have items populated
+  has_items <- purchase_data |>
+    filter(!map_lgl(items, \(x) is.null(x) || nrow(x) == 0))
+
+  if (nrow(has_items) == 0) {
+    return(NULL)
+  }
+
+  has_items |>
+    unnest_longer(items) |> # One row per item per purchase
+    unnest_wider(items) # Named item fields become columns
+}
+```
+
+```{r}
+#| label: confirm-helpers
+
+cli::cli_alert_success("All three helper functions are defined and ready.")
+cli::cli_bullets(c(
+  "v" = "flatten_structs()       — flattens device, geo, traffic_source, ecommerce",
+  "v" = "flatten_event_params()  — applies 3-stage pipeline to event_params",
+  "v" = "flatten_items()         — expands items array for purchase events"
+))
+```
+
+---
+
+## Download: Day-by-Day Loop
+
+This is the main download process. Each iteration:
+
+1. Checks if the files already exist (skips if so — safe to re-run)
+2. Downloads one day's data from BigQuery
+3. Saves the raw nested data as `.rds`
+4. Flattens struct columns and saves as Parquet
+5. Flattens `event_params` and saves as Parquet
+6. Flattens `items` and saves as Parquet
+7. Logs the result for the summary report
+
+::: {.callout-warning}
+## Do Not Interrupt This Process
+
+Each day's files are saved immediately after downloading. If you must
+stop, simply close R and re-run the chunk later — already-downloaded
+files are detected and skipped automatically.
+:::
+
+```{r}
+#| label: download-loop
+#| eval: false
+#| cache: false
+
+cli::cli_h1("Starting GA4 Download")
+cli::cli_alert_info(
+  "Downloading {length(target_tables)} tables. Please wait..."
+)
+cat("\n")
+
+# ── Initialise the download log ────────────────────────────────────────────────
+download_log <- vector("list", length(target_tables))
+names(download_log) <- target_tables
+
+# ── Main loop ─────────────────────────────────────────────────────────────────
+for (i in seq_along(target_tables)) {
+  tbl_name <- target_tables[i]
+  date_str <- str_extract(tbl_name, "\\d{8}")
+
+  # File paths for each format
+  rds_path <- glue("data/ga4_raw/ga4_{date_str}.rds")
+  parq_path <- glue("data/ga4_parquet/ga4_{date_str}.parquet")
+  params_path <- glue("data/ga4_parquet_params/params_{date_str}.parquet")
+  items_path <- glue("data/ga4_parquet_items/items_{date_str}.parquet")
+
+  all_exist <- all(
+    fs::file_exists(rds_path),
+    fs::file_exists(parq_path),
+    fs::file_exists(params_path)
+  )
+
+  # ── Skip if already downloaded ─────────────────────────────────────────────
+  if (all_exist) {
+    cli::cli_alert_info(
+      "[{i}/{length(target_tables)}] Skipping {date_str} — already exists"
+    )
+    download_log[[tbl_name]] <- list(status = "skipped", rows = NA_integer_)
+    next
+  }
+
+  # ── Download with error handling ───────────────────────────────────────────
+  cli::cli_progress_step(
+    "[{i}/{length(target_tables)}] Downloading {date_str}..."
+  )
+
+  day_result <- tryCatch(
+    {
+      # ── Download raw data ────────────────────────────────────────────────────
+      raw_day <- tbl(con, tbl_name) |> collect()
+      n_rows <- nrow(raw_day)
+
+      # ── Save raw nested data as .rds ─────────────────────────────────────────
+      # compress = FALSE: fastest read/write — use "gz" to save disk space
+      saveRDS(raw_day, rds_path, compress = FALSE)
+
+      # ── Flatten structs and save as Parquet ──────────────────────────────────
+      flat_day <- flatten_structs(raw_day)
+      write_parquet(flat_day, parq_path, compression = "snappy")
+
+      # ── Flatten event_params and save as Parquet ─────────────────────────────
+      params_flat <- flatten_event_params(raw_day)
+      if (!is.null(params_flat) && nrow(params_flat) > 0) {
+        write_parquet(params_flat, params_path, compression = "snappy")
+      }
+
+      # ── Flatten items and save as Parquet ────────────────────────────────────
+      items_flat <- flatten_items(raw_day)
+      if (!is.null(items_flat) && nrow(items_flat) > 0) {
+        write_parquet(items_flat, items_path, compression = "snappy")
+      }
+
+      # ── Clean up to free RAM before next iteration ───────────────────────────
+      rm(raw_day, flat_day, params_flat, items_flat)
+      gc(verbose = FALSE)
+
+      cli::cli_alert_success(
+        "  Done: {scales::comma(n_rows)} rows saved in 3 formats"
+      )
+
+      list(status = "success", rows = n_rows)
+    },
+    error = function(e) {
+      cli::cli_alert_danger(
+        "  FAILED: {date_str} — {conditionMessage(e)}"
+      )
+      list(status = "error", error = conditionMessage(e), rows = NA_integer_)
+    }
+  )
+
+  download_log[[tbl_name]] <- day_result
+
+  # ── Brief pause every 10 downloads to avoid rate limiting ─────────────────
+  if (i %% 10 == 0 && i < length(target_tables)) {
+    cli::cli_alert_info("  Pausing briefly to avoid rate limits...")
+    Sys.sleep(3)
+  }
+}
+
+cli::cli_alert_success("Download loop complete!")
+```
+
+---
+
+## Build Partitioned Datasets
+
+Now combine all daily Parquet files into Hive-partitioned datasets. This
+is the format used for all multi-day analyses in subsequent notebooks.
+
+::: {.callout-note}
+## What Is Hive Partitioning?
+
+Hive partitioning stores data in a folder hierarchy where folder names
+encode column values: `year=2020/month=11/part-0.parquet`. When you
+query `filter(year == 2020, month == 11)`, Arrow and DuckDB skip every
+other folder entirely — they never open those files. This makes
+date-filtered queries dramatically faster on large datasets.
+:::
+
+### Events Partitioned Dataset
+
+```{r}
+#| label: partition-events
+#| eval: false
+#| cache: false
+
+cli::cli_h2("Building partitioned events dataset")
+
+# ── Find all daily Parquet files ──────────────────────────────────────────────
+event_files <- fs::dir_ls("data/ga4_parquet", regexp = "\\.parquet$")
+
+if (length(event_files) == 0) {
+  cli::cli_abort(
+    "No Parquet files found in data/ga4_parquet/.
+    Run the download loop first."
+  )
+}
+
+cli::cli_alert_info(
+  "Found {length(event_files)} daily Parquet files to combine"
+)
+
+# ── Open all files as one Arrow dataset and write partitioned ─────────────────
+open_dataset(event_files) |>
+  write_dataset(
+    path = "data/ga4_partitioned",
+    format = "parquet",
+    partitioning = c("year", "month"),
+    compression = "snappy",
+    max_rows_per_file = 500000
+  )
+
+cli::cli_alert_success(
+  "Events partitioned dataset written to data/ga4_partitioned/"
+)
+```
+
+### Event Params Partitioned Dataset
+
+```{r}
+#| label: partition-params
+#| eval: false
+#| cache: false
+
+cli::cli_h2("Building partitioned event_params dataset")
+
+params_files <- fs::dir_ls(
+  "data/ga4_parquet_params",
+  regexp = "\\.parquet$"
+)
+
+if (length(params_files) == 0) {
+  cli::cli_alert_warning(
+    "No params Parquet files found. Skipping params partitioning."
+  )
+} else {
+  cli::cli_alert_info(
+    "Found {length(params_files)} params files to combine"
+  )
+
+  open_dataset(params_files) |>
+    mutate(
+      year = as.integer(str_sub(event_date, 1L, 4L)),
+      month = as.integer(str_sub(event_date, 5L, 6L))
+    ) |>
+    write_dataset(
+      path = "data/ga4_params_partitioned",
+      format = "parquet",
+      partitioning = c("year", "month"),
+      compression = "snappy"
+    )
+
+  cli::cli_alert_success(
+    "Params partitioned dataset written to data/ga4_params_partitioned/"
+  )
+}
+```
+
+### Items Partitioned Dataset
+
+```{r}
+#| label: partition-items
+#| eval: false
+#| cache: false
+
+cli::cli_h2("Building partitioned items dataset")
+
+items_files <- fs::dir_ls(
+  "data/ga4_parquet_items",
+  regexp = "\\.parquet$"
+)
+
+if (length(items_files) == 0) {
+  cli::cli_alert_warning(
+    "No items Parquet files found.
+    This is expected if no purchase events occurred.
+    Skipping items partitioning."
+  )
+} else {
+  cli::cli_alert_info(
+    "Found {length(items_files)} items files to combine"
+  )
+
+  open_dataset(items_files) |>
+    mutate(
+      year = as.integer(str_sub(event_date, 1L, 4L)),
+      month = as.integer(str_sub(event_date, 5L, 6L))
+    ) |>
+    write_dataset(
+      path = "data/ga4_items_partitioned",
+      format = "parquet",
+      partitioning = c("year", "month"),
+      compression = "snappy"
+    )
+
+  cli::cli_alert_success(
+    "Items partitioned dataset written to data/ga4_items_partitioned/"
+  )
+}
+```
+
+---
+
+## Verify the Download
+
+Run these checks after the download completes to confirm everything is
+correct before closing the connection.
+
+### File Count Check
+
+```{r}
+#| label: verify-file-counts
+
+cli::cli_h2("Verification: File Counts")
+
+# Define what we expect in each folder
+expected_counts <- tibble::tribble(
+  ~folder                   , ~description                         ,
+  "data/ga4_raw"            , "Raw nested .rds files"              ,
+  "data/ga4_parquet"        , "Flat events Parquet"                ,
+  "data/ga4_parquet_params" , "Event params Parquet"               ,
+  "data/ga4_parquet_items"  , "Items Parquet (purchase days only)"
+)
+
+# Count files actually present
+file_counts <- expected_counts |>
+  mutate(
+    exists = map_lgl(folder, fs::dir_exists),
+    n_files = map_int(folder, \(d) {
+      if (!fs::dir_exists(d)) {
+        return(0L)
+      }
+      length(fs::dir_ls(d, regexp = "\\.(rds|parquet)$"))
+    }),
+    status = case_when(
+      !exists ~ "folder missing",
+      n_files == 0 ~ "empty",
+      n_files < 85 ~ glue("⚠ only {n_files} files"),
+      n_files >= 85 ~ glue("✓ {n_files} files"),
+      TRUE ~ as.character(n_files)
+    )
+  ) |>
+  select(description, folder, n_files, status)
+
+knitr::kable(
+  file_counts,
+  col.names = c("Dataset", "Folder", "Files", "Status"),
+  caption = "File count by folder"
+)
+```
+
+### Storage Summary
+
+```{r}
+#| label: verify-storage
+
+cli::cli_h2("Verification: Storage Used")
+
+all_data_folders <- c(
+  "data/ga4_raw",
+  "data/ga4_parquet",
+  "data/ga4_parquet_params",
+  "data/ga4_parquet_items",
+  "data/ga4_partitioned",
+  "data/ga4_params_partitioned",
+  "data/ga4_items_partitioned"
+)
+
+storage_summary <- all_data_folders |>
+  keep(fs::dir_exists) |>
+  map_df(\(d) {
+    files <- fs::dir_ls(d, recurse = TRUE, regexp = "\\.(rds|parquet)$")
+    size_mb <- sum(as.numeric(fs::file_size(files))) / 1024^2
+    tibble(
+      folder = d,
+      n_files = length(files),
+      size_mb = round(size_mb, 1)
+    )
+  })
+
+storage_summary |>
+  mutate(size_mb = glue("{size_mb} MB")) |>
+  knitr::kable(
+    col.names = c("Folder", "Files", "Size"),
+    caption = "Storage used by folder"
+  )
+
+total_mb <- sum(storage_summary$size_mb)
+cli::cli_alert_info(
+  "Total storage used: {round(total_mb / 1024, 2)} GB
+  ({scales::comma(total_mb)} MB)"
+)
+```
+
+### Partition Structure Check
+
+```{r}
+#| label: verify-partitions
+#| eval: false
+
+cli::cli_h2("Verification: Partition Structure")
+
+if (fs::dir_exists("data/ga4_partitioned")) {
+  ga4_check <- open_dataset("data/ga4_partitioned")
+
+  cat("Schema:\n")
+  print(ga4_check$schema)
+  cat("\n")
+
+  partition_summary <- ga4_check |>
+    count(year, month, name = "rows") |>
+    collect() |>
+    arrange(year, month) |>
+    mutate(
+      month_name = month.abb[month],
+      period = glue("{month_name} {year}"),
+      rows = scales::comma(rows)
+    ) |>
+    select(period, year, month, rows)
+
+  knitr::kable(
+    partition_summary,
+    col.names = c("Period", "Year", "Month", "Rows"),
+    caption = "Row counts by partition"
+  )
+
+  total_rows <- ga4_check |>
+    summarise(n = n()) |>
+    collect() |>
+    pull(n)
+
+  cli::cli_alert_success(
+    "Total rows across all partitions: {scales::comma(total_rows)}"
+  )
+} else {
+  cli::cli_alert_warning(
+    "Partitioned dataset not found. Run the partitioning chunks above."
+  )
+}
+```
+
+### Sample Data Check
+
+```{r}
+#| label: verify-sample-data
+#| eval: false
+
+cli::cli_h2("Verification: Sample Data")
+
+# ── Core events ───────────────────────────────────────────────────────────────
+cat("── Core events (first 5 rows, November 2020) ──────────────────────\n")
+if (fs::dir_exists("data/ga4_partitioned")) {
+  open_dataset("data/ga4_partitioned") |>
+    filter(year == 2020, month == 11) |>
+    select(
+      event_date,
+      event_name,
+      user_pseudo_id,
+      device_category,
+      geo_country
+    ) |>
+    head(5) |>
+    collect() |>
+    knitr::kable()
+}
+
+# ── Event params ──────────────────────────────────────────────────────────────
+cat("\n── Event params (first 5 rows) ─────────────────────────────────────\n")
+if (fs::dir_exists("data/ga4_params_partitioned")) {
+  open_dataset("data/ga4_params_partitioned") |>
+    filter(year == 2020, month == 11) |>
+    head(5) |>
+    collect() |>
+    knitr::kable()
+}
+
+# ── Items ─────────────────────────────────────────────────────────────────────
+cat("\n── Items (first 5 rows) ─────────────────────────────────────────────\n")
+if (fs::dir_exists("data/ga4_items_partitioned")) {
+  open_dataset("data/ga4_items_partitioned") |>
+    head(5) |>
+    collect() |>
+    knitr::kable()
+}
+```
+
+---
+
+## Download Summary Report
+
+```{r}
+#| label: download-summary
+#| eval: false
+
+cli::cli_h1("Download Summary")
+
+if (exists("download_log") && length(download_log) > 0) {
+  # ── Build log data frame ──────────────────────────────────────────────────
+  log_df <- download_log |>
+    imap_df(\(x, nm) {
+      tibble(
+        table = nm,
+        status = x$status,
+        rows = x$rows %||% NA_integer_
+      )
+    }) |>
+    mutate(
+      date = ymd(str_extract(table, "\\d{8}")),
+      month_label = glue("{month.abb[month(date)]} {year(date)}")
+    )
+
+  # ── Status summary ────────────────────────────────────────────────────────
+  cat("Status Summary:\n")
+  log_df |>
+    count(status, name = "tables") |>
+    knitr::kable(col.names = c("Status", "Tables"))
+
+  # ── Monthly summary ───────────────────────────────────────────────────────
+  cat("\nRows by Month:\n")
+  log_df |>
+    filter(status == "success") |>
+    group_by(month_label) |>
+    summarise(
+      days_downloaded = n(),
+      total_rows = sum(rows, na.rm = TRUE),
+      avg_rows_per_day = round(mean(rows, na.rm = TRUE)),
+      .groups = "drop"
+    ) |>
+    mutate(
+      total_rows = scales::comma(total_rows),
+      avg_rows_per_day = scales::comma(avg_rows_per_day)
+    ) |>
+    knitr::kable(
+      col.names = c("Month", "Days", "Total Rows", "Avg Rows/Day")
+    )
+
+  # ── Flag any failures ─────────────────────────────────────────────────────
+  failed <- log_df |> filter(status == "error")
+
+  if (nrow(failed) > 0) {
+    cli::cli_alert_danger("{nrow(failed)} tables failed:")
+    failed |>
+      select(table, status) |>
+      print()
+    cli::cli_alert_info(
+      "Re-run the download loop — it skips successful days automatically."
+    )
+  } else {
+    cli::cli_alert_success("All tables downloaded successfully!")
+  }
+}
+```
+
+---
+
+## Disconnect from BigQuery
+
+```{r}
+#| label: disconnect
+#| eval: false
+#| cache: false
+
+# Close the BigQuery connection — no longer needed after download
+dbDisconnect(con)
+cli::cli_alert_success("BigQuery connection closed.")
+cli::cli_alert_info(
+  "You will not need to reconnect to BigQuery for the rest of this course."
+)
+```
+
+---
+
+## How to Load Data in Future Sessions
+
+::: {.callout-tip}
+## Quick Reference — Copy This Into Every Future Notebook
+
+Paste this code block at the top of each subsequent notebook to load
+all three datasets:
+
+```r
+library(arrow)
+library(dplyr)
+
+ga4_events <- open_dataset("data/ga4_partitioned")
+ga4_params <- open_dataset("data/ga4_params_partitioned")
+ga4_items  <- open_dataset("data/ga4_items_partitioned")
+```
+
+That is all you need. No BigQuery, no authentication, no waiting.
+:::
+
+### The Five Loading Patterns
+
+```{r}
+#| label: loading-patterns
+#| eval: false
+
+library(arrow)
+library(dplyr)
+library(duckdb)
+library(duckplyr)
+
+# ── Pattern 1: Partitioned dataset — recommended for most analyses ─────────────
+# Lazy: nothing loaded into RAM until collect()
+# Fast: Arrow skips irrelevant year/month folders automatically
+ga4_events <- open_dataset("data/ga4_partitioned")
+ga4_params <- open_dataset("data/ga4_params_partitioned")
+ga4_items <- open_dataset("data/ga4_items_partitioned")
+
+# Query a specific month
+november_events <- ga4_events |>
+  filter(year == 2020, month == 11) |>
+  select(event_date, event_name, user_pseudo_id, device_category) |>
+  collect()
+
+# ── Pattern 2: Single day flat Parquet ────────────────────────────────────────
+# Eager: loads immediately into RAM as a tibble
+# Use for: single-day analysis, quick exploration
+day_data <- read_parquet("data/ga4_parquet/ga4_20201101.parquet")
+
+# ── Pattern 3: Raw nested .rds ────────────────────────────────────────────────
+# Use for: teaching and practising rectangling techniques
+raw_day <- readRDS("data/ga4_raw/ga4_20201101.rds")
+glimpse(raw_day) # List-columns are still nested — ready for rectangling
+
+# ── Pattern 4: DuckDB on partitioned Parquet ──────────────────────────────────
+# Use for: SQL queries, window functions, complex multi-table joins
+con <- dbConnect(duckdb::duckdb())
+duckdb_register_arrow(con, "events", open_dataset("data/ga4_partitioned"))
+duckdb_register_arrow(
+  con,
+  "params",
+  open_dataset("data/ga4_params_partitioned")
+)
+duckdb_register_arrow(con, "items", open_dataset("data/ga4_items_partitioned"))
+
+DBI::dbGetQuery(
+  con,
+  "
+  SELECT event_name, COUNT(*) AS n
+  FROM events
+  GROUP BY event_name
+  ORDER BY n DESC
+  LIMIT 10
+"
+)
+
+DBI::dbDisconnect(con, shutdown = TRUE)
+
+# ── Pattern 5: duckplyr on Parquet ────────────────────────────────────────────
+# Use for: dplyr syntax with DuckDB speed on large data
+ga4_duck <- duckplyr::df_from_parquet(
+  fs::dir_ls("data/ga4_parquet", regexp = "\\.parquet$")
+)
+
+ga4_duck |>
+  count(event_name, sort = TRUE) |>
+  head(10)
+```
+
+---
+
+## Troubleshooting
+
+```{r}
+#| label: troubleshooting
+#| eval: false
+
+# ── Problem 1: "notFound" error ───────────────────────────────────────────────
+# Symptom: Error in bq_post(): Request couldn't be served. [notFound]
+# Causes and fixes:
+
+# Cause A: BILLING_PROJECT is wrong
+cat("Current billing project:", BILLING_PROJECT, "\n")
+bq_projects() # Your project MUST appear in this list
+
+# Cause B: BigQuery API not enabled on your project
+# Fix: Go to console.cloud.google.com/apis/library/bigquery.googleapis.com
+#      select your project and click Enable
+
+# Cause C: Dataset name has a typo
+# The correct name is exactly:
+# "ga4_obfuscated_sample_ecommerce"
+# Check available datasets:
+bq_project_datasets("bigquery-public-data") |>
+  as_tibble() |>
+  dplyr::filter(stringr::str_detect(dataset, "ga4"))
+
+# ── Problem 2: Integer overflow warning ───────────────────────────────────────
+# Symptom: NAs produced by integer overflow
+# Cause: event_timestamp is INT64, too large for R's 32-bit integer
+# Fix: collect() via tbl() handles this automatically through Arrow
+# If using bq_table_download() directly, add: bigint = "numeric"
+
+# ── Problem 3: Download stalls or times out ───────────────────────────────────
+# Fix: The loop saves each day before moving to the next
+# Simply re-run the download chunk — already-saved files are skipped
+already_saved <- fs::dir_ls("data/ga4_parquet") |>
+  fs::path_file() |>
+  str_extract("\\d{8}") |>
+  na.omit()
+
+still_needed <- date_strings[!date_strings %in% already_saved]
+cli::cli_alert_info(
+  "{length(still_needed)} tables still need downloading"
+)
+
+# ── Problem 4: "Cannot allocate vector" — out of memory ──────────────────────
+# Cause: One day's data is larger than available RAM
+# Fix: Download fewer columns per day
+tbl(con, "events_20201101") |>
+  select(
+    event_date,
+    event_timestamp,
+    event_name,
+    user_pseudo_id,
+    device,
+    geo,
+    traffic_source
+  ) |>
+  collect() # Excludes event_params and items — much smaller
+
+# ── Problem 5: Parquet write error with list-columns ─────────────────────────
+# Symptom: Error writing Parquet — type not supported
+# Cause: Trying to write a tibble that still has list-columns
+# Fix: The flatten_structs() function removes event_params and items
+# before writing. Check that it ran without error.
+
+# ── Problem 6: Partitioned dataset reads wrong columns ───────────────────────
+# Symptom: year and month columns show as integers but filtering fails
+# Fix: Confirm the partition columns exist in the schema
+open_dataset("data/ga4_partitioned")$schema
+# year and month should appear as int32 or int64
+```
+
+---
+
+## Session Info
+
+```{r}
+#| label: session-info
+#| code-fold: true
+#| code-summary: "Show session info"
+#| cache: false
+#| eval: false
+
+sessioninfo::session_info()
+```
+

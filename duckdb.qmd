@@ -2,8 +2,14 @@
 title: "DuckDB for Marketing Analytics: From Parquet to Powerful Queries"
 subtitle: "How to Combine DuckDB with Arrow + Parquet"
 description: "This page describes DuckDB and compares it with Arrow and Parquet and explain how to use them together effectively when dealing with big data"
-categories: [DuckDB, Arrow, Parquet]
-order: 2
+categories:
+  - DuckDB
+  - SQL
+  - Big Data
+  - GA4
+  - Arrow
+  - Parquet
+order: 3
 author: "Jae Jung"
 date: today
 format: 
