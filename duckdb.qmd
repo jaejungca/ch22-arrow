@@ -14,7 +14,7 @@ author: "Jae Jung"
 date: today
 format: 
     html:
-        theme: cosmo
+        #theme: cosmo
         toc: true
         toc-depth: 3
         toc-expand: 1
