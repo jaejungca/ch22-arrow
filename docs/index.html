@@ -82,7 +82,7 @@ ul.task-list li input[type="checkbox"] {
     const options = {
       valueNames: ['listing-title','listing-description','listing-categories',{ data: ['index'] },{ data: ['categories'] },{ data: ['listing-date-sort'] },{ data: ['listing-file-modified-sort'] }],
       
-      searchColumns: ["listing-title","listing-author","listing-date","listing-image","listing-description"],
+      searchColumns: ["listing-title","listing-author","listing-date","listing-image","listing-description","listing-categories"],
     };
 
     window['quarto-listings'] = window['quarto-listings'] || {};
@@ -223,10 +223,9 @@ window.Quarto = {
   <li><a href="#visualisation-reporting" id="toc-visualisation-reporting" class="nav-link" data-scroll-target="#visualisation-reporting">Visualisation &amp; Reporting</a></li>
   <li><a href="#workflow-utilities" id="toc-workflow-utilities" class="nav-link" data-scroll-target="#workflow-utilities">Workflow &amp; Utilities</a></li>
   </ul></li>
-  <li><a href="#tools" id="toc-tools" class="nav-link" data-scroll-target="#tools">Tools</a></li>
   </ul>
 </nav>
-    </div>
+    <h5 class="quarto-listing-category-title">Categories</h5><div class="quarto-listing-category category-default"><div class="category" data-category="">All <span class="quarto-category-count">(4)</span></div><div class="category" data-category="QXJyb3c=">Arrow <span class="quarto-category-count">(3)</span></div><div class="category" data-category="QmlnJTIwRGF0YQ==">Big Data <span class="quarto-category-count">(3)</span></div><div class="category" data-category="YmlncnF1ZXJ5">bigrquery <span class="quarto-category-count">(1)</span></div><div class="category" data-category="RGF0YSUyMEFjcXVpc2l0aW9u">Data Acquisition <span class="quarto-category-count">(1)</span></div><div class="category" data-category="REJJ">DBI <span class="quarto-category-count">(1)</span></div><div class="category" data-category="ZHBseXI=">dplyr <span class="quarto-category-count">(1)</span></div><div class="category" data-category="RHVja0RC">DuckDB <span class="quarto-category-count">(2)</span></div><div class="category" data-category="ZHVja3BseXI=">duckplyr <span class="quarto-category-count">(1)</span></div><div class="category" data-category="R0E0">GA4 <span class="quarto-category-count">(3)</span></div><div class="category" data-category="SGl2ZSUyMFBhcnRpdGlvbmluZw==">Hive Partitioning <span class="quarto-category-count">(2)</span></div><div class="category" data-category="UGFycXVldA==">Parquet <span class="quarto-category-count">(3)</span></div><div class="category" data-category="UmVjdGFuZ2xpbmc=">Rectangling <span class="quarto-category-count">(1)</span></div><div class="category" data-category="U1FM">SQL <span class="quarto-category-count">(1)</span></div></div></div>
 <!-- main -->
 <main class="content" id="quarto-document-content">
 
@@ -415,7 +414,7 @@ Access         : Free to query (GCP billing project required)</code></pre>
 </div>
 <div class="callout-body-container callout-body">
 <p><strong>If you are new to this material</strong>, start with Notebook 1 and work through them in order. Each notebook builds directly on the previous one.</p>
-<p><strong>If you are looking for a specific topic</strong>, use the category tags below each notebook card to find what you need — for example, click <code>DuckDB</code> to see all notebooks that use DuckDB.</p>
+<p><strong>If you are looking for a specific topic</strong>, look at the category tags shown on each notebook card below. Each card displays the tools and concepts covered in that notebook.</p>
 <p><strong>If you want to follow along in R</strong>, you will need:</p>
 <ol type="1">
 <li>R (≥ 4.2.0) and RStudio or Positron IDE</li>
@@ -424,18 +423,19 @@ Access         : Free to query (GCP billing project required)</code></pre>
 </ol>
 </div>
 </div>
-<p>Introduction to Arrow, Parquet, DuckDB, Duckplyr.</p>
+
+
+
 </section>
-</section>
-<section id="tools" class="level2">
-<h2 class="anchored" data-anchor-id="tools">Tools</h2>
-<p><code>R</code> · <code>Quarto</code> · <code>DBI</code> · <code>arrow</code> · <code>parquet</code> · <code>duckdb</code> · <code>dplyr</code> · <code>dbplyr</code></p>
-
-
-
 </section>
 
 <div class="quarto-listing quarto-listing-container-grid" id="listing-listing">
+<div class="listing-actions-group">
+    <div class="input-group input-group-sm quarto-listing-filter">
+      <span class="input-group-text"><i class="bi bi-search"></i></span>
+      <input type="text" class="search form-control" placeholder="Filter">
+    </div>
+</div>
 <div class="list grid quarto-listing-cols-3">
 <div class="g-col-1" data-index="0" data-categories="UGFycXVldCUyQ0Fycm93JTJDSGl2ZSUyMFBhcnRpdGlvbmluZyUyQ0JpZyUyMERhdGE=" data-listing-date-sort="1773990000000" data-listing-file-modified-sort="1774052592984" data-listing-date-modified-sort="NaN" data-listing-reading-time-sort="17" data-listing-word-count-sort="3206">
 <a href="./arrow.html" class="quarto-grid-link">

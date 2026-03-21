@@ -9,6 +9,8 @@ listing:
   type: grid
   fields: [title, description, categories]
   sort: "order"
+  filter-ui: true   # ← adds a search/filter
+  categories: true  # ← makes category tags clickable filters
 ---
 
 ## Welcome
@@ -115,7 +117,7 @@ The data acquisition notebook on this site uses rectangling briefly to prepare r
 
 **If you are new to this material**, start with Notebook 1 and work through them in order. Each notebook builds directly on the previous one.
 
-**If you are looking for a specific topic**, use the category tags below each notebook card to find what you need — for example, click `DuckDB` to see all notebooks that use DuckDB.
+**If you are looking for a specific topic**, look at the category tags shown on each notebook card below. Each card displays the tools and concepts covered in that notebook.
 
 **If you want to follow along in R**, you will need:
 
@@ -123,9 +125,3 @@ The data acquisition notebook on this site uses rectangling briefly to prepare r
 2.  A Google Cloud Platform account with billing enabled (setup instructions are in Notebook 2)
 3.  The R packages listed in each notebook's setup chunk — install instructions are included
 :::
-
-Introduction to Arrow, Parquet, DuckDB, Duckplyr.
-
-## Tools
-
-`R` · `Quarto` · `DBI` · `arrow` · `parquet` · `duckdb` · `dplyr` · `dbplyr`
