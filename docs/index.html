@@ -7,7 +7,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
 
-<title>Fundamnentals on Arrow, Parquet, and DuckDB – Arrow and DuckDB</title>
+<title>Arrow, Parquet, and DuckDB for Marketing Analytics – Arrow and DuckDB</title>
 <style>
 code{white-space: pre-wrap;}
 span.smallcaps{font-variant: small-caps;}
@@ -164,7 +164,7 @@ window.Quarto = {
       <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" role="button" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
         <i class="bi bi-layout-text-sidebar-reverse"></i>
       </button>
-        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item">Fundamnentals on Arrow, Parquet, and DuckDB</li></ol></nav>
+        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item">Arrow, Parquet, and DuckDB for Marketing Analytics</li></ol></nav>
         <a class="flex-grow-1" role="navigation" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
         </a>
     </div>
@@ -210,7 +210,20 @@ window.Quarto = {
     <h2 id="toc-title">On this page</h2>
    
   <ul>
-  <li><a href="#tools" id="toc-tools" class="nav-link active" data-scroll-target="#tools">Tools</a></li>
+  <li><a href="#welcome" id="toc-welcome" class="nav-link active" data-scroll-target="#welcome">Welcome</a></li>
+  <li><a href="#what-you-will-learn" id="toc-what-you-will-learn" class="nav-link" data-scroll-target="#what-you-will-learn">What You Will Learn</a></li>
+  <li><a href="#the-dataset" id="toc-the-dataset" class="nav-link" data-scroll-target="#the-dataset">The Dataset</a></li>
+  <li><a href="#why-these-tools" id="toc-why-these-tools" class="nav-link" data-scroll-target="#why-these-tools">Why These Tools?</a></li>
+  <li><a href="#related-resource" id="toc-related-resource" class="nav-link" data-scroll-target="#related-resource">Related Resource</a></li>
+  <li><a href="#tools-used-in-this-series" id="toc-tools-used-in-this-series" class="nav-link" data-scroll-target="#tools-used-in-this-series">Tools Used in This Series</a>
+  <ul class="collapse">
+  <li><a href="#data-access" id="toc-data-access" class="nav-link" data-scroll-target="#data-access">Data Access</a></li>
+  <li><a href="#data-storage-querying" id="toc-data-storage-querying" class="nav-link" data-scroll-target="#data-storage-querying">Data Storage &amp; Querying</a></li>
+  <li><a href="#data-wrangling" id="toc-data-wrangling" class="nav-link" data-scroll-target="#data-wrangling">Data Wrangling</a></li>
+  <li><a href="#visualisation-reporting" id="toc-visualisation-reporting" class="nav-link" data-scroll-target="#visualisation-reporting">Visualisation &amp; Reporting</a></li>
+  <li><a href="#workflow-utilities" id="toc-workflow-utilities" class="nav-link" data-scroll-target="#workflow-utilities">Workflow &amp; Utilities</a></li>
+  </ul></li>
+  <li><a href="#tools" id="toc-tools" class="nav-link" data-scroll-target="#tools">Tools</a></li>
   </ul>
 </nav>
     </div>
@@ -219,8 +232,8 @@ window.Quarto = {
 
 <header id="title-block-header" class="quarto-title-block default">
 <div class="quarto-title">
-<h1 class="title">Fundamnentals on Arrow, Parquet, and DuckDB</h1>
-<p class="subtitle lead">Comparisons and Guide</p>
+<h1 class="title">Arrow, Parquet, and DuckDB for Marketing Analytics</h1>
+<p class="subtitle lead">A Practical Guide Using Google Analytics 4 Public Data</p>
 </div>
 
 
@@ -237,7 +250,183 @@ window.Quarto = {
 </header>
 
 
-<p>Introduction to Arrow, Parquet, and DuckDB.</p>
+<section id="welcome" class="level2">
+<h2 class="anchored" data-anchor-id="welcome">Welcome</h2>
+<p>This site is a companion resource for the <strong>Marketing Analytics course</strong> at Cal Poly Pomona MSDM Program. It provides a hands-on, code-first introduction to modern tools for working with large-scale marketing data in R — specifically the kind of high-volume event data that real-world analytics platforms like Google Analytics 4 produce.</p>
+<p>All examples use the <strong>GA4 Obfuscated Sample E-commerce Dataset</strong> — a publicly available BigQuery dataset derived from real user behavior on the <a href="https://shop.merch.google">Google Merchandise Store</a>. This means every technique you learn here applies directly to the GA4 data your future employer is already collecting.</p>
+</section>
+<section id="what-you-will-learn" class="level2">
+<h2 class="anchored" data-anchor-id="what-you-will-learn">What You Will Learn</h2>
+<p>The notebooks in this series build on each other in a deliberate sequence:</p>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 15%">
+<col style="width: 32%">
+<col style="width: 51%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>Step</th>
+<th>Topic</th>
+<th>Key Skill</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>1</td>
+<td>Arrow and Parquet</td>
+<td>Read and write columnar files; query larger-than-RAM data</td>
+</tr>
+<tr class="even">
+<td>2</td>
+<td>Data Acquisition from BigQuery</td>
+<td>Download 90 days of GA4 data and save in multiple formats</td>
+</tr>
+<tr class="odd">
+<td>3</td>
+<td>DuckDB</td>
+<td>Run SQL and <code>dplyr</code> queries on Parquet files without loading into RAM</td>
+</tr>
+<tr class="even">
+<td>4</td>
+<td>duckplyr</td>
+<td>Use <code>dplyr</code> syntax powered by DuckDB for production-scale speed</td>
+</tr>
+</tbody>
+</table>
+<p>By the end of this series you will be able to take raw GA4 event data from BigQuery and turn it into clean, fast, queryable local datasets that support real marketing analyses — traffic source performance, purchase funnels, content analytics, and e-commerce reporting.</p>
+</section>
+<section id="the-dataset" class="level2">
+<h2 class="anchored" data-anchor-id="the-dataset">The Dataset</h2>
+<pre><code>Google Analytics 4 · Obfuscated Sample E-commerce Dataset
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+BigQuery path  : bigquery-public-data.ga4_obfuscated_sample_ecommerce
+Date range     : November 2020 – January 2021 (90 days)
+Approx. rows   : ~3 million events
+Storage formats: Raw RDS · Flat Parquet · Hive-partitioned Parquet
+Access         : Free to query (GCP billing project required)</code></pre>
+<p>The dataset captures every user interaction on the Google Merchandise Store — page views, product clicks, add-to-cart events, checkouts, and purchases — stored in BigQuery’s nested event format. Learning to work with this data teaches you exactly the skills needed for any GA4 implementation in industry.</p>
+</section>
+<section id="why-these-tools" class="level2">
+<h2 class="anchored" data-anchor-id="why-these-tools">Why These Tools?</h2>
+<p>Traditional approaches to marketing data analysis load everything into RAM as a flat data frame. This works fine for small datasets but breaks down quickly when you have millions of events, dozens of dimensions, and deeply nested data structures. The tools in this series solve each layer of that problem:</p>
+<div class="callout callout-style-simple callout-note no-icon callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon no-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Note</span>Parquet
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>Stores data in a compressed columnar format that is 10–50× smaller than CSV and reads 5–10× faster. It is the industry standard for analytical data storage and is readable by R, Python, Spark, and Tableau.</p>
+</div>
+</div>
+<div class="callout callout-style-simple callout-note no-icon callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon no-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Note</span>Arrow
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>A library for reading, writing, and processing Parquet files in R. It allows you to query files that are larger than your RAM by loading only the columns and rows your query actually needs — a technique called lazy evaluation.</p>
+</div>
+</div>
+<div class="callout callout-style-simple callout-note no-icon callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon no-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Note</span>DuckDB
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>An embedded analytical database that runs inside R with zero server setup. It reads Parquet files directly and executes SQL or <code>dplyr</code> queries at speeds that rival dedicated cloud data warehouses.</p>
+</div>
+</div>
+<div class="callout callout-style-simple callout-note no-icon callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon no-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Note</span>duckplyr
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>Brings DuckDB’s engine to your existing <code>dplyr</code> code with no syntax changes — the same verbs, the same pipes, dramatically faster execution on large data. The ideal upgrade path from <code>dplyr</code> for production-scale marketing analysis.</p>
+</div>
+</div>
+</section>
+<section id="related-resource" class="level2">
+<h2 class="anchored" data-anchor-id="related-resource">Related Resource</h2>
+<div class="callout callout-style-default callout-tip callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Tip</span>Rectangling Hierarchical Data
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>GA4 stores event data in a <strong>nested format</strong> — arrays of structs inside structs — that must be flattened before it can be saved as Parquet or analysed with standard tools. This flattening process is called <strong>rectangling</strong>.</p>
+<p>This topic is covered in depth in a dedicated companion site:</p>
+<p><a href="https://jaejungca.github.io/ch23-hierarchical_data/"><strong>Rectangling Hierarchical Data with GA4 →</strong></a></p>
+<p>The data acquisition notebook on this site uses rectangling briefly to prepare raw GA4 data for Parquet storage. If that code looks unfamiliar, visit the companion site first.</p>
+</div>
+</div>
+</section>
+<section id="tools-used-in-this-series" class="level2">
+<h2 class="anchored" data-anchor-id="tools-used-in-this-series">Tools Used in This Series</h2>
+<section id="data-access" class="level3">
+<h3 class="anchored" data-anchor-id="data-access">Data Access</h3>
+<p><code>bigrquery</code> · <code>DBI</code></p>
+</section>
+<section id="data-storage-querying" class="level3">
+<h3 class="anchored" data-anchor-id="data-storage-querying">Data Storage &amp; Querying</h3>
+<p><code>arrow</code> · <code>duckdb</code> · <code>duckplyr</code> · <code>dbplyr</code></p>
+</section>
+<section id="data-wrangling" class="level3">
+<h3 class="anchored" data-anchor-id="data-wrangling">Data Wrangling</h3>
+<p><code>dplyr</code> · <code>purrr</code> · <code>stringr</code> · <code>lubridate</code></p>
+</section>
+<section id="visualisation-reporting" class="level3">
+<h3 class="anchored" data-anchor-id="visualisation-reporting">Visualisation &amp; Reporting</h3>
+<p><code>ggplot2</code> · <code>scales</code> · <code>gt</code> · <code>glue</code></p>
+</section>
+<section id="workflow-utilities" class="level3">
+<h3 class="anchored" data-anchor-id="workflow-utilities">Workflow &amp; Utilities</h3>
+<p><code>R</code> · <code>Quarto</code> · <code>fs</code> · <code>cli</code></p>
+<hr>
+<div class="callout callout-style-default callout-tip callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Tip</span>How to Use This Site
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p><strong>If you are new to this material</strong>, start with Notebook 1 and work through them in order. Each notebook builds directly on the previous one.</p>
+<p><strong>If you are looking for a specific topic</strong>, use the category tags below each notebook card to find what you need — for example, click <code>DuckDB</code> to see all notebooks that use DuckDB.</p>
+<p><strong>If you want to follow along in R</strong>, you will need:</p>
+<ol type="1">
+<li>R (≥ 4.2.0) and RStudio or Positron IDE</li>
+<li>A Google Cloud Platform account with billing enabled (setup instructions are in Notebook 2)</li>
+<li>The R packages listed in each notebook’s setup chunk — install instructions are included</li>
+</ol>
+</div>
+</div>
+<p>Introduction to Arrow, Parquet, DuckDB, Duckplyr.</p>
+</section>
+</section>
 <section id="tools" class="level2">
 <h2 class="anchored" data-anchor-id="tools">Tools</h2>
 <p><code>R</code> · <code>Quarto</code> · <code>DBI</code> · <code>arrow</code> · <code>parquet</code> · <code>duckdb</code> · <code>dplyr</code> · <code>dbplyr</code></p>
@@ -272,7 +461,7 @@ Apache Arrow and Apache Parqet: Ch22 &amp; More
 </div>
 </div></a>
 </div>
-<div class="g-col-1" data-index="1" data-categories="RGF0YSUyMEFjcXVpc2l0aW9uJTJDR0E0JTJDUGFycXVldCUyQ0hpdmUlMjBQYXJ0aXRpb25pbmclMkNSZWN0YW5nbGluZyUyQ2JpZ3JxdWVyeSUyQ0Fycm93JTJDREJJ" data-listing-date-sort="1773990000000" data-listing-file-modified-sort="1774052386060" data-listing-date-modified-sort="NaN" data-listing-reading-time-sort="28" data-listing-word-count-sort="5559">
+<div class="g-col-1" data-index="1" data-categories="RGF0YSUyMEFjcXVpc2l0aW9uJTJDR0E0JTJDUGFycXVldCUyQ0hpdmUlMjBQYXJ0aXRpb25pbmclMkNSZWN0YW5nbGluZyUyQ2JpZ3JxdWVyeSUyQ0Fycm93JTJDREJJ" data-listing-date-sort="1773990000000" data-listing-file-modified-sort="1774054326135" data-listing-date-modified-sort="NaN" data-listing-reading-time-sort="29" data-listing-word-count-sort="5607">
 <a href="./ga4_data_setup.html" class="quarto-grid-link">
 <div class="quarto-grid-item card h-100 card-left">
 <div class="card-body post-contents">

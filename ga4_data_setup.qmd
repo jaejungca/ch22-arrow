@@ -474,6 +474,20 @@ If you need a refresher on why GA4 data is nested and how rectangling
 works, refer to the previous notebook in this series.
 :::
 
+::: {.callout-note}
+## Rectangling: A Brief Appearance
+
+The helper functions below flatten GA4's nested columns before
+saving to Parquet. These techniques — `unnest_wider()`,
+`unnest_longer()`, and `coalesce()` — are covered in depth in a
+dedicated site:
+
+**[Rectangling Hierarchical Data with GA4](https://jaejungca.github.io/ch23-hierarchical_data/hierarchical-data-0.html)**
+
+If the code below looks unfamiliar, visit that site first and
+return here when you are ready.
+:::
+
 ### Struct Flattening Helper
 
 ```{r}

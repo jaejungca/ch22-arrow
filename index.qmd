@@ -1,17 +1,130 @@
 ---
-title: "Fundamnentals on Arrow, Parquet, and DuckDB"
-subtitle: "Comparisons and Guide"
-listing: 
-    contents: 
-        - "*.qmd"
-        - "!index.qmd"
-        - "!draft-*.qmd"
-    type: grid
-    fields: [title, description, categories]
-    sort: "order"
+title: "Arrow, Parquet, and DuckDB for Marketing Analytics"
+subtitle: "A Practical Guide Using Google Analytics 4 Public Data"
+listing:
+  contents:
+    - "*.qmd"
+    - "!index.qmd"
+    - "!draft-*.qmd"
+  type: grid
+  fields: [title, description, categories]
+  sort: "order"
 ---
 
-Introduction to Arrow, Parquet, and DuckDB. 
+## Welcome
+
+This site is a companion resource for the **Marketing Analytics course** at Cal Poly Pomona MSDM Program. It provides a hands-on, code-first introduction to modern tools for working with large-scale marketing data in R — specifically the kind of high-volume event data that real-world analytics platforms like Google Analytics 4 produce.
+
+All examples use the **GA4 Obfuscated Sample E-commerce Dataset** — a publicly available BigQuery dataset derived from real user behavior on the [Google Merchandise Store](https://shop.merch.google). This means every technique you learn here applies directly to the GA4 data your future employer is already collecting.
+
+## What You Will Learn
+
+The notebooks in this series build on each other in a deliberate sequence:
+
+| Step | Topic | Key Skill |
+|----------|---------------------|---------------------------------|
+| 1 | Arrow and Parquet | Read and write columnar files; query larger-than-RAM data |
+| 2 | Data Acquisition from BigQuery | Download 90 days of GA4 data and save in multiple formats |
+| 3 | DuckDB | Run SQL and `dplyr` queries on Parquet files without loading into RAM |
+| 4 | duckplyr | Use `dplyr` syntax powered by DuckDB for production-scale speed |
+
+By the end of this series you will be able to take raw GA4 event data from BigQuery and turn it into clean, fast, queryable local datasets that support real marketing analyses — traffic source performance, purchase funnels, content analytics, and e-commerce reporting.
+
+## The Dataset
+
+```         
+Google Analytics 4 · Obfuscated Sample E-commerce Dataset
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+BigQuery path  : bigquery-public-data.ga4_obfuscated_sample_ecommerce
+Date range     : November 2020 – January 2021 (90 days)
+Approx. rows   : ~3 million events
+Storage formats: Raw RDS · Flat Parquet · Hive-partitioned Parquet
+Access         : Free to query (GCP billing project required)
+```
+
+The dataset captures every user interaction on the Google Merchandise Store — page views, product clicks, add-to-cart events, checkouts, and purchases — stored in BigQuery's nested event format. Learning to work with this data teaches you exactly the skills needed for any GA4 implementation in industry.
+
+## Why These Tools?
+
+Traditional approaches to marketing data analysis load everything into RAM as a flat data frame. This works fine for small datasets but breaks down quickly when you have millions of events, dozens of dimensions, and deeply nested data structures. The tools in this series solve each layer of that problem:
+
+::: {.callout-note appearance="minimal"}
+## Parquet
+
+Stores data in a compressed columnar format that is 10–50× smaller than CSV and reads 5–10× faster. It is the industry standard for analytical data storage and is readable by R, Python, Spark, and Tableau.
+:::
+
+::: {.callout-note appearance="minimal"}
+## Arrow
+
+A library for reading, writing, and processing Parquet files in R. It allows you to query files that are larger than your RAM by loading only the columns and rows your query actually needs — a technique called lazy evaluation.
+:::
+
+::: {.callout-note appearance="minimal"}
+## DuckDB
+
+An embedded analytical database that runs inside R with zero server setup. It reads Parquet files directly and executes SQL or `dplyr` queries at speeds that rival dedicated cloud data warehouses.
+:::
+
+::: {.callout-note appearance="minimal"}
+## duckplyr
+
+Brings DuckDB's engine to your existing `dplyr` code with no syntax changes — the same verbs, the same pipes, dramatically faster execution on large data. The ideal upgrade path from `dplyr` for production-scale marketing analysis.
+:::
+
+## Related Resource
+
+::: callout-tip
+## Rectangling Hierarchical Data
+
+GA4 stores event data in a **nested format** — arrays of structs inside structs — that must be flattened before it can be saved as Parquet or analysed with standard tools. This flattening process is called **rectangling**.
+
+This topic is covered in depth in a dedicated companion site:
+
+[**Rectangling Hierarchical Data with GA4 →**](https://jaejungca.github.io/ch23-hierarchical_data/)
+
+The data acquisition notebook on this site uses rectangling briefly to prepare raw GA4 data for Parquet storage. If that code looks unfamiliar, visit the companion site first.
+:::
+
+## Tools Used in This Series
+
+### Data Access
+
+`bigrquery` · `DBI`
+
+### Data Storage & Querying
+
+`arrow` · `duckdb` · `duckplyr` · `dbplyr`
+
+### Data Wrangling
+
+`dplyr` · `purrr` · `stringr` · `lubridate`
+
+### Visualisation & Reporting
+
+`ggplot2` · `scales` · `gt` · `glue`
+
+### Workflow & Utilities
+
+`R` · `Quarto` · `fs` · `cli`
+
+------------------------------------------------------------------------
+
+::: callout-tip
+## How to Use This Site
+
+**If you are new to this material**, start with Notebook 1 and work through them in order. Each notebook builds directly on the previous one.
+
+**If you are looking for a specific topic**, use the category tags below each notebook card to find what you need — for example, click `DuckDB` to see all notebooks that use DuckDB.
+
+**If you want to follow along in R**, you will need:
+
+1.  R (≥ 4.2.0) and RStudio or Positron IDE
+2.  A Google Cloud Platform account with billing enabled (setup instructions are in Notebook 2)
+3.  The R packages listed in each notebook's setup chunk — install instructions are included
+:::
+
+Introduction to Arrow, Parquet, DuckDB, Duckplyr.
 
 ## Tools
 
