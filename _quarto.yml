@@ -16,7 +16,11 @@ website:
 
 format: 
   html: 
-    theme: cosmo
+    theme:
+      light: faltly
+      dark: darkly
     toc: true
-    mermaid:
-      theme: default
+    toc-location: right-body
+    highlight-style: github
+    smooth-scroll: true
+   
