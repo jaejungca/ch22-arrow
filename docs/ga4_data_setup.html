@@ -10,7 +10,7 @@
 <meta name="dcterms.date" content="2026-03-22">
 <meta name="description" content="This guide walks through the complete process of downloading three months of GA4 public event data from BigQuery and saving it in multiple formats — raw RDS, flat Parquet, and Hive-partitioned Parquet — so that all subsequent analyses run entirely from local files without requiring a BigQuery connection.">
 
-<title>Complete Data Acquisition Guide for GA4 Public Data – Arrow and DuckDB</title>
+<title>Data Acquisition Guide for GA4 Public Data: Comprehensive – Arrow and DuckDB</title>
 <style>
 code{white-space: pre-wrap;}
 span.smallcaps{font-variant: small-caps;}
@@ -310,7 +310,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
       <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" role="button" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
         <i class="bi bi-layout-text-sidebar-reverse"></i>
       </button>
-        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./ga4_data_setup.html">Data Acquisition Guide for GA4 Public Data</a></li></ol></nav>
+        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./ga4_data_setup.html">Data Acquisition Guide for GA4 Public Data: Comprehensive</a></li></ol></nav>
         <a class="flex-grow-1" role="navigation" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
         </a>
     </div>
@@ -331,7 +331,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
         <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="./ga4_data_setup.html" class="sidebar-item-text sidebar-link active">
- <span class="menu-text">Data Acquisition Guide for GA4 Public Data</span></a>
+ <span class="menu-text">Data Acquisition Guide for GA4 Public Data: Comprehensive</span></a>
   </div>
 </li>
         <li class="sidebar-item">
@@ -416,8 +416,8 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 
 <header id="title-block-header" class="quarto-title-block default">
 <div class="quarto-title">
-<h1 class="title">Complete Data Acquisition Guide for GA4 Public Data</h1>
-<p class="subtitle lead">90 days of data in multiple formats</p>
+<h1 class="title">Data Acquisition Guide for GA4 Public Data: Comprehensive</h1>
+<p class="subtitle lead">90 days of GA4 data in multiple formats</p>
   <div class="quarto-categories">
     <div class="quarto-category">Data Acquisition</div>
     <div class="quarto-category">GA4</div>
@@ -1062,6 +1062,21 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </div>
 <div class="callout-body-container callout-body">
 <p>Parquet files cannot store R list-columns (nested data). We must flatten the nested columns before saving to Parquet. Defining the helper functions here keeps the download loop clean and readable. If you need a refresher on why GA4 data is nested and how rectangling works, refer to the previous notebook in this series.</p>
+</div>
+</div>
+<div class="callout callout-style-default callout-note callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Note</span>Rectangling: A Brief Appearance
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>The helper functions below flatten GA4’s nested columns before saving to Parquet. These techniques — <code>unnest_wider()</code>, <code>unnest_longer()</code>, and <code>coalesce()</code> — are covered in depth in a dedicated site:</p>
+<p><strong><a href="https://jaejungca.github.io/ch23-hierarchical_data/hierarchical-data-0.html">Rectangling Hierarchical Data with GA4</a></strong></p>
+<p>If the code below looks unfamiliar, visit that site first and return here when you are ready.</p>
 </div>
 </div>
 <section id="struct-flattening-helper" class="level3" data-number="5.1">

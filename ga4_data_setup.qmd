@@ -1,5 +1,5 @@
 ---
-title: "Data Acquisition Guide for GA4 Public Data"
+title: "Data Acquisition Guide for GA4 Public Data: Comprehensive"
 subtitle: "90 days of GA4 data in multiple formats"
 description: "This guide walks through the complete process of downloading
   three months of GA4 public event data from BigQuery and saving it in
