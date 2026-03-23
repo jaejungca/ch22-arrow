@@ -25,4 +25,5 @@ format:
     smooth-scroll: true
     code-copy: true
     code-link: true
+    link-external-newwindow: true
    
