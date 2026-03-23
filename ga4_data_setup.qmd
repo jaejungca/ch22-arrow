@@ -136,8 +136,8 @@ library(purrr)
 library(arrow)
 library(lubridate)
 library(glue)
-library(fs)
-library(cli)
+library(fs) # file system operations
+library(cli) # Command Line Interface Tools to create rich, readable console output in R 
 library(stringr)
 library(scales)
 ```

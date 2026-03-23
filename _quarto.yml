@@ -23,4 +23,6 @@ format:
     toc-location: right-body
     highlight-style: github
     smooth-scroll: true
+    code-copy: true
+    code-link: true
    
