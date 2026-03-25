@@ -103,7 +103,7 @@ data/
 
 ```{r}
 #| label: install-packages
-#| eval: false
+#| eval: true
 #| cache: false
 
 # Run this chunk once if you have not installed these packages yet.
@@ -196,7 +196,7 @@ error message if you forget.
 
 ```{r}
 #| label: set-project-id
-#| eval: false
+#| eval: true
 
 # ── Replace this string with your actual GCP Project ID ──────────────────────
 # Example: "marketing-analytics-391408"
@@ -233,7 +233,7 @@ cli::cli_alert_success("Billing project set to: {.val {BILLING_PROJECT}}")
 
 ```{r}
 #| label: authenticate
-#| eval: false
+#| eval: true
 #| cache: false
 
 # This opens a browser window asking you to sign in with your Google account.
@@ -263,7 +263,7 @@ will only see the browser prompt on your first run.
 
 ```{r}
 #| label: connect
-#| eval: false
+#| eval: true
 
 # ── Connect to the public GA4 dataset ─────────────────────────────────────────
 # project  = where the PUBLIC data lives (always "bigquery-public-data")
@@ -312,7 +312,7 @@ structure and volume of what you are working with.
 
 ```{r}
 #| label: inspect-schema
-#| eval: false
+#| eval: true
 
 # ── Inspect the schema of a single day ────────────────────────────────────────
 # tbl() creates a lazy reference — nothing is downloaded yet
@@ -345,7 +345,7 @@ in the previous notebook.
 
 ```{r}
 #| label: check-row-counts
-#| eval: false
+#| eval: true
 
 # ── Sample a few days to understand data volume ────────────────────────────────
 sample_dates <- c(
@@ -383,7 +383,7 @@ cli::cli_alert_info(
 
 ```{r}
 #| label: plan-download
-#| eval: false
+#| eval: true
 
 # ── Define the three months to download ───────────────────────────────────────
 # November 2020, December 2020, January 2021
@@ -691,7 +691,7 @@ files are detected and skipped automatically.
 
 ```{r}
 #| label: download-loop
-#| eval: false
+#| eval: true
 #| cache: false
 
 cli::cli_h1("Starting GA4 Download")
@@ -743,11 +743,11 @@ for (i in seq_along(target_tables)) {
 
       # ── Save raw nested data as .rds ─────────────────────────────────────────
       # compress = FALSE: fastest read/write — use "gz" to save disk space
-      saveRDS(raw_day, rds_path, compress = FALSE)
+      saveRDS(events_jan, "C:/Users/Juan/Documents/ga4_data/events_jan.rds")
 
       # ── Flatten structs and save as Parquet ──────────────────────────────────
       flat_day <- flatten_structs(raw_day)
-      write_parquet(flat_day, parq_path, compression = "snappy")
+      write_parquet(events_jan, "C:/Users/Juan/Documents/ga4_data/events_jan.parquet")
 
       # ── Flatten event_params and save as Parquet ─────────────────────────────
       params_flat <- flatten_event_params(raw_day)
@@ -812,7 +812,7 @@ date-filtered queries dramatically faster on large datasets.
 
 ```{r}
 #| label: partition-events
-#| eval: false
+#| eval: true
 #| cache: false
 
 cli::cli_h2("Building partitioned events dataset")
@@ -850,7 +850,7 @@ cli::cli_alert_success(
 
 ```{r}
 #| label: partition-params
-#| eval: false
+#| eval: true
 #| cache: false
 
 cli::cli_h2("Building partitioned event_params dataset")
@@ -891,7 +891,7 @@ if (length(params_files) == 0) {
 
 ```{r}
 #| label: partition-items
-#| eval: false
+#| eval: true
 #| cache: false
 
 cli::cli_h2("Building partitioned items dataset")
@@ -918,11 +918,11 @@ if (length(items_files) == 0) {
       month = as.integer(str_sub(event_date, 5L, 6L))
     ) |>
     write_dataset(
-      path = "data/ga4_items_partitioned",
-      format = "parquet",
-      partitioning = c("year", "month"),
-      compression = "snappy"
-    )
+  path = "data/ga4_items_partitioned",
+  format = "parquet",
+  partitioning = c("year", "month"),
+  compression = "snappy"
+)
 
   cli::cli_alert_success(
     "Items partitioned dataset written to data/ga4_items_partitioned/"
@@ -1027,7 +1027,7 @@ cli::cli_alert_info(
 
 ```{r}
 #| label: verify-partitions
-#| eval: false
+#| eval: true
 
 cli::cli_h2("Verification: Partition Structure")
 
@@ -1074,7 +1074,7 @@ if (fs::dir_exists("data/ga4_partitioned")) {
 
 ```{r}
 #| label: verify-sample-data
-#| eval: false
+#| eval: true
 
 cli::cli_h2("Verification: Sample Data")
 
@@ -1121,7 +1121,7 @@ if (fs::dir_exists("data/ga4_items_partitioned")) {
 
 ```{r}
 #| label: download-summary
-#| eval: false
+#| eval: true
 
 cli::cli_h1("Download Summary")
 
@@ -1188,7 +1188,7 @@ if (exists("download_log") && length(download_log) > 0) {
 
 ```{r}
 #| label: disconnect
-#| eval: false
+#| eval: true
 #| cache: false
 
 # Close the BigQuery connection — no longer needed after download
@@ -1225,7 +1225,7 @@ That is all you need. No BigQuery, no authentication, no waiting.
 
 ```{r}
 #| label: loading-patterns
-#| eval: false
+#| eval: true
 
 library(arrow)
 library(dplyr)
@@ -1296,7 +1296,7 @@ ga4_duck |>
 
 ```{r}
 #| label: troubleshooting
-#| eval: false
+#| eval: true
 
 # ── Problem 1: "notFound" error ───────────────────────────────────────────────
 # Symptom: Error in bq_post(): Request couldn't be served. [notFound]
@@ -1374,7 +1374,7 @@ open_dataset("data/ga4_partitioned")$schema
 #| code-fold: true
 #| code-summary: "Show session info"
 #| cache: false
-#| eval: false
+#| eval: true
 
 sessioninfo::session_info()
 ```
