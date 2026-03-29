@@ -346,7 +346,7 @@ These nested columns are why we need the rectangling techniques taught in the pr
 ```{r}
 #| label: check-row-counts
 #| eval: true
-#| cache: true
+#| cache: false
 
 # ── Sample a few days to understand data volume ────────────────────────────────
 sample_dates <- c(
@@ -385,7 +385,7 @@ cli::cli_alert_info(
 ```{r}
 #| label: plan-download
 #| eval: true
-#| cache: true
+#| cache: false
 
 # ── Define the three months to download ───────────────────────────────────────
 # November 2020, December 2020, January 2021
@@ -429,7 +429,7 @@ cli::cli_bullets(c(
 
 ```{r}
 #| label: create-folders
-#| cache: true
+#| cache: false
 
 # ── Create all required directories ───────────────────────────────────────────
 # fs::dir_create() is safer than base R dir.create() — it does not error If directory already exists → silently does nothing, leaves contents intact
@@ -676,7 +676,7 @@ flatten_items <- function(data) {
 
 ```{r}
 #| label: confirm-helpers
-#| cache: true
+#| cache: false
 
 cli::cli_alert_success("All three helper functions are defined and ready.")
 cli::cli_bullets(c(
@@ -724,8 +724,8 @@ Each day's files are saved immediately after downloading. If you must stop, simp
 
 ```{r}
 #| label: download-loop
-#| eval: false
-#| cache: true
+#| eval: true
+#| cache: false
 
 cli::cli_h1("Starting GA4 Download")
 cli::cli_alert_info(
@@ -841,7 +841,7 @@ Hive partitioning stores data in a folder hierarchy where folder names encode co
 ```{r}
 #| label: partition-events
 #| eval: true
-#| cache: true
+#| cache: false
 
 cli::cli_h2("Building partitioned events dataset")
 
@@ -879,7 +879,7 @@ cli::cli_alert_success(
 ```{r}
 #| label: partition-params
 #| eval: true
-#| cache: true
+#| cache: false
 
 cli::cli_h2("Building partitioned event_params dataset")
 
@@ -920,7 +920,7 @@ if (length(params_files) == 0) {
 ```{r}
 #| label: partition-items
 #| eval: true
-#| cache: true
+#| cache: false
 
 cli::cli_h2("Building partitioned items dataset")
 
@@ -1234,7 +1234,7 @@ if (exists("download_log") && length(download_log) > 0) {
 ```{r}
 #| label: disconnect
 #| eval: true
-#| cache: true
+#| cache: false
 
 # Close the BigQuery connection — no longer needed after download
 dbDisconnect(con)
@@ -1400,7 +1400,7 @@ tbl(con, "events_20201101") |>
     geo,
     traffic_source
   ) |>
-  collect() # Excludes event_params and items — much smaller
+  collect(page_size = 1000) # Excludes event_params and items — much smaller
 
 # ── Problem 5: Parquet write error with list-columns ─────────────────────────
 # Symptom: Error writing Parquet — type not supported
