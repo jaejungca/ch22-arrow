@@ -618,7 +618,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb2"><pre class="sourceCode markdown code-with-copy"><code class="sourceCode markdown"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
 <span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a><span class="co">#| label: install-packages</span></span>
 <span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a><span class="co">#| eval: true</span></span>
-<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a><span class="co">#| cache: true</span></span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a><span class="co">#| cache: false</span></span>
 <span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a><span class="co"># Run this chunk once if you have not installed these packages yet.</span></span>
 <span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a><span class="co"># After installing, you do not need to run it again.</span></span>
@@ -658,7 +658,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <div class="cell">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb3"><pre class="sourceCode markdown code-with-copy"><code class="sourceCode markdown"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
 <span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a><span class="co">#| label: load-packages</span></span>
-<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a><span class="co">#| cache: true</span></span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a><span class="co">#| cache: false</span></span>
 <span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(bigrquery)</span>
 <span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(DBI)</span>
@@ -1135,13 +1135,13 @@ $ items                         &lt;list&lt;df[,26]&gt;&gt; [&lt;data.frame[0 x 
 </ol>
 </div>
 </div>
-<div class="callout callout-style-default callout-note callout-titled">
+<div class="callout callout-style-default callout-tip callout-titled">
 <div class="callout-header d-flex align-content-center">
 <div class="callout-icon-container">
 <i class="callout-icon"></i>
 </div>
 <div class="callout-title-container flex-fill">
-<span class="screen-reader-only">Note</span>Rectangling: A Brief Appearance
+<span class="screen-reader-only">Tip</span>Rectangling: A Brief Appearance
 </div>
 </div>
 <div class="callout-body-container callout-body">
@@ -1655,52 +1655,53 @@ $ items                         &lt;list&lt;df[,26]&gt;&gt; [&lt;data.frame[0 x 
 <div class="cell">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb21"><pre class="sourceCode markdown code-with-copy"><code class="sourceCode markdown"><span id="cb21-1"><a href="#cb21-1" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
 <span id="cb21-2"><a href="#cb21-2" aria-hidden="true" tabindex="-1"></a><span class="co">#| label: verify-file-counts</span></span>
-<span id="cb21-3"><a href="#cb21-3" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb21-4"><a href="#cb21-4" aria-hidden="true" tabindex="-1"></a>cli<span class="sc">::</span><span class="fu">cli_h2</span>(<span class="st">"Verification: File Counts"</span>)</span>
-<span id="cb21-5"><a href="#cb21-5" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb21-6"><a href="#cb21-6" aria-hidden="true" tabindex="-1"></a><span class="co"># Define what we expect in each folder</span></span>
-<span id="cb21-7"><a href="#cb21-7" aria-hidden="true" tabindex="-1"></a>expected_counts <span class="ot">&lt;-</span> tibble<span class="sc">::</span><span class="fu">tribble</span>(</span>
-<span id="cb21-8"><a href="#cb21-8" aria-hidden="true" tabindex="-1"></a>  <span class="sc">~</span>folder                   , <span class="sc">~</span>description                         ,</span>
-<span id="cb21-9"><a href="#cb21-9" aria-hidden="true" tabindex="-1"></a>  <span class="st">"data/ga4_raw"</span>            , <span class="st">"Raw nested .rds files"</span>              ,</span>
-<span id="cb21-10"><a href="#cb21-10" aria-hidden="true" tabindex="-1"></a>  <span class="st">"data/ga4_parquet"</span>        , <span class="st">"Flat events Parquet"</span>                ,</span>
-<span id="cb21-11"><a href="#cb21-11" aria-hidden="true" tabindex="-1"></a>  <span class="st">"data/ga4_parquet_params"</span> , <span class="st">"Event params Parquet"</span>               ,</span>
-<span id="cb21-12"><a href="#cb21-12" aria-hidden="true" tabindex="-1"></a>  <span class="st">"data/ga4_parquet_items"</span>  , <span class="st">"Items Parquet (purchase days only)"</span></span>
-<span id="cb21-13"><a href="#cb21-13" aria-hidden="true" tabindex="-1"></a>)</span>
-<span id="cb21-14"><a href="#cb21-14" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb21-15"><a href="#cb21-15" aria-hidden="true" tabindex="-1"></a><span class="co"># Count files actually present</span></span>
-<span id="cb21-16"><a href="#cb21-16" aria-hidden="true" tabindex="-1"></a>file_counts <span class="ot">&lt;-</span> expected_counts <span class="sc">|&gt;</span></span>
-<span id="cb21-17"><a href="#cb21-17" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(</span>
-<span id="cb21-18"><a href="#cb21-18" aria-hidden="true" tabindex="-1"></a>    <span class="at">exists =</span> <span class="fu">map_lgl</span>(folder, fs<span class="sc">::</span>dir_exists),</span>
-<span id="cb21-19"><a href="#cb21-19" aria-hidden="true" tabindex="-1"></a>    <span class="at">n_files =</span> <span class="fu">map_int</span>(folder, \(d) {</span>
-<span id="cb21-20"><a href="#cb21-20" aria-hidden="true" tabindex="-1"></a>      <span class="cf">if</span> (<span class="sc">!</span>fs<span class="sc">::</span><span class="fu">dir_exists</span>(d)) {</span>
-<span id="cb21-21"><a href="#cb21-21" aria-hidden="true" tabindex="-1"></a>        <span class="fu">return</span>(<span class="dv">0</span>L)</span>
-<span id="cb21-22"><a href="#cb21-22" aria-hidden="true" tabindex="-1"></a>      }</span>
-<span id="cb21-23"><a href="#cb21-23" aria-hidden="true" tabindex="-1"></a>      <span class="fu">length</span>(fs<span class="sc">::</span><span class="fu">dir_ls</span>(d, <span class="at">regexp =</span> <span class="st">"</span><span class="sc">\\</span><span class="st">.(rds|parquet)$"</span>))</span>
-<span id="cb21-24"><a href="#cb21-24" aria-hidden="true" tabindex="-1"></a>    }),</span>
-<span id="cb21-25"><a href="#cb21-25" aria-hidden="true" tabindex="-1"></a>    <span class="at">status =</span> <span class="fu">case_when</span>(</span>
-<span id="cb21-26"><a href="#cb21-26" aria-hidden="true" tabindex="-1"></a>      <span class="sc">!</span>exists <span class="sc">~</span> <span class="st">"folder missing"</span>,</span>
-<span id="cb21-27"><a href="#cb21-27" aria-hidden="true" tabindex="-1"></a>      n_files <span class="sc">==</span> <span class="dv">0</span> <span class="sc">~</span> <span class="st">"empty"</span>,</span>
-<span id="cb21-28"><a href="#cb21-28" aria-hidden="true" tabindex="-1"></a>      n_files <span class="sc">&lt;</span> <span class="dv">85</span> <span class="sc">~</span> <span class="fu">glue</span>(<span class="st">"⚠ only {n_files} files"</span>),</span>
-<span id="cb21-29"><a href="#cb21-29" aria-hidden="true" tabindex="-1"></a>      n_files <span class="sc">&gt;=</span> <span class="dv">85</span> <span class="sc">~</span> <span class="fu">glue</span>(<span class="st">"✓ {n_files} files"</span>),</span>
-<span id="cb21-30"><a href="#cb21-30" aria-hidden="true" tabindex="-1"></a>      <span class="cn">TRUE</span> <span class="sc">~</span> <span class="fu">as.character</span>(n_files)</span>
-<span id="cb21-31"><a href="#cb21-31" aria-hidden="true" tabindex="-1"></a>    )</span>
-<span id="cb21-32"><a href="#cb21-32" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">|&gt;</span></span>
-<span id="cb21-33"><a href="#cb21-33" aria-hidden="true" tabindex="-1"></a>  <span class="fu">select</span>(description, folder, n_files, status)</span>
-<span id="cb21-34"><a href="#cb21-34" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb21-35"><a href="#cb21-35" aria-hidden="true" tabindex="-1"></a>knitr<span class="sc">::</span><span class="fu">kable</span>(</span>
-<span id="cb21-36"><a href="#cb21-36" aria-hidden="true" tabindex="-1"></a>  file_counts,</span>
-<span id="cb21-37"><a href="#cb21-37" aria-hidden="true" tabindex="-1"></a>  <span class="at">col.names =</span> <span class="fu">c</span>(<span class="st">"Dataset"</span>, <span class="st">"Folder"</span>, <span class="st">"Files"</span>, <span class="st">"Status"</span>),</span>
-<span id="cb21-38"><a href="#cb21-38" aria-hidden="true" tabindex="-1"></a>  <span class="at">caption =</span> <span class="st">"File count by folder"</span></span>
-<span id="cb21-39"><a href="#cb21-39" aria-hidden="true" tabindex="-1"></a>)</span>
-<span id="cb21-40"><a href="#cb21-40" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<span id="cb21-3"><a href="#cb21-3" aria-hidden="true" tabindex="-1"></a><span class="co">#| cache: false</span></span>
+<span id="cb21-4"><a href="#cb21-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb21-5"><a href="#cb21-5" aria-hidden="true" tabindex="-1"></a>cli<span class="sc">::</span><span class="fu">cli_h2</span>(<span class="st">"Verification: File Counts"</span>)</span>
+<span id="cb21-6"><a href="#cb21-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb21-7"><a href="#cb21-7" aria-hidden="true" tabindex="-1"></a><span class="co"># Define what we expect in each folder</span></span>
+<span id="cb21-8"><a href="#cb21-8" aria-hidden="true" tabindex="-1"></a>expected_counts <span class="ot">&lt;-</span> tibble<span class="sc">::</span><span class="fu">tribble</span>(</span>
+<span id="cb21-9"><a href="#cb21-9" aria-hidden="true" tabindex="-1"></a>  <span class="sc">~</span>folder                   , <span class="sc">~</span>description                         ,</span>
+<span id="cb21-10"><a href="#cb21-10" aria-hidden="true" tabindex="-1"></a>  <span class="st">"data/ga4_raw"</span>            , <span class="st">"Raw nested .rds files"</span>              ,</span>
+<span id="cb21-11"><a href="#cb21-11" aria-hidden="true" tabindex="-1"></a>  <span class="st">"data/ga4_parquet"</span>        , <span class="st">"Flat events Parquet"</span>                ,</span>
+<span id="cb21-12"><a href="#cb21-12" aria-hidden="true" tabindex="-1"></a>  <span class="st">"data/ga4_parquet_params"</span> , <span class="st">"Event params Parquet"</span>               ,</span>
+<span id="cb21-13"><a href="#cb21-13" aria-hidden="true" tabindex="-1"></a>  <span class="st">"data/ga4_parquet_items"</span>  , <span class="st">"Items Parquet (purchase days only)"</span></span>
+<span id="cb21-14"><a href="#cb21-14" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb21-15"><a href="#cb21-15" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb21-16"><a href="#cb21-16" aria-hidden="true" tabindex="-1"></a><span class="co"># Count files actually present</span></span>
+<span id="cb21-17"><a href="#cb21-17" aria-hidden="true" tabindex="-1"></a>file_counts <span class="ot">&lt;-</span> expected_counts <span class="sc">|&gt;</span></span>
+<span id="cb21-18"><a href="#cb21-18" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(</span>
+<span id="cb21-19"><a href="#cb21-19" aria-hidden="true" tabindex="-1"></a>    <span class="at">exists =</span> <span class="fu">map_lgl</span>(folder, fs<span class="sc">::</span>dir_exists),</span>
+<span id="cb21-20"><a href="#cb21-20" aria-hidden="true" tabindex="-1"></a>    <span class="at">n_files =</span> <span class="fu">map_int</span>(folder, \(d) {</span>
+<span id="cb21-21"><a href="#cb21-21" aria-hidden="true" tabindex="-1"></a>      <span class="cf">if</span> (<span class="sc">!</span>fs<span class="sc">::</span><span class="fu">dir_exists</span>(d)) {</span>
+<span id="cb21-22"><a href="#cb21-22" aria-hidden="true" tabindex="-1"></a>        <span class="fu">return</span>(<span class="dv">0</span>L)</span>
+<span id="cb21-23"><a href="#cb21-23" aria-hidden="true" tabindex="-1"></a>      }</span>
+<span id="cb21-24"><a href="#cb21-24" aria-hidden="true" tabindex="-1"></a>      <span class="fu">length</span>(fs<span class="sc">::</span><span class="fu">dir_ls</span>(d, <span class="at">regexp =</span> <span class="st">"</span><span class="sc">\\</span><span class="st">.(rds|parquet)$"</span>))</span>
+<span id="cb21-25"><a href="#cb21-25" aria-hidden="true" tabindex="-1"></a>    }),</span>
+<span id="cb21-26"><a href="#cb21-26" aria-hidden="true" tabindex="-1"></a>    <span class="at">status =</span> <span class="fu">case_when</span>(</span>
+<span id="cb21-27"><a href="#cb21-27" aria-hidden="true" tabindex="-1"></a>      <span class="sc">!</span>exists <span class="sc">~</span> <span class="st">"folder missing"</span>,</span>
+<span id="cb21-28"><a href="#cb21-28" aria-hidden="true" tabindex="-1"></a>      n_files <span class="sc">==</span> <span class="dv">0</span> <span class="sc">~</span> <span class="st">"empty"</span>,</span>
+<span id="cb21-29"><a href="#cb21-29" aria-hidden="true" tabindex="-1"></a>      n_files <span class="sc">&lt;</span> <span class="dv">85</span> <span class="sc">~</span> <span class="fu">glue</span>(<span class="st">"⚠ only {n_files} files"</span>),</span>
+<span id="cb21-30"><a href="#cb21-30" aria-hidden="true" tabindex="-1"></a>      n_files <span class="sc">&gt;=</span> <span class="dv">85</span> <span class="sc">~</span> <span class="fu">glue</span>(<span class="st">"✓ {n_files} files"</span>),</span>
+<span id="cb21-31"><a href="#cb21-31" aria-hidden="true" tabindex="-1"></a>      <span class="cn">TRUE</span> <span class="sc">~</span> <span class="fu">as.character</span>(n_files)</span>
+<span id="cb21-32"><a href="#cb21-32" aria-hidden="true" tabindex="-1"></a>    )</span>
+<span id="cb21-33"><a href="#cb21-33" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">|&gt;</span></span>
+<span id="cb21-34"><a href="#cb21-34" aria-hidden="true" tabindex="-1"></a>  <span class="fu">select</span>(description, folder, n_files, status)</span>
+<span id="cb21-35"><a href="#cb21-35" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb21-36"><a href="#cb21-36" aria-hidden="true" tabindex="-1"></a>knitr<span class="sc">::</span><span class="fu">kable</span>(</span>
+<span id="cb21-37"><a href="#cb21-37" aria-hidden="true" tabindex="-1"></a>  file_counts,</span>
+<span id="cb21-38"><a href="#cb21-38" aria-hidden="true" tabindex="-1"></a>  <span class="at">col.names =</span> <span class="fu">c</span>(<span class="st">"Dataset"</span>, <span class="st">"Folder"</span>, <span class="st">"Files"</span>, <span class="st">"Status"</span>),</span>
+<span id="cb21-39"><a href="#cb21-39" aria-hidden="true" tabindex="-1"></a>  <span class="at">caption =</span> <span class="st">"File count by folder"</span></span>
+<span id="cb21-40"><a href="#cb21-40" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb21-41"><a href="#cb21-41" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output-display">
 <table class="caption-top table table-sm table-striped small">
 <caption>File count by folder</caption>
 <colgroup>
-<col style="width: 48%">
-<col style="width: 33%">
-<col style="width: 8%">
-<col style="width: 9%">
+<col style="width: 46%">
+<col style="width: 31%">
+<col style="width: 7%">
+<col style="width: 14%">
 </colgroup>
 <thead>
 <tr class="header">
@@ -1714,26 +1715,26 @@ $ items                         &lt;list&lt;df[,26]&gt;&gt; [&lt;data.frame[0 x 
 <tr class="odd">
 <td style="text-align: left;">Raw nested .rds files</td>
 <td style="text-align: left;">data/ga4_raw</td>
-<td style="text-align: right;">0</td>
-<td style="text-align: left;">empty</td>
+<td style="text-align: right;">92</td>
+<td style="text-align: left;">✓ 92 files</td>
 </tr>
 <tr class="even">
 <td style="text-align: left;">Flat events Parquet</td>
 <td style="text-align: left;">data/ga4_parquet</td>
-<td style="text-align: right;">0</td>
-<td style="text-align: left;">empty</td>
+<td style="text-align: right;">92</td>
+<td style="text-align: left;">✓ 92 files</td>
 </tr>
 <tr class="odd">
 <td style="text-align: left;">Event params Parquet</td>
 <td style="text-align: left;">data/ga4_parquet_params</td>
-<td style="text-align: right;">0</td>
-<td style="text-align: left;">empty</td>
+<td style="text-align: right;">92</td>
+<td style="text-align: left;">✓ 92 files</td>
 </tr>
 <tr class="even">
 <td style="text-align: left;">Items Parquet (purchase days only)</td>
 <td style="text-align: left;">data/ga4_parquet_items</td>
-<td style="text-align: right;">0</td>
-<td style="text-align: left;">empty</td>
+<td style="text-align: right;">92</td>
+<td style="text-align: left;">✓ 92 files</td>
 </tr>
 </tbody>
 </table>
@@ -1745,44 +1746,45 @@ $ items                         &lt;list&lt;df[,26]&gt;&gt; [&lt;data.frame[0 x 
 <div class="cell">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb22"><pre class="sourceCode markdown code-with-copy"><code class="sourceCode markdown"><span id="cb22-1"><a href="#cb22-1" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
 <span id="cb22-2"><a href="#cb22-2" aria-hidden="true" tabindex="-1"></a><span class="co">#| label: verify-storage</span></span>
-<span id="cb22-3"><a href="#cb22-3" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb22-4"><a href="#cb22-4" aria-hidden="true" tabindex="-1"></a>cli<span class="sc">::</span><span class="fu">cli_h2</span>(<span class="st">"Verification: Storage Used"</span>)</span>
-<span id="cb22-5"><a href="#cb22-5" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb22-6"><a href="#cb22-6" aria-hidden="true" tabindex="-1"></a>all_data_folders <span class="ot">&lt;-</span> <span class="fu">c</span>(</span>
-<span id="cb22-7"><a href="#cb22-7" aria-hidden="true" tabindex="-1"></a>  <span class="st">"data/ga4_raw"</span>,</span>
-<span id="cb22-8"><a href="#cb22-8" aria-hidden="true" tabindex="-1"></a>  <span class="st">"data/ga4_parquet"</span>,</span>
-<span id="cb22-9"><a href="#cb22-9" aria-hidden="true" tabindex="-1"></a>  <span class="st">"data/ga4_parquet_params"</span>,</span>
-<span id="cb22-10"><a href="#cb22-10" aria-hidden="true" tabindex="-1"></a>  <span class="st">"data/ga4_parquet_items"</span>,</span>
-<span id="cb22-11"><a href="#cb22-11" aria-hidden="true" tabindex="-1"></a>  <span class="st">"data/ga4_partitioned"</span>,</span>
-<span id="cb22-12"><a href="#cb22-12" aria-hidden="true" tabindex="-1"></a>  <span class="st">"data/ga4_params_partitioned"</span>,</span>
-<span id="cb22-13"><a href="#cb22-13" aria-hidden="true" tabindex="-1"></a>  <span class="st">"data/ga4_items_partitioned"</span></span>
-<span id="cb22-14"><a href="#cb22-14" aria-hidden="true" tabindex="-1"></a>)</span>
-<span id="cb22-15"><a href="#cb22-15" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb22-16"><a href="#cb22-16" aria-hidden="true" tabindex="-1"></a>storage_summary <span class="ot">&lt;-</span> all_data_folders <span class="sc">|&gt;</span></span>
-<span id="cb22-17"><a href="#cb22-17" aria-hidden="true" tabindex="-1"></a>  <span class="fu">keep</span>(fs<span class="sc">::</span>dir_exists) <span class="sc">|&gt;</span></span>
-<span id="cb22-18"><a href="#cb22-18" aria-hidden="true" tabindex="-1"></a>  <span class="fu">map_df</span>(\(d) {</span>
-<span id="cb22-19"><a href="#cb22-19" aria-hidden="true" tabindex="-1"></a>    files <span class="ot">&lt;-</span> fs<span class="sc">::</span><span class="fu">dir_ls</span>(d, <span class="at">recurse =</span> <span class="cn">TRUE</span>, <span class="at">regexp =</span> <span class="st">"</span><span class="sc">\\</span><span class="st">.(rds|parquet)$"</span>)</span>
-<span id="cb22-20"><a href="#cb22-20" aria-hidden="true" tabindex="-1"></a>    size_mb <span class="ot">&lt;-</span> <span class="fu">sum</span>(<span class="fu">as.numeric</span>(fs<span class="sc">::</span><span class="fu">file_size</span>(files))) <span class="sc">/</span> <span class="dv">1024</span><span class="sc">^</span><span class="dv">2</span></span>
-<span id="cb22-21"><a href="#cb22-21" aria-hidden="true" tabindex="-1"></a>    <span class="fu">tibble</span>(</span>
-<span id="cb22-22"><a href="#cb22-22" aria-hidden="true" tabindex="-1"></a>      <span class="at">folder =</span> d,</span>
-<span id="cb22-23"><a href="#cb22-23" aria-hidden="true" tabindex="-1"></a>      <span class="at">n_files =</span> <span class="fu">length</span>(files),</span>
-<span id="cb22-24"><a href="#cb22-24" aria-hidden="true" tabindex="-1"></a>      <span class="at">size_mb =</span> <span class="fu">round</span>(size_mb, <span class="dv">1</span>)</span>
-<span id="cb22-25"><a href="#cb22-25" aria-hidden="true" tabindex="-1"></a>    )</span>
-<span id="cb22-26"><a href="#cb22-26" aria-hidden="true" tabindex="-1"></a>  })</span>
-<span id="cb22-27"><a href="#cb22-27" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb22-28"><a href="#cb22-28" aria-hidden="true" tabindex="-1"></a>storage_summary <span class="sc">|&gt;</span></span>
-<span id="cb22-29"><a href="#cb22-29" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">size_mb =</span> <span class="fu">glue</span>(<span class="st">"{size_mb} MB"</span>)) <span class="sc">|&gt;</span></span>
-<span id="cb22-30"><a href="#cb22-30" aria-hidden="true" tabindex="-1"></a>  knitr<span class="sc">::</span><span class="fu">kable</span>(</span>
-<span id="cb22-31"><a href="#cb22-31" aria-hidden="true" tabindex="-1"></a>    <span class="at">col.names =</span> <span class="fu">c</span>(<span class="st">"Folder"</span>, <span class="st">"Files"</span>, <span class="st">"Size"</span>),</span>
-<span id="cb22-32"><a href="#cb22-32" aria-hidden="true" tabindex="-1"></a>    <span class="at">caption =</span> <span class="st">"Storage used by folder"</span></span>
-<span id="cb22-33"><a href="#cb22-33" aria-hidden="true" tabindex="-1"></a>  )</span>
-<span id="cb22-34"><a href="#cb22-34" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb22-35"><a href="#cb22-35" aria-hidden="true" tabindex="-1"></a>total_mb <span class="ot">&lt;-</span> <span class="fu">sum</span>(storage_summary<span class="sc">$</span>size_mb)</span>
-<span id="cb22-36"><a href="#cb22-36" aria-hidden="true" tabindex="-1"></a>cli<span class="sc">::</span><span class="fu">cli_alert_info</span>(</span>
-<span id="cb22-37"><a href="#cb22-37" aria-hidden="true" tabindex="-1"></a>  <span class="st">"Total storage used: {round(total_mb / 1024, 2)} GB</span></span>
-<span id="cb22-38"><a href="#cb22-38" aria-hidden="true" tabindex="-1"></a><span class="st">  ({scales::comma(total_mb)} MB)"</span></span>
-<span id="cb22-39"><a href="#cb22-39" aria-hidden="true" tabindex="-1"></a>)</span>
-<span id="cb22-40"><a href="#cb22-40" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<span id="cb22-3"><a href="#cb22-3" aria-hidden="true" tabindex="-1"></a><span class="co">#| cache: false</span></span>
+<span id="cb22-4"><a href="#cb22-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb22-5"><a href="#cb22-5" aria-hidden="true" tabindex="-1"></a>cli<span class="sc">::</span><span class="fu">cli_h2</span>(<span class="st">"Verification: Storage Used"</span>)</span>
+<span id="cb22-6"><a href="#cb22-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb22-7"><a href="#cb22-7" aria-hidden="true" tabindex="-1"></a>all_data_folders <span class="ot">&lt;-</span> <span class="fu">c</span>(</span>
+<span id="cb22-8"><a href="#cb22-8" aria-hidden="true" tabindex="-1"></a>  <span class="st">"data/ga4_raw"</span>,</span>
+<span id="cb22-9"><a href="#cb22-9" aria-hidden="true" tabindex="-1"></a>  <span class="st">"data/ga4_parquet"</span>,</span>
+<span id="cb22-10"><a href="#cb22-10" aria-hidden="true" tabindex="-1"></a>  <span class="st">"data/ga4_parquet_params"</span>,</span>
+<span id="cb22-11"><a href="#cb22-11" aria-hidden="true" tabindex="-1"></a>  <span class="st">"data/ga4_parquet_items"</span>,</span>
+<span id="cb22-12"><a href="#cb22-12" aria-hidden="true" tabindex="-1"></a>  <span class="st">"data/ga4_partitioned"</span>,</span>
+<span id="cb22-13"><a href="#cb22-13" aria-hidden="true" tabindex="-1"></a>  <span class="st">"data/ga4_params_partitioned"</span>,</span>
+<span id="cb22-14"><a href="#cb22-14" aria-hidden="true" tabindex="-1"></a>  <span class="st">"data/ga4_items_partitioned"</span></span>
+<span id="cb22-15"><a href="#cb22-15" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb22-16"><a href="#cb22-16" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb22-17"><a href="#cb22-17" aria-hidden="true" tabindex="-1"></a>storage_summary <span class="ot">&lt;-</span> all_data_folders <span class="sc">|&gt;</span></span>
+<span id="cb22-18"><a href="#cb22-18" aria-hidden="true" tabindex="-1"></a>  <span class="fu">keep</span>(fs<span class="sc">::</span>dir_exists) <span class="sc">|&gt;</span></span>
+<span id="cb22-19"><a href="#cb22-19" aria-hidden="true" tabindex="-1"></a>  <span class="fu">map_df</span>(\(d) {</span>
+<span id="cb22-20"><a href="#cb22-20" aria-hidden="true" tabindex="-1"></a>    files <span class="ot">&lt;-</span> fs<span class="sc">::</span><span class="fu">dir_ls</span>(d, <span class="at">recurse =</span> <span class="cn">TRUE</span>, <span class="at">regexp =</span> <span class="st">"</span><span class="sc">\\</span><span class="st">.(rds|parquet)$"</span>)</span>
+<span id="cb22-21"><a href="#cb22-21" aria-hidden="true" tabindex="-1"></a>    size_mb <span class="ot">&lt;-</span> <span class="fu">sum</span>(<span class="fu">as.numeric</span>(fs<span class="sc">::</span><span class="fu">file_size</span>(files))) <span class="sc">/</span> <span class="dv">1024</span><span class="sc">^</span><span class="dv">2</span></span>
+<span id="cb22-22"><a href="#cb22-22" aria-hidden="true" tabindex="-1"></a>    <span class="fu">tibble</span>(</span>
+<span id="cb22-23"><a href="#cb22-23" aria-hidden="true" tabindex="-1"></a>      <span class="at">folder =</span> d,</span>
+<span id="cb22-24"><a href="#cb22-24" aria-hidden="true" tabindex="-1"></a>      <span class="at">n_files =</span> <span class="fu">length</span>(files),</span>
+<span id="cb22-25"><a href="#cb22-25" aria-hidden="true" tabindex="-1"></a>      <span class="at">size_mb =</span> <span class="fu">round</span>(size_mb, <span class="dv">1</span>)</span>
+<span id="cb22-26"><a href="#cb22-26" aria-hidden="true" tabindex="-1"></a>    )</span>
+<span id="cb22-27"><a href="#cb22-27" aria-hidden="true" tabindex="-1"></a>  })</span>
+<span id="cb22-28"><a href="#cb22-28" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb22-29"><a href="#cb22-29" aria-hidden="true" tabindex="-1"></a>storage_summary <span class="sc">|&gt;</span></span>
+<span id="cb22-30"><a href="#cb22-30" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">size_mb =</span> <span class="fu">glue</span>(<span class="st">"{size_mb} MB"</span>)) <span class="sc">|&gt;</span></span>
+<span id="cb22-31"><a href="#cb22-31" aria-hidden="true" tabindex="-1"></a>  knitr<span class="sc">::</span><span class="fu">kable</span>(</span>
+<span id="cb22-32"><a href="#cb22-32" aria-hidden="true" tabindex="-1"></a>    <span class="at">col.names =</span> <span class="fu">c</span>(<span class="st">"Folder"</span>, <span class="st">"Files"</span>, <span class="st">"Size"</span>),</span>
+<span id="cb22-33"><a href="#cb22-33" aria-hidden="true" tabindex="-1"></a>    <span class="at">caption =</span> <span class="st">"Storage used by folder"</span></span>
+<span id="cb22-34"><a href="#cb22-34" aria-hidden="true" tabindex="-1"></a>  )</span>
+<span id="cb22-35"><a href="#cb22-35" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb22-36"><a href="#cb22-36" aria-hidden="true" tabindex="-1"></a>total_mb <span class="ot">&lt;-</span> <span class="fu">sum</span>(storage_summary<span class="sc">$</span>size_mb)</span>
+<span id="cb22-37"><a href="#cb22-37" aria-hidden="true" tabindex="-1"></a>cli<span class="sc">::</span><span class="fu">cli_alert_info</span>(</span>
+<span id="cb22-38"><a href="#cb22-38" aria-hidden="true" tabindex="-1"></a>  <span class="st">"Total storage used: {round(total_mb / 1024, 2)} GB</span></span>
+<span id="cb22-39"><a href="#cb22-39" aria-hidden="true" tabindex="-1"></a><span class="st">  ({scales::comma(total_mb)} MB)"</span></span>
+<span id="cb22-40"><a href="#cb22-40" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb22-41"><a href="#cb22-41" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output-display">
 <table class="caption-top table table-sm table-striped small">
 <caption>Storage used by folder</caption>
@@ -1796,38 +1798,38 @@ $ items                         &lt;list&lt;df[,26]&gt;&gt; [&lt;data.frame[0 x 
 <tbody>
 <tr class="odd">
 <td style="text-align: left;">data/ga4_raw</td>
-<td style="text-align: right;">0</td>
-<td style="text-align: left;">0 MB</td>
+<td style="text-align: right;">92</td>
+<td style="text-align: left;">13142.2 MB</td>
 </tr>
 <tr class="even">
 <td style="text-align: left;">data/ga4_parquet</td>
-<td style="text-align: right;">0</td>
-<td style="text-align: left;">0 MB</td>
+<td style="text-align: right;">92</td>
+<td style="text-align: left;">31.1 MB</td>
 </tr>
 <tr class="odd">
 <td style="text-align: left;">data/ga4_parquet_params</td>
-<td style="text-align: right;">0</td>
-<td style="text-align: left;">0 MB</td>
+<td style="text-align: right;">92</td>
+<td style="text-align: left;">108.5 MB</td>
 </tr>
 <tr class="even">
 <td style="text-align: left;">data/ga4_parquet_items</td>
-<td style="text-align: right;">0</td>
-<td style="text-align: left;">0 MB</td>
+<td style="text-align: right;">92</td>
+<td style="text-align: left;">1.3 MB</td>
 </tr>
 <tr class="odd">
 <td style="text-align: left;">data/ga4_partitioned</td>
-<td style="text-align: right;">0</td>
-<td style="text-align: left;">0 MB</td>
+<td style="text-align: right;">10</td>
+<td style="text-align: left;">33.4 MB</td>
 </tr>
 <tr class="even">
 <td style="text-align: left;">data/ga4_params_partitioned</td>
-<td style="text-align: right;">0</td>
-<td style="text-align: left;">0 MB</td>
+<td style="text-align: right;">3</td>
+<td style="text-align: left;">117.9 MB</td>
 </tr>
 <tr class="odd">
 <td style="text-align: left;">data/ga4_items_partitioned</td>
-<td style="text-align: right;">0</td>
-<td style="text-align: left;">0 MB</td>
+<td style="text-align: right;">3</td>
+<td style="text-align: left;">1.1 MB</td>
 </tr>
 </tbody>
 </table>
@@ -1840,47 +1842,48 @@ $ items                         &lt;list&lt;df[,26]&gt;&gt; [&lt;data.frame[0 x 
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb23"><pre class="sourceCode markdown code-with-copy"><code class="sourceCode markdown"><span id="cb23-1"><a href="#cb23-1" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
 <span id="cb23-2"><a href="#cb23-2" aria-hidden="true" tabindex="-1"></a><span class="co">#| label: verify-partitions</span></span>
 <span id="cb23-3"><a href="#cb23-3" aria-hidden="true" tabindex="-1"></a><span class="co">#| eval: true</span></span>
-<span id="cb23-4"><a href="#cb23-4" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb23-5"><a href="#cb23-5" aria-hidden="true" tabindex="-1"></a>cli<span class="sc">::</span><span class="fu">cli_h2</span>(<span class="st">"Verification: Partition Structure"</span>)</span>
-<span id="cb23-6"><a href="#cb23-6" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb23-7"><a href="#cb23-7" aria-hidden="true" tabindex="-1"></a><span class="cf">if</span> (fs<span class="sc">::</span><span class="fu">dir_exists</span>(<span class="st">"data/ga4_partitioned"</span>)) {</span>
-<span id="cb23-8"><a href="#cb23-8" aria-hidden="true" tabindex="-1"></a>  ga4_check <span class="ot">&lt;-</span> <span class="fu">open_dataset</span>(<span class="st">"data/ga4_partitioned"</span>)</span>
-<span id="cb23-9"><a href="#cb23-9" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb23-10"><a href="#cb23-10" aria-hidden="true" tabindex="-1"></a>  <span class="fu">cat</span>(<span class="st">"Schema:</span><span class="sc">\n</span><span class="st">"</span>)</span>
-<span id="cb23-11"><a href="#cb23-11" aria-hidden="true" tabindex="-1"></a>  <span class="fu">print</span>(ga4_check<span class="sc">$</span>schema)</span>
-<span id="cb23-12"><a href="#cb23-12" aria-hidden="true" tabindex="-1"></a>  <span class="fu">cat</span>(<span class="st">"</span><span class="sc">\n</span><span class="st">"</span>)</span>
-<span id="cb23-13"><a href="#cb23-13" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb23-14"><a href="#cb23-14" aria-hidden="true" tabindex="-1"></a>  partition_summary <span class="ot">&lt;-</span> ga4_check <span class="sc">|&gt;</span></span>
-<span id="cb23-15"><a href="#cb23-15" aria-hidden="true" tabindex="-1"></a>    <span class="fu">count</span>(year, month, <span class="at">name =</span> <span class="st">"rows"</span>) <span class="sc">|&gt;</span></span>
-<span id="cb23-16"><a href="#cb23-16" aria-hidden="true" tabindex="-1"></a>    <span class="fu">collect</span>() <span class="sc">|&gt;</span></span>
-<span id="cb23-17"><a href="#cb23-17" aria-hidden="true" tabindex="-1"></a>    <span class="fu">arrange</span>(year, month) <span class="sc">|&gt;</span></span>
-<span id="cb23-18"><a href="#cb23-18" aria-hidden="true" tabindex="-1"></a>    <span class="fu">mutate</span>(</span>
-<span id="cb23-19"><a href="#cb23-19" aria-hidden="true" tabindex="-1"></a>      <span class="at">month_name =</span> month.abb[month],</span>
-<span id="cb23-20"><a href="#cb23-20" aria-hidden="true" tabindex="-1"></a>      <span class="at">period =</span> <span class="fu">glue</span>(<span class="st">"{month_name} {year}"</span>),</span>
-<span id="cb23-21"><a href="#cb23-21" aria-hidden="true" tabindex="-1"></a>      <span class="at">rows =</span> scales<span class="sc">::</span><span class="fu">comma</span>(rows)</span>
-<span id="cb23-22"><a href="#cb23-22" aria-hidden="true" tabindex="-1"></a>    ) <span class="sc">|&gt;</span></span>
-<span id="cb23-23"><a href="#cb23-23" aria-hidden="true" tabindex="-1"></a>    <span class="fu">select</span>(period, year, month, rows)</span>
-<span id="cb23-24"><a href="#cb23-24" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb23-25"><a href="#cb23-25" aria-hidden="true" tabindex="-1"></a>  knitr<span class="sc">::</span><span class="fu">kable</span>(</span>
-<span id="cb23-26"><a href="#cb23-26" aria-hidden="true" tabindex="-1"></a>    partition_summary,</span>
-<span id="cb23-27"><a href="#cb23-27" aria-hidden="true" tabindex="-1"></a>    <span class="at">col.names =</span> <span class="fu">c</span>(<span class="st">"Period"</span>, <span class="st">"Year"</span>, <span class="st">"Month"</span>, <span class="st">"Rows"</span>),</span>
-<span id="cb23-28"><a href="#cb23-28" aria-hidden="true" tabindex="-1"></a>    <span class="at">caption =</span> <span class="st">"Row counts by partition"</span></span>
-<span id="cb23-29"><a href="#cb23-29" aria-hidden="true" tabindex="-1"></a>  )</span>
-<span id="cb23-30"><a href="#cb23-30" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb23-31"><a href="#cb23-31" aria-hidden="true" tabindex="-1"></a>  total_rows <span class="ot">&lt;-</span> ga4_check <span class="sc">|&gt;</span></span>
-<span id="cb23-32"><a href="#cb23-32" aria-hidden="true" tabindex="-1"></a>    <span class="fu">summarise</span>(<span class="at">n =</span> <span class="fu">n</span>()) <span class="sc">|&gt;</span></span>
-<span id="cb23-33"><a href="#cb23-33" aria-hidden="true" tabindex="-1"></a>    <span class="fu">collect</span>() <span class="sc">|&gt;</span></span>
-<span id="cb23-34"><a href="#cb23-34" aria-hidden="true" tabindex="-1"></a>    <span class="fu">pull</span>(n)</span>
-<span id="cb23-35"><a href="#cb23-35" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb23-36"><a href="#cb23-36" aria-hidden="true" tabindex="-1"></a>  cli<span class="sc">::</span><span class="fu">cli_alert_success</span>(</span>
-<span id="cb23-37"><a href="#cb23-37" aria-hidden="true" tabindex="-1"></a>    <span class="st">"Total rows across all partitions: {scales::comma(total_rows)}"</span></span>
-<span id="cb23-38"><a href="#cb23-38" aria-hidden="true" tabindex="-1"></a>  )</span>
-<span id="cb23-39"><a href="#cb23-39" aria-hidden="true" tabindex="-1"></a>} <span class="cf">else</span> {</span>
-<span id="cb23-40"><a href="#cb23-40" aria-hidden="true" tabindex="-1"></a>  cli<span class="sc">::</span><span class="fu">cli_alert_warning</span>(</span>
-<span id="cb23-41"><a href="#cb23-41" aria-hidden="true" tabindex="-1"></a>    <span class="st">"Partitioned dataset not found. Run the partitioning chunks above."</span></span>
-<span id="cb23-42"><a href="#cb23-42" aria-hidden="true" tabindex="-1"></a>  )</span>
-<span id="cb23-43"><a href="#cb23-43" aria-hidden="true" tabindex="-1"></a>}</span>
-<span id="cb23-44"><a href="#cb23-44" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<span id="cb23-4"><a href="#cb23-4" aria-hidden="true" tabindex="-1"></a><span class="co">#| cache: false</span></span>
+<span id="cb23-5"><a href="#cb23-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb23-6"><a href="#cb23-6" aria-hidden="true" tabindex="-1"></a>cli<span class="sc">::</span><span class="fu">cli_h2</span>(<span class="st">"Verification: Partition Structure"</span>)</span>
+<span id="cb23-7"><a href="#cb23-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb23-8"><a href="#cb23-8" aria-hidden="true" tabindex="-1"></a><span class="cf">if</span> (fs<span class="sc">::</span><span class="fu">dir_exists</span>(<span class="st">"data/ga4_partitioned"</span>)) {</span>
+<span id="cb23-9"><a href="#cb23-9" aria-hidden="true" tabindex="-1"></a>  ga4_check <span class="ot">&lt;-</span> <span class="fu">open_dataset</span>(<span class="st">"data/ga4_partitioned"</span>)</span>
+<span id="cb23-10"><a href="#cb23-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb23-11"><a href="#cb23-11" aria-hidden="true" tabindex="-1"></a>  <span class="fu">cat</span>(<span class="st">"Schema:</span><span class="sc">\n</span><span class="st">"</span>)</span>
+<span id="cb23-12"><a href="#cb23-12" aria-hidden="true" tabindex="-1"></a>  <span class="fu">print</span>(ga4_check<span class="sc">$</span>schema)</span>
+<span id="cb23-13"><a href="#cb23-13" aria-hidden="true" tabindex="-1"></a>  <span class="fu">cat</span>(<span class="st">"</span><span class="sc">\n</span><span class="st">"</span>)</span>
+<span id="cb23-14"><a href="#cb23-14" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb23-15"><a href="#cb23-15" aria-hidden="true" tabindex="-1"></a>  partition_summary <span class="ot">&lt;-</span> ga4_check <span class="sc">|&gt;</span></span>
+<span id="cb23-16"><a href="#cb23-16" aria-hidden="true" tabindex="-1"></a>    <span class="fu">count</span>(year, month, <span class="at">name =</span> <span class="st">"rows"</span>) <span class="sc">|&gt;</span></span>
+<span id="cb23-17"><a href="#cb23-17" aria-hidden="true" tabindex="-1"></a>    <span class="fu">collect</span>() <span class="sc">|&gt;</span></span>
+<span id="cb23-18"><a href="#cb23-18" aria-hidden="true" tabindex="-1"></a>    <span class="fu">arrange</span>(year, month) <span class="sc">|&gt;</span></span>
+<span id="cb23-19"><a href="#cb23-19" aria-hidden="true" tabindex="-1"></a>    <span class="fu">mutate</span>(</span>
+<span id="cb23-20"><a href="#cb23-20" aria-hidden="true" tabindex="-1"></a>      <span class="at">month_name =</span> month.abb[month],</span>
+<span id="cb23-21"><a href="#cb23-21" aria-hidden="true" tabindex="-1"></a>      <span class="at">period =</span> <span class="fu">glue</span>(<span class="st">"{month_name} {year}"</span>),</span>
+<span id="cb23-22"><a href="#cb23-22" aria-hidden="true" tabindex="-1"></a>      <span class="at">rows =</span> scales<span class="sc">::</span><span class="fu">comma</span>(rows)</span>
+<span id="cb23-23"><a href="#cb23-23" aria-hidden="true" tabindex="-1"></a>    ) <span class="sc">|&gt;</span></span>
+<span id="cb23-24"><a href="#cb23-24" aria-hidden="true" tabindex="-1"></a>    <span class="fu">select</span>(period, year, month, rows)</span>
+<span id="cb23-25"><a href="#cb23-25" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb23-26"><a href="#cb23-26" aria-hidden="true" tabindex="-1"></a>  knitr<span class="sc">::</span><span class="fu">kable</span>(</span>
+<span id="cb23-27"><a href="#cb23-27" aria-hidden="true" tabindex="-1"></a>    partition_summary,</span>
+<span id="cb23-28"><a href="#cb23-28" aria-hidden="true" tabindex="-1"></a>    <span class="at">col.names =</span> <span class="fu">c</span>(<span class="st">"Period"</span>, <span class="st">"Year"</span>, <span class="st">"Month"</span>, <span class="st">"Rows"</span>),</span>
+<span id="cb23-29"><a href="#cb23-29" aria-hidden="true" tabindex="-1"></a>    <span class="at">caption =</span> <span class="st">"Row counts by partition"</span></span>
+<span id="cb23-30"><a href="#cb23-30" aria-hidden="true" tabindex="-1"></a>  )</span>
+<span id="cb23-31"><a href="#cb23-31" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb23-32"><a href="#cb23-32" aria-hidden="true" tabindex="-1"></a>  total_rows <span class="ot">&lt;-</span> ga4_check <span class="sc">|&gt;</span></span>
+<span id="cb23-33"><a href="#cb23-33" aria-hidden="true" tabindex="-1"></a>    <span class="fu">summarise</span>(<span class="at">n =</span> <span class="fu">n</span>()) <span class="sc">|&gt;</span></span>
+<span id="cb23-34"><a href="#cb23-34" aria-hidden="true" tabindex="-1"></a>    <span class="fu">collect</span>() <span class="sc">|&gt;</span></span>
+<span id="cb23-35"><a href="#cb23-35" aria-hidden="true" tabindex="-1"></a>    <span class="fu">pull</span>(n)</span>
+<span id="cb23-36"><a href="#cb23-36" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb23-37"><a href="#cb23-37" aria-hidden="true" tabindex="-1"></a>  cli<span class="sc">::</span><span class="fu">cli_alert_success</span>(</span>
+<span id="cb23-38"><a href="#cb23-38" aria-hidden="true" tabindex="-1"></a>    <span class="st">"Total rows across all partitions: {scales::comma(total_rows)}"</span></span>
+<span id="cb23-39"><a href="#cb23-39" aria-hidden="true" tabindex="-1"></a>  )</span>
+<span id="cb23-40"><a href="#cb23-40" aria-hidden="true" tabindex="-1"></a>} <span class="cf">else</span> {</span>
+<span id="cb23-41"><a href="#cb23-41" aria-hidden="true" tabindex="-1"></a>  cli<span class="sc">::</span><span class="fu">cli_alert_warning</span>(</span>
+<span id="cb23-42"><a href="#cb23-42" aria-hidden="true" tabindex="-1"></a>    <span class="st">"Partitioned dataset not found. Run the partitioning chunks above."</span></span>
+<span id="cb23-43"><a href="#cb23-43" aria-hidden="true" tabindex="-1"></a>  )</span>
+<span id="cb23-44"><a href="#cb23-44" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb23-45"><a href="#cb23-45" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>Schema:
 Schema
@@ -1947,60 +1950,61 @@ month: int32</code></pre>
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb25"><pre class="sourceCode markdown code-with-copy"><code class="sourceCode markdown"><span id="cb25-1"><a href="#cb25-1" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
 <span id="cb25-2"><a href="#cb25-2" aria-hidden="true" tabindex="-1"></a><span class="co">#| label: verify-sample-data</span></span>
 <span id="cb25-3"><a href="#cb25-3" aria-hidden="true" tabindex="-1"></a><span class="co">#| eval: true</span></span>
-<span id="cb25-4"><a href="#cb25-4" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb25-5"><a href="#cb25-5" aria-hidden="true" tabindex="-1"></a>cli<span class="sc">::</span><span class="fu">cli_h2</span>(<span class="st">"Verification: Sample Data"</span>)</span>
-<span id="cb25-6"><a href="#cb25-6" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb25-7"><a href="#cb25-7" aria-hidden="true" tabindex="-1"></a><span class="co"># ── Core events ───────────────────────────────────────────────────────────────</span></span>
-<span id="cb25-8"><a href="#cb25-8" aria-hidden="true" tabindex="-1"></a><span class="fu">cat</span>(<span class="st">"── Core events (first 5 rows, November 2020) ──────────────────────</span><span class="sc">\n</span><span class="st">"</span>)</span>
-<span id="cb25-9"><a href="#cb25-9" aria-hidden="true" tabindex="-1"></a><span class="cf">if</span> (fs<span class="sc">::</span><span class="fu">dir_exists</span>(<span class="st">"data/ga4_partitioned"</span>)) {</span>
-<span id="cb25-10"><a href="#cb25-10" aria-hidden="true" tabindex="-1"></a>  <span class="fu">open_dataset</span>(<span class="st">"data/ga4_partitioned"</span>) <span class="sc">|&gt;</span></span>
-<span id="cb25-11"><a href="#cb25-11" aria-hidden="true" tabindex="-1"></a>    <span class="fu">filter</span>(year <span class="sc">==</span> <span class="dv">2020</span>, month <span class="sc">==</span> <span class="dv">11</span>) <span class="sc">|&gt;</span></span>
-<span id="cb25-12"><a href="#cb25-12" aria-hidden="true" tabindex="-1"></a>    <span class="fu">select</span>(</span>
-<span id="cb25-13"><a href="#cb25-13" aria-hidden="true" tabindex="-1"></a>      event_date,</span>
-<span id="cb25-14"><a href="#cb25-14" aria-hidden="true" tabindex="-1"></a>      event_name,</span>
-<span id="cb25-15"><a href="#cb25-15" aria-hidden="true" tabindex="-1"></a>      user_pseudo_id,</span>
-<span id="cb25-16"><a href="#cb25-16" aria-hidden="true" tabindex="-1"></a>      device_category,</span>
-<span id="cb25-17"><a href="#cb25-17" aria-hidden="true" tabindex="-1"></a>      geo_country</span>
-<span id="cb25-18"><a href="#cb25-18" aria-hidden="true" tabindex="-1"></a>    ) <span class="sc">|&gt;</span></span>
-<span id="cb25-19"><a href="#cb25-19" aria-hidden="true" tabindex="-1"></a>    <span class="fu">head</span>(<span class="dv">5</span>) <span class="sc">|&gt;</span></span>
-<span id="cb25-20"><a href="#cb25-20" aria-hidden="true" tabindex="-1"></a>    <span class="fu">collect</span>() <span class="sc">|&gt;</span></span>
-<span id="cb25-21"><a href="#cb25-21" aria-hidden="true" tabindex="-1"></a>    knitr<span class="sc">::</span><span class="fu">kable</span>()</span>
-<span id="cb25-22"><a href="#cb25-22" aria-hidden="true" tabindex="-1"></a>}</span>
-<span id="cb25-23"><a href="#cb25-23" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb25-24"><a href="#cb25-24" aria-hidden="true" tabindex="-1"></a><span class="co"># ── Event params ──────────────────────────────────────────────────────────────</span></span>
-<span id="cb25-25"><a href="#cb25-25" aria-hidden="true" tabindex="-1"></a><span class="fu">cat</span>(<span class="st">"</span><span class="sc">\n</span><span class="st">── Event params (first 5 rows) ─────────────────────────────────────</span><span class="sc">\n</span><span class="st">"</span>)</span>
-<span id="cb25-26"><a href="#cb25-26" aria-hidden="true" tabindex="-1"></a><span class="cf">if</span> (fs<span class="sc">::</span><span class="fu">dir_exists</span>(<span class="st">"data/ga4_params_partitioned"</span>)) {</span>
-<span id="cb25-27"><a href="#cb25-27" aria-hidden="true" tabindex="-1"></a>  <span class="fu">open_dataset</span>(<span class="st">"data/ga4_params_partitioned"</span>) <span class="sc">|&gt;</span></span>
-<span id="cb25-28"><a href="#cb25-28" aria-hidden="true" tabindex="-1"></a>    <span class="fu">filter</span>(year <span class="sc">==</span> <span class="dv">2020</span>, month <span class="sc">==</span> <span class="dv">11</span>) <span class="sc">|&gt;</span></span>
-<span id="cb25-29"><a href="#cb25-29" aria-hidden="true" tabindex="-1"></a>    <span class="fu">select</span>(</span>
-<span id="cb25-30"><a href="#cb25-30" aria-hidden="true" tabindex="-1"></a>      event_date,</span>
-<span id="cb25-31"><a href="#cb25-31" aria-hidden="true" tabindex="-1"></a>      event_name,</span>
-<span id="cb25-32"><a href="#cb25-32" aria-hidden="true" tabindex="-1"></a>      user_pseudo_id,</span>
-<span id="cb25-33"><a href="#cb25-33" aria-hidden="true" tabindex="-1"></a>      key,</span>
-<span id="cb25-34"><a href="#cb25-34" aria-hidden="true" tabindex="-1"></a>      param_value</span>
-<span id="cb25-35"><a href="#cb25-35" aria-hidden="true" tabindex="-1"></a>    ) <span class="sc">|&gt;</span></span>
-<span id="cb25-36"><a href="#cb25-36" aria-hidden="true" tabindex="-1"></a>    <span class="fu">head</span>(<span class="dv">5</span>) <span class="sc">|&gt;</span></span>
-<span id="cb25-37"><a href="#cb25-37" aria-hidden="true" tabindex="-1"></a>    <span class="fu">collect</span>() <span class="sc">|&gt;</span></span>
-<span id="cb25-38"><a href="#cb25-38" aria-hidden="true" tabindex="-1"></a>    knitr<span class="sc">::</span><span class="fu">kable</span>()</span>
-<span id="cb25-39"><a href="#cb25-39" aria-hidden="true" tabindex="-1"></a>}</span>
-<span id="cb25-40"><a href="#cb25-40" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb25-41"><a href="#cb25-41" aria-hidden="true" tabindex="-1"></a><span class="co"># ── Items ─────────────────────────────────────────────────────────────────────</span></span>
-<span id="cb25-42"><a href="#cb25-42" aria-hidden="true" tabindex="-1"></a><span class="fu">cat</span>(<span class="st">"</span><span class="sc">\n</span><span class="st">── Items (first 5 rows) ─────────────────────────────────────────────</span><span class="sc">\n</span><span class="st">"</span>)</span>
-<span id="cb25-43"><a href="#cb25-43" aria-hidden="true" tabindex="-1"></a><span class="cf">if</span> (fs<span class="sc">::</span><span class="fu">dir_exists</span>(<span class="st">"data/ga4_items_partitioned"</span>)) {</span>
-<span id="cb25-44"><a href="#cb25-44" aria-hidden="true" tabindex="-1"></a>  <span class="fu">open_dataset</span>(<span class="st">"data/ga4_items_partitioned"</span>) <span class="sc">|&gt;</span></span>
-<span id="cb25-45"><a href="#cb25-45" aria-hidden="true" tabindex="-1"></a>    <span class="fu">select</span>(</span>
-<span id="cb25-46"><a href="#cb25-46" aria-hidden="true" tabindex="-1"></a>      event_date,</span>
-<span id="cb25-47"><a href="#cb25-47" aria-hidden="true" tabindex="-1"></a>      user_pseudo_id,</span>
-<span id="cb25-48"><a href="#cb25-48" aria-hidden="true" tabindex="-1"></a>      item_id,</span>
-<span id="cb25-49"><a href="#cb25-49" aria-hidden="true" tabindex="-1"></a>      item_name,</span>
-<span id="cb25-50"><a href="#cb25-50" aria-hidden="true" tabindex="-1"></a>      price,</span>
-<span id="cb25-51"><a href="#cb25-51" aria-hidden="true" tabindex="-1"></a>      quantity</span>
-<span id="cb25-52"><a href="#cb25-52" aria-hidden="true" tabindex="-1"></a>    ) <span class="sc">|&gt;</span></span>
-<span id="cb25-53"><a href="#cb25-53" aria-hidden="true" tabindex="-1"></a>    <span class="fu">head</span>(<span class="dv">5</span>) <span class="sc">|&gt;</span></span>
-<span id="cb25-54"><a href="#cb25-54" aria-hidden="true" tabindex="-1"></a>    <span class="fu">collect</span>() <span class="sc">|&gt;</span></span>
-<span id="cb25-55"><a href="#cb25-55" aria-hidden="true" tabindex="-1"></a>    knitr<span class="sc">::</span><span class="fu">kable</span>()</span>
-<span id="cb25-56"><a href="#cb25-56" aria-hidden="true" tabindex="-1"></a>}</span>
-<span id="cb25-57"><a href="#cb25-57" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<span id="cb25-4"><a href="#cb25-4" aria-hidden="true" tabindex="-1"></a><span class="co">#| cache: false</span></span>
+<span id="cb25-5"><a href="#cb25-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb25-6"><a href="#cb25-6" aria-hidden="true" tabindex="-1"></a>cli<span class="sc">::</span><span class="fu">cli_h2</span>(<span class="st">"Verification: Sample Data"</span>)</span>
+<span id="cb25-7"><a href="#cb25-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb25-8"><a href="#cb25-8" aria-hidden="true" tabindex="-1"></a><span class="co"># ── Core events ───────────────────────────────────────────────────────────────</span></span>
+<span id="cb25-9"><a href="#cb25-9" aria-hidden="true" tabindex="-1"></a><span class="fu">cat</span>(<span class="st">"── Core events (first 5 rows, November 2020) ──────────────────────</span><span class="sc">\n</span><span class="st">"</span>)</span>
+<span id="cb25-10"><a href="#cb25-10" aria-hidden="true" tabindex="-1"></a><span class="cf">if</span> (fs<span class="sc">::</span><span class="fu">dir_exists</span>(<span class="st">"data/ga4_partitioned"</span>)) {</span>
+<span id="cb25-11"><a href="#cb25-11" aria-hidden="true" tabindex="-1"></a>  <span class="fu">open_dataset</span>(<span class="st">"data/ga4_partitioned"</span>) <span class="sc">|&gt;</span></span>
+<span id="cb25-12"><a href="#cb25-12" aria-hidden="true" tabindex="-1"></a>    <span class="fu">filter</span>(year <span class="sc">==</span> <span class="dv">2020</span>, month <span class="sc">==</span> <span class="dv">11</span>) <span class="sc">|&gt;</span></span>
+<span id="cb25-13"><a href="#cb25-13" aria-hidden="true" tabindex="-1"></a>    <span class="fu">select</span>(</span>
+<span id="cb25-14"><a href="#cb25-14" aria-hidden="true" tabindex="-1"></a>      event_date,</span>
+<span id="cb25-15"><a href="#cb25-15" aria-hidden="true" tabindex="-1"></a>      event_name,</span>
+<span id="cb25-16"><a href="#cb25-16" aria-hidden="true" tabindex="-1"></a>      user_pseudo_id,</span>
+<span id="cb25-17"><a href="#cb25-17" aria-hidden="true" tabindex="-1"></a>      device_category,</span>
+<span id="cb25-18"><a href="#cb25-18" aria-hidden="true" tabindex="-1"></a>      geo_country</span>
+<span id="cb25-19"><a href="#cb25-19" aria-hidden="true" tabindex="-1"></a>    ) <span class="sc">|&gt;</span></span>
+<span id="cb25-20"><a href="#cb25-20" aria-hidden="true" tabindex="-1"></a>    <span class="fu">head</span>(<span class="dv">5</span>) <span class="sc">|&gt;</span></span>
+<span id="cb25-21"><a href="#cb25-21" aria-hidden="true" tabindex="-1"></a>    <span class="fu">collect</span>() <span class="sc">|&gt;</span></span>
+<span id="cb25-22"><a href="#cb25-22" aria-hidden="true" tabindex="-1"></a>    knitr<span class="sc">::</span><span class="fu">kable</span>()</span>
+<span id="cb25-23"><a href="#cb25-23" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb25-24"><a href="#cb25-24" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb25-25"><a href="#cb25-25" aria-hidden="true" tabindex="-1"></a><span class="co"># ── Event params ──────────────────────────────────────────────────────────────</span></span>
+<span id="cb25-26"><a href="#cb25-26" aria-hidden="true" tabindex="-1"></a><span class="fu">cat</span>(<span class="st">"</span><span class="sc">\n</span><span class="st">── Event params (first 5 rows) ─────────────────────────────────────</span><span class="sc">\n</span><span class="st">"</span>)</span>
+<span id="cb25-27"><a href="#cb25-27" aria-hidden="true" tabindex="-1"></a><span class="cf">if</span> (fs<span class="sc">::</span><span class="fu">dir_exists</span>(<span class="st">"data/ga4_params_partitioned"</span>)) {</span>
+<span id="cb25-28"><a href="#cb25-28" aria-hidden="true" tabindex="-1"></a>  <span class="fu">open_dataset</span>(<span class="st">"data/ga4_params_partitioned"</span>) <span class="sc">|&gt;</span></span>
+<span id="cb25-29"><a href="#cb25-29" aria-hidden="true" tabindex="-1"></a>    <span class="fu">filter</span>(year <span class="sc">==</span> <span class="dv">2020</span>, month <span class="sc">==</span> <span class="dv">11</span>) <span class="sc">|&gt;</span></span>
+<span id="cb25-30"><a href="#cb25-30" aria-hidden="true" tabindex="-1"></a>    <span class="fu">select</span>(</span>
+<span id="cb25-31"><a href="#cb25-31" aria-hidden="true" tabindex="-1"></a>      event_date,</span>
+<span id="cb25-32"><a href="#cb25-32" aria-hidden="true" tabindex="-1"></a>      event_name,</span>
+<span id="cb25-33"><a href="#cb25-33" aria-hidden="true" tabindex="-1"></a>      user_pseudo_id,</span>
+<span id="cb25-34"><a href="#cb25-34" aria-hidden="true" tabindex="-1"></a>      key,</span>
+<span id="cb25-35"><a href="#cb25-35" aria-hidden="true" tabindex="-1"></a>      param_value</span>
+<span id="cb25-36"><a href="#cb25-36" aria-hidden="true" tabindex="-1"></a>    ) <span class="sc">|&gt;</span></span>
+<span id="cb25-37"><a href="#cb25-37" aria-hidden="true" tabindex="-1"></a>    <span class="fu">head</span>(<span class="dv">5</span>) <span class="sc">|&gt;</span></span>
+<span id="cb25-38"><a href="#cb25-38" aria-hidden="true" tabindex="-1"></a>    <span class="fu">collect</span>() <span class="sc">|&gt;</span></span>
+<span id="cb25-39"><a href="#cb25-39" aria-hidden="true" tabindex="-1"></a>    knitr<span class="sc">::</span><span class="fu">kable</span>()</span>
+<span id="cb25-40"><a href="#cb25-40" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb25-41"><a href="#cb25-41" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb25-42"><a href="#cb25-42" aria-hidden="true" tabindex="-1"></a><span class="co"># ── Items ─────────────────────────────────────────────────────────────────────</span></span>
+<span id="cb25-43"><a href="#cb25-43" aria-hidden="true" tabindex="-1"></a><span class="fu">cat</span>(<span class="st">"</span><span class="sc">\n</span><span class="st">── Items (first 5 rows) ─────────────────────────────────────────────</span><span class="sc">\n</span><span class="st">"</span>)</span>
+<span id="cb25-44"><a href="#cb25-44" aria-hidden="true" tabindex="-1"></a><span class="cf">if</span> (fs<span class="sc">::</span><span class="fu">dir_exists</span>(<span class="st">"data/ga4_items_partitioned"</span>)) {</span>
+<span id="cb25-45"><a href="#cb25-45" aria-hidden="true" tabindex="-1"></a>  <span class="fu">open_dataset</span>(<span class="st">"data/ga4_items_partitioned"</span>) <span class="sc">|&gt;</span></span>
+<span id="cb25-46"><a href="#cb25-46" aria-hidden="true" tabindex="-1"></a>    <span class="fu">select</span>(</span>
+<span id="cb25-47"><a href="#cb25-47" aria-hidden="true" tabindex="-1"></a>      event_date,</span>
+<span id="cb25-48"><a href="#cb25-48" aria-hidden="true" tabindex="-1"></a>      user_pseudo_id,</span>
+<span id="cb25-49"><a href="#cb25-49" aria-hidden="true" tabindex="-1"></a>      item_id,</span>
+<span id="cb25-50"><a href="#cb25-50" aria-hidden="true" tabindex="-1"></a>      item_name,</span>
+<span id="cb25-51"><a href="#cb25-51" aria-hidden="true" tabindex="-1"></a>      price,</span>
+<span id="cb25-52"><a href="#cb25-52" aria-hidden="true" tabindex="-1"></a>      quantity</span>
+<span id="cb25-53"><a href="#cb25-53" aria-hidden="true" tabindex="-1"></a>    ) <span class="sc">|&gt;</span></span>
+<span id="cb25-54"><a href="#cb25-54" aria-hidden="true" tabindex="-1"></a>    <span class="fu">head</span>(<span class="dv">5</span>) <span class="sc">|&gt;</span></span>
+<span id="cb25-55"><a href="#cb25-55" aria-hidden="true" tabindex="-1"></a>    <span class="fu">collect</span>() <span class="sc">|&gt;</span></span>
+<span id="cb25-56"><a href="#cb25-56" aria-hidden="true" tabindex="-1"></a>    knitr<span class="sc">::</span><span class="fu">kable</span>()</span>
+<span id="cb25-57"><a href="#cb25-57" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb25-58"><a href="#cb25-58" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>── Core events (first 5 rows, November 2020) ──────────────────────</code></pre>
 </div>
@@ -2129,12 +2133,12 @@ month: int32</code></pre>
 <div class="cell-output-display">
 <table class="caption-top table table-sm table-striped small">
 <colgroup>
-<col style="width: 13%">
-<col style="width: 24%">
+<col style="width: 11%">
+<col style="width: 20%">
+<col style="width: 8%">
+<col style="width: 44%">
+<col style="width: 6%">
 <col style="width: 9%">
-<col style="width: 34%">
-<col style="width: 7%">
-<col style="width: 10%">
 </colgroup>
 <thead>
 <tr class="header">
@@ -2148,44 +2152,44 @@ month: int32</code></pre>
 </thead>
 <tbody>
 <tr class="odd">
-<td style="text-align: left;">20201104</td>
-<td style="text-align: left;">1697570.3789044764</td>
-<td style="text-align: left;">9195130</td>
-<td style="text-align: left;">Google Zip Hoodie F/C</td>
-<td style="text-align: right;">48</td>
+<td style="text-align: left;">20201102</td>
+<td style="text-align: left;">1441375.7353918689</td>
+<td style="text-align: left;">9199123</td>
+<td style="text-align: left;">Google Land &amp; Sea French Terry Sweatshirt</td>
+<td style="text-align: right;">55</td>
 <td style="text-align: right;">1</td>
 </tr>
 <tr class="even">
-<td style="text-align: left;">20201104</td>
-<td style="text-align: left;">5237397.7064940983</td>
-<td style="text-align: left;">9195553</td>
-<td style="text-align: left;">Google Unisex Eco Tee Black</td>
-<td style="text-align: right;">18</td>
+<td style="text-align: left;">20201102</td>
+<td style="text-align: left;">5448801.1228248851</td>
+<td style="text-align: left;">9196732</td>
+<td style="text-align: left;">Google Cotopaxi Shell</td>
+<td style="text-align: right;">38</td>
 <td style="text-align: right;">1</td>
 </tr>
 <tr class="odd">
-<td style="text-align: left;">20201104</td>
-<td style="text-align: left;">7446712.2726872272</td>
-<td style="text-align: left;">9196778</td>
-<td style="text-align: left;">Google Sherpa Vest Black</td>
-<td style="text-align: right;">63</td>
+<td style="text-align: left;">20201102</td>
+<td style="text-align: left;">5963534.4700679023</td>
+<td style="text-align: left;">9188189</td>
+<td style="text-align: left;">Google 16 oz Tumbler Blue</td>
+<td style="text-align: right;">10</td>
 <td style="text-align: right;">1</td>
 </tr>
 <tr class="even">
-<td style="text-align: left;">20201104</td>
-<td style="text-align: left;">8690699.3669256403</td>
-<td style="text-align: left;">9195841</td>
-<td style="text-align: left;">Google Perk Thermal Tumbler</td>
-<td style="text-align: right;">16</td>
+<td style="text-align: left;">20201102</td>
+<td style="text-align: left;">5963534.4700679023</td>
+<td style="text-align: left;">9188189</td>
+<td style="text-align: left;">Google 16 oz Tumbler Blue</td>
+<td style="text-align: right;">10</td>
 <td style="text-align: right;">1</td>
 </tr>
 <tr class="odd">
-<td style="text-align: left;">20201104</td>
-<td style="text-align: left;">53311820.2795082545</td>
-<td style="text-align: left;">9195130</td>
-<td style="text-align: left;">Google Zip Hoodie F/C</td>
-<td style="text-align: right;">48</td>
-<td style="text-align: right;">2</td>
+<td style="text-align: left;">20201102</td>
+<td style="text-align: left;">5963534.4700679023</td>
+<td style="text-align: left;">9188189</td>
+<td style="text-align: left;">Google 16 oz Tumbler Blue</td>
+<td style="text-align: right;">10</td>
+<td style="text-align: right;">1</td>
 </tr>
 </tbody>
 </table>
@@ -2200,68 +2204,69 @@ month: int32</code></pre>
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb29"><pre class="sourceCode markdown code-with-copy"><code class="sourceCode markdown"><span id="cb29-1"><a href="#cb29-1" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
 <span id="cb29-2"><a href="#cb29-2" aria-hidden="true" tabindex="-1"></a><span class="co">#| label: download-summary</span></span>
 <span id="cb29-3"><a href="#cb29-3" aria-hidden="true" tabindex="-1"></a><span class="co">#| eval: true</span></span>
-<span id="cb29-4"><a href="#cb29-4" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb29-5"><a href="#cb29-5" aria-hidden="true" tabindex="-1"></a>cli<span class="sc">::</span><span class="fu">cli_h1</span>(<span class="st">"Download Summary"</span>)</span>
-<span id="cb29-6"><a href="#cb29-6" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb29-7"><a href="#cb29-7" aria-hidden="true" tabindex="-1"></a><span class="cf">if</span> (<span class="fu">exists</span>(<span class="st">"download_log"</span>) <span class="sc">&amp;&amp;</span> <span class="fu">length</span>(download_log) <span class="sc">&gt;</span> <span class="dv">0</span>) {</span>
-<span id="cb29-8"><a href="#cb29-8" aria-hidden="true" tabindex="-1"></a>  <span class="co"># &amp;&amp;: short-circuit evaluation</span></span>
-<span id="cb29-9"><a href="#cb29-9" aria-hidden="true" tabindex="-1"></a>  <span class="co"># ── Build log data frame ──────────────────────────────────────────────────</span></span>
-<span id="cb29-10"><a href="#cb29-10" aria-hidden="true" tabindex="-1"></a>  log_df <span class="ot">&lt;-</span> download_log <span class="sc">|&gt;</span></span>
-<span id="cb29-11"><a href="#cb29-11" aria-hidden="true" tabindex="-1"></a>    <span class="fu">imap</span>(\(x, nm) {</span>
-<span id="cb29-12"><a href="#cb29-12" aria-hidden="true" tabindex="-1"></a>      <span class="co"># imap_df() iterates over the named list, where x is the value (list with status and rows) and nm is the name (table name)</span></span>
-<span id="cb29-13"><a href="#cb29-13" aria-hidden="true" tabindex="-1"></a>      <span class="fu">tibble</span>(</span>
-<span id="cb29-14"><a href="#cb29-14" aria-hidden="true" tabindex="-1"></a>        <span class="at">table =</span> nm,</span>
-<span id="cb29-15"><a href="#cb29-15" aria-hidden="true" tabindex="-1"></a>        <span class="at">status =</span> x<span class="sc">$</span>status,</span>
-<span id="cb29-16"><a href="#cb29-16" aria-hidden="true" tabindex="-1"></a>        <span class="at">rows =</span> x<span class="sc">$</span>rows <span class="sc">%||%</span> <span class="cn">NA_integer_</span> <span class="co"># %||% is a null coalescing operator that returns the left-hand side if it's not NULL, otherwise it returns the right-hand side. This ensures that if x$rows is NULL (e.g., in case of an error), it will be recorded as NA_integer_ instead of causing an error when trying to access it.</span></span>
-<span id="cb29-17"><a href="#cb29-17" aria-hidden="true" tabindex="-1"></a>      )</span>
-<span id="cb29-18"><a href="#cb29-18" aria-hidden="true" tabindex="-1"></a>    }) <span class="sc">|&gt;</span></span>
-<span id="cb29-19"><a href="#cb29-19" aria-hidden="true" tabindex="-1"></a>    <span class="fu">list_rbind</span>() <span class="sc">|&gt;</span> <span class="co"># ← replaces imap_dfr</span></span>
-<span id="cb29-20"><a href="#cb29-20" aria-hidden="true" tabindex="-1"></a>    <span class="fu">mutate</span>(</span>
-<span id="cb29-21"><a href="#cb29-21" aria-hidden="true" tabindex="-1"></a>      <span class="at">date =</span> <span class="fu">ymd</span>(<span class="fu">str_extract</span>(table, <span class="st">"</span><span class="sc">\\</span><span class="st">d{8}"</span>)),</span>
-<span id="cb29-22"><a href="#cb29-22" aria-hidden="true" tabindex="-1"></a>      <span class="at">month_label =</span> <span class="fu">glue</span>(<span class="st">"{month.abb[month(date)]} {year(date)}"</span>)</span>
-<span id="cb29-23"><a href="#cb29-23" aria-hidden="true" tabindex="-1"></a>    )</span>
-<span id="cb29-24"><a href="#cb29-24" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb29-25"><a href="#cb29-25" aria-hidden="true" tabindex="-1"></a>  <span class="co"># ── Status summary ────────────────────────────────────────────────────────</span></span>
-<span id="cb29-26"><a href="#cb29-26" aria-hidden="true" tabindex="-1"></a>  <span class="fu">cat</span>(<span class="st">"Status Summary:</span><span class="sc">\n</span><span class="st">"</span>)</span>
-<span id="cb29-27"><a href="#cb29-27" aria-hidden="true" tabindex="-1"></a>  log_df <span class="sc">|&gt;</span></span>
-<span id="cb29-28"><a href="#cb29-28" aria-hidden="true" tabindex="-1"></a>    <span class="fu">count</span>(status, <span class="at">name =</span> <span class="st">"tables"</span>) <span class="sc">|&gt;</span></span>
-<span id="cb29-29"><a href="#cb29-29" aria-hidden="true" tabindex="-1"></a>    knitr<span class="sc">::</span><span class="fu">kable</span>(<span class="at">col.names =</span> <span class="fu">c</span>(<span class="st">"Status"</span>, <span class="st">"Tables"</span>))</span>
-<span id="cb29-30"><a href="#cb29-30" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb29-31"><a href="#cb29-31" aria-hidden="true" tabindex="-1"></a>  <span class="co"># ── Monthly summary ───────────────────────────────────────────────────────</span></span>
-<span id="cb29-32"><a href="#cb29-32" aria-hidden="true" tabindex="-1"></a>  <span class="fu">cat</span>(<span class="st">"</span><span class="sc">\n</span><span class="st">Rows by Month:</span><span class="sc">\n</span><span class="st">"</span>)</span>
-<span id="cb29-33"><a href="#cb29-33" aria-hidden="true" tabindex="-1"></a>  log_df <span class="sc">|&gt;</span></span>
-<span id="cb29-34"><a href="#cb29-34" aria-hidden="true" tabindex="-1"></a>    <span class="fu">filter</span>(status <span class="sc">==</span> <span class="st">"success"</span>) <span class="sc">|&gt;</span></span>
-<span id="cb29-35"><a href="#cb29-35" aria-hidden="true" tabindex="-1"></a>    <span class="fu">group_by</span>(month_label) <span class="sc">|&gt;</span></span>
-<span id="cb29-36"><a href="#cb29-36" aria-hidden="true" tabindex="-1"></a>    <span class="fu">summarise</span>(</span>
-<span id="cb29-37"><a href="#cb29-37" aria-hidden="true" tabindex="-1"></a>      <span class="at">days_downloaded =</span> <span class="fu">n</span>(),</span>
-<span id="cb29-38"><a href="#cb29-38" aria-hidden="true" tabindex="-1"></a>      <span class="at">total_rows =</span> <span class="fu">sum</span>(rows, <span class="at">na.rm =</span> <span class="cn">TRUE</span>),</span>
-<span id="cb29-39"><a href="#cb29-39" aria-hidden="true" tabindex="-1"></a>      <span class="at">avg_rows_per_day =</span> <span class="fu">round</span>(<span class="fu">mean</span>(rows, <span class="at">na.rm =</span> <span class="cn">TRUE</span>)),</span>
-<span id="cb29-40"><a href="#cb29-40" aria-hidden="true" tabindex="-1"></a>      <span class="at">.groups =</span> <span class="st">"drop"</span></span>
-<span id="cb29-41"><a href="#cb29-41" aria-hidden="true" tabindex="-1"></a>    ) <span class="sc">|&gt;</span></span>
-<span id="cb29-42"><a href="#cb29-42" aria-hidden="true" tabindex="-1"></a>    <span class="fu">mutate</span>(</span>
-<span id="cb29-43"><a href="#cb29-43" aria-hidden="true" tabindex="-1"></a>      <span class="at">total_rows =</span> scales<span class="sc">::</span><span class="fu">comma</span>(total_rows),</span>
-<span id="cb29-44"><a href="#cb29-44" aria-hidden="true" tabindex="-1"></a>      <span class="at">avg_rows_per_day =</span> scales<span class="sc">::</span><span class="fu">comma</span>(avg_rows_per_day)</span>
-<span id="cb29-45"><a href="#cb29-45" aria-hidden="true" tabindex="-1"></a>    ) <span class="sc">|&gt;</span></span>
-<span id="cb29-46"><a href="#cb29-46" aria-hidden="true" tabindex="-1"></a>    knitr<span class="sc">::</span><span class="fu">kable</span>(</span>
-<span id="cb29-47"><a href="#cb29-47" aria-hidden="true" tabindex="-1"></a>      <span class="at">col.names =</span> <span class="fu">c</span>(<span class="st">"Month"</span>, <span class="st">"Days"</span>, <span class="st">"Total Rows"</span>, <span class="st">"Avg Rows/Day"</span>)</span>
-<span id="cb29-48"><a href="#cb29-48" aria-hidden="true" tabindex="-1"></a>    )</span>
-<span id="cb29-49"><a href="#cb29-49" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb29-50"><a href="#cb29-50" aria-hidden="true" tabindex="-1"></a>  <span class="co"># ── Flag any failures ─────────────────────────────────────────────────────</span></span>
-<span id="cb29-51"><a href="#cb29-51" aria-hidden="true" tabindex="-1"></a>  failed <span class="ot">&lt;-</span> log_df <span class="sc">|&gt;</span> <span class="fu">filter</span>(status <span class="sc">==</span> <span class="st">"error"</span>)</span>
-<span id="cb29-52"><a href="#cb29-52" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb29-53"><a href="#cb29-53" aria-hidden="true" tabindex="-1"></a>  <span class="cf">if</span> (<span class="fu">nrow</span>(failed) <span class="sc">&gt;</span> <span class="dv">0</span>) {</span>
-<span id="cb29-54"><a href="#cb29-54" aria-hidden="true" tabindex="-1"></a>    cli<span class="sc">::</span><span class="fu">cli_alert_danger</span>(<span class="st">"{nrow(failed)} tables failed:"</span>)</span>
-<span id="cb29-55"><a href="#cb29-55" aria-hidden="true" tabindex="-1"></a>    failed <span class="sc">|&gt;</span></span>
-<span id="cb29-56"><a href="#cb29-56" aria-hidden="true" tabindex="-1"></a>      <span class="fu">select</span>(table, status) <span class="sc">|&gt;</span></span>
-<span id="cb29-57"><a href="#cb29-57" aria-hidden="true" tabindex="-1"></a>      <span class="fu">print</span>()</span>
-<span id="cb29-58"><a href="#cb29-58" aria-hidden="true" tabindex="-1"></a>    cli<span class="sc">::</span><span class="fu">cli_alert_info</span>(</span>
-<span id="cb29-59"><a href="#cb29-59" aria-hidden="true" tabindex="-1"></a>      <span class="st">"Re-run the download loop — it skips successful days automatically."</span></span>
-<span id="cb29-60"><a href="#cb29-60" aria-hidden="true" tabindex="-1"></a>    )</span>
-<span id="cb29-61"><a href="#cb29-61" aria-hidden="true" tabindex="-1"></a>  } <span class="cf">else</span> {</span>
-<span id="cb29-62"><a href="#cb29-62" aria-hidden="true" tabindex="-1"></a>    cli<span class="sc">::</span><span class="fu">cli_alert_success</span>(<span class="st">"All tables downloaded successfully!"</span>)</span>
-<span id="cb29-63"><a href="#cb29-63" aria-hidden="true" tabindex="-1"></a>  }</span>
-<span id="cb29-64"><a href="#cb29-64" aria-hidden="true" tabindex="-1"></a>}</span>
-<span id="cb29-65"><a href="#cb29-65" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<span id="cb29-4"><a href="#cb29-4" aria-hidden="true" tabindex="-1"></a><span class="co">#| cache: false</span></span>
+<span id="cb29-5"><a href="#cb29-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb29-6"><a href="#cb29-6" aria-hidden="true" tabindex="-1"></a>cli<span class="sc">::</span><span class="fu">cli_h1</span>(<span class="st">"Download Summary"</span>)</span>
+<span id="cb29-7"><a href="#cb29-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb29-8"><a href="#cb29-8" aria-hidden="true" tabindex="-1"></a><span class="cf">if</span> (<span class="fu">exists</span>(<span class="st">"download_log"</span>) <span class="sc">&amp;&amp;</span> <span class="fu">length</span>(download_log) <span class="sc">&gt;</span> <span class="dv">0</span>) {</span>
+<span id="cb29-9"><a href="#cb29-9" aria-hidden="true" tabindex="-1"></a>  <span class="co"># &amp;&amp;: short-circuit evaluation</span></span>
+<span id="cb29-10"><a href="#cb29-10" aria-hidden="true" tabindex="-1"></a>  <span class="co"># ── Build log data frame ──────────────────────────────────────────────────</span></span>
+<span id="cb29-11"><a href="#cb29-11" aria-hidden="true" tabindex="-1"></a>  log_df <span class="ot">&lt;-</span> download_log <span class="sc">|&gt;</span></span>
+<span id="cb29-12"><a href="#cb29-12" aria-hidden="true" tabindex="-1"></a>    <span class="fu">imap</span>(\(x, nm) {</span>
+<span id="cb29-13"><a href="#cb29-13" aria-hidden="true" tabindex="-1"></a>      <span class="co"># imap_df() iterates over the named list, where x is the value (list with status and rows) and nm is the name (table name)</span></span>
+<span id="cb29-14"><a href="#cb29-14" aria-hidden="true" tabindex="-1"></a>      <span class="fu">tibble</span>(</span>
+<span id="cb29-15"><a href="#cb29-15" aria-hidden="true" tabindex="-1"></a>        <span class="at">table =</span> nm,</span>
+<span id="cb29-16"><a href="#cb29-16" aria-hidden="true" tabindex="-1"></a>        <span class="at">status =</span> x<span class="sc">$</span>status,</span>
+<span id="cb29-17"><a href="#cb29-17" aria-hidden="true" tabindex="-1"></a>        <span class="at">rows =</span> x<span class="sc">$</span>rows <span class="sc">%||%</span> <span class="cn">NA_integer_</span> <span class="co"># %||% is a null coalescing operator that returns the left-hand side if it's not NULL, otherwise it returns the right-hand side. This ensures that if x$rows is NULL (e.g., in case of an error), it will be recorded as NA_integer_ instead of causing an error when trying to access it.</span></span>
+<span id="cb29-18"><a href="#cb29-18" aria-hidden="true" tabindex="-1"></a>      )</span>
+<span id="cb29-19"><a href="#cb29-19" aria-hidden="true" tabindex="-1"></a>    }) <span class="sc">|&gt;</span></span>
+<span id="cb29-20"><a href="#cb29-20" aria-hidden="true" tabindex="-1"></a>    <span class="fu">list_rbind</span>() <span class="sc">|&gt;</span> <span class="co"># ← replaces imap_dfr</span></span>
+<span id="cb29-21"><a href="#cb29-21" aria-hidden="true" tabindex="-1"></a>    <span class="fu">mutate</span>(</span>
+<span id="cb29-22"><a href="#cb29-22" aria-hidden="true" tabindex="-1"></a>      <span class="at">date =</span> <span class="fu">ymd</span>(<span class="fu">str_extract</span>(table, <span class="st">"</span><span class="sc">\\</span><span class="st">d{8}"</span>)),</span>
+<span id="cb29-23"><a href="#cb29-23" aria-hidden="true" tabindex="-1"></a>      <span class="at">month_label =</span> <span class="fu">glue</span>(<span class="st">"{month.abb[month(date)]} {year(date)}"</span>)</span>
+<span id="cb29-24"><a href="#cb29-24" aria-hidden="true" tabindex="-1"></a>    )</span>
+<span id="cb29-25"><a href="#cb29-25" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb29-26"><a href="#cb29-26" aria-hidden="true" tabindex="-1"></a>  <span class="co"># ── Status summary ────────────────────────────────────────────────────────</span></span>
+<span id="cb29-27"><a href="#cb29-27" aria-hidden="true" tabindex="-1"></a>  <span class="fu">cat</span>(<span class="st">"Status Summary:</span><span class="sc">\n</span><span class="st">"</span>)</span>
+<span id="cb29-28"><a href="#cb29-28" aria-hidden="true" tabindex="-1"></a>  log_df <span class="sc">|&gt;</span></span>
+<span id="cb29-29"><a href="#cb29-29" aria-hidden="true" tabindex="-1"></a>    <span class="fu">count</span>(status, <span class="at">name =</span> <span class="st">"tables"</span>) <span class="sc">|&gt;</span></span>
+<span id="cb29-30"><a href="#cb29-30" aria-hidden="true" tabindex="-1"></a>    knitr<span class="sc">::</span><span class="fu">kable</span>(<span class="at">col.names =</span> <span class="fu">c</span>(<span class="st">"Status"</span>, <span class="st">"Tables"</span>))</span>
+<span id="cb29-31"><a href="#cb29-31" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb29-32"><a href="#cb29-32" aria-hidden="true" tabindex="-1"></a>  <span class="co"># ── Monthly summary ───────────────────────────────────────────────────────</span></span>
+<span id="cb29-33"><a href="#cb29-33" aria-hidden="true" tabindex="-1"></a>  <span class="fu">cat</span>(<span class="st">"</span><span class="sc">\n</span><span class="st">Rows by Month:</span><span class="sc">\n</span><span class="st">"</span>)</span>
+<span id="cb29-34"><a href="#cb29-34" aria-hidden="true" tabindex="-1"></a>  log_df <span class="sc">|&gt;</span></span>
+<span id="cb29-35"><a href="#cb29-35" aria-hidden="true" tabindex="-1"></a>    <span class="fu">filter</span>(status <span class="sc">==</span> <span class="st">"success"</span>) <span class="sc">|&gt;</span></span>
+<span id="cb29-36"><a href="#cb29-36" aria-hidden="true" tabindex="-1"></a>    <span class="fu">group_by</span>(month_label) <span class="sc">|&gt;</span></span>
+<span id="cb29-37"><a href="#cb29-37" aria-hidden="true" tabindex="-1"></a>    <span class="fu">summarise</span>(</span>
+<span id="cb29-38"><a href="#cb29-38" aria-hidden="true" tabindex="-1"></a>      <span class="at">days_downloaded =</span> <span class="fu">n</span>(),</span>
+<span id="cb29-39"><a href="#cb29-39" aria-hidden="true" tabindex="-1"></a>      <span class="at">total_rows =</span> <span class="fu">sum</span>(rows, <span class="at">na.rm =</span> <span class="cn">TRUE</span>),</span>
+<span id="cb29-40"><a href="#cb29-40" aria-hidden="true" tabindex="-1"></a>      <span class="at">avg_rows_per_day =</span> <span class="fu">round</span>(<span class="fu">mean</span>(rows, <span class="at">na.rm =</span> <span class="cn">TRUE</span>)),</span>
+<span id="cb29-41"><a href="#cb29-41" aria-hidden="true" tabindex="-1"></a>      <span class="at">.groups =</span> <span class="st">"drop"</span></span>
+<span id="cb29-42"><a href="#cb29-42" aria-hidden="true" tabindex="-1"></a>    ) <span class="sc">|&gt;</span></span>
+<span id="cb29-43"><a href="#cb29-43" aria-hidden="true" tabindex="-1"></a>    <span class="fu">mutate</span>(</span>
+<span id="cb29-44"><a href="#cb29-44" aria-hidden="true" tabindex="-1"></a>      <span class="at">total_rows =</span> scales<span class="sc">::</span><span class="fu">comma</span>(total_rows),</span>
+<span id="cb29-45"><a href="#cb29-45" aria-hidden="true" tabindex="-1"></a>      <span class="at">avg_rows_per_day =</span> scales<span class="sc">::</span><span class="fu">comma</span>(avg_rows_per_day)</span>
+<span id="cb29-46"><a href="#cb29-46" aria-hidden="true" tabindex="-1"></a>    ) <span class="sc">|&gt;</span></span>
+<span id="cb29-47"><a href="#cb29-47" aria-hidden="true" tabindex="-1"></a>    knitr<span class="sc">::</span><span class="fu">kable</span>(</span>
+<span id="cb29-48"><a href="#cb29-48" aria-hidden="true" tabindex="-1"></a>      <span class="at">col.names =</span> <span class="fu">c</span>(<span class="st">"Month"</span>, <span class="st">"Days"</span>, <span class="st">"Total Rows"</span>, <span class="st">"Avg Rows/Day"</span>)</span>
+<span id="cb29-49"><a href="#cb29-49" aria-hidden="true" tabindex="-1"></a>    )</span>
+<span id="cb29-50"><a href="#cb29-50" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb29-51"><a href="#cb29-51" aria-hidden="true" tabindex="-1"></a>  <span class="co"># ── Flag any failures ─────────────────────────────────────────────────────</span></span>
+<span id="cb29-52"><a href="#cb29-52" aria-hidden="true" tabindex="-1"></a>  failed <span class="ot">&lt;-</span> log_df <span class="sc">|&gt;</span> <span class="fu">filter</span>(status <span class="sc">==</span> <span class="st">"error"</span>)</span>
+<span id="cb29-53"><a href="#cb29-53" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb29-54"><a href="#cb29-54" aria-hidden="true" tabindex="-1"></a>  <span class="cf">if</span> (<span class="fu">nrow</span>(failed) <span class="sc">&gt;</span> <span class="dv">0</span>) {</span>
+<span id="cb29-55"><a href="#cb29-55" aria-hidden="true" tabindex="-1"></a>    cli<span class="sc">::</span><span class="fu">cli_alert_danger</span>(<span class="st">"{nrow(failed)} tables failed:"</span>)</span>
+<span id="cb29-56"><a href="#cb29-56" aria-hidden="true" tabindex="-1"></a>    failed <span class="sc">|&gt;</span></span>
+<span id="cb29-57"><a href="#cb29-57" aria-hidden="true" tabindex="-1"></a>      <span class="fu">select</span>(table, status) <span class="sc">|&gt;</span></span>
+<span id="cb29-58"><a href="#cb29-58" aria-hidden="true" tabindex="-1"></a>      <span class="fu">print</span>()</span>
+<span id="cb29-59"><a href="#cb29-59" aria-hidden="true" tabindex="-1"></a>    cli<span class="sc">::</span><span class="fu">cli_alert_info</span>(</span>
+<span id="cb29-60"><a href="#cb29-60" aria-hidden="true" tabindex="-1"></a>      <span class="st">"Re-run the download loop — it skips successful days automatically."</span></span>
+<span id="cb29-61"><a href="#cb29-61" aria-hidden="true" tabindex="-1"></a>    )</span>
+<span id="cb29-62"><a href="#cb29-62" aria-hidden="true" tabindex="-1"></a>  } <span class="cf">else</span> {</span>
+<span id="cb29-63"><a href="#cb29-63" aria-hidden="true" tabindex="-1"></a>    cli<span class="sc">::</span><span class="fu">cli_alert_success</span>(<span class="st">"All tables downloaded successfully!"</span>)</span>
+<span id="cb29-64"><a href="#cb29-64" aria-hidden="true" tabindex="-1"></a>  }</span>
+<span id="cb29-65"><a href="#cb29-65" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb29-66"><a href="#cb29-66" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
 <hr>
 </section>

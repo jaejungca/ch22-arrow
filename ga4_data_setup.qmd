@@ -97,7 +97,7 @@ data/
 ```{r}
 #| label: install-packages
 #| eval: true
-#| cache: true
+#| cache: false
 
 # Run this chunk once if you have not installed these packages yet.
 # After installing, you do not need to run it again.
@@ -136,7 +136,7 @@ if (length(missing_packages) > 0) {
 
 ```{r}
 #| label: load-packages
-#| cache: true
+#| cache: false
 
 library(bigrquery)
 library(DBI)
@@ -950,6 +950,7 @@ Run these checks after the download completes to confirm everything is correct b
 
 ```{r}
 #| label: verify-file-counts
+#| cache: false
 
 cli::cli_h2("Verification: File Counts")
 
@@ -993,6 +994,7 @@ knitr::kable(
 
 ```{r}
 #| label: verify-storage
+#| cache: false
 
 cli::cli_h2("Verification: Storage Used")
 
@@ -1037,6 +1039,7 @@ cli::cli_alert_info(
 ```{r}
 #| label: verify-partitions
 #| eval: true
+#| cache: false
 
 cli::cli_h2("Verification: Partition Structure")
 
@@ -1084,6 +1087,7 @@ if (fs::dir_exists("data/ga4_partitioned")) {
 ```{r}
 #| label: verify-sample-data
 #| eval: true
+#| cache: false
 
 cli::cli_h2("Verification: Sample Data")
 
@@ -1146,6 +1150,7 @@ if (fs::dir_exists("data/ga4_items_partitioned")) {
 ```{r}
 #| label: download-summary
 #| eval: true
+#| cache: false
 
 cli::cli_h1("Download Summary")
 
