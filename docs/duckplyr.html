@@ -1,15 +1,12 @@
 <!DOCTYPE html>
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
-
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 <meta charset="utf-8">
 <meta name="generator" content="quarto-1.8.26">
-
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
-
 <meta name="author" content="Jae Jung">
 <meta name="dcterms.date" content="2026-03-28">
 <meta name="description" content="This page describes the benifits of using duckplyr and illustrate how to use it for GA4 data">
-
 <title>Duckplyr: The Best of Both Worlds – Arrow and DuckDB</title>
 <style>
 code{white-space: pre-wrap;}
@@ -60,7 +57,6 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 }
 </style>
 
-
 <script src="site_libs/quarto-nav/quarto-nav.js"></script>
 <script src="site_libs/quarto-nav/headroom.min.js"></script>
 <script src="site_libs/clipboard/clipboard.min.js"></script>
@@ -82,8 +78,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <link href="site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
 <link href="site_libs/bootstrap/bootstrap-ea2c01f27a86cd888be845a75ab84aaf.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme" id="quarto-bootstrap" data-mode="light">
 <link href="site_libs/bootstrap/bootstrap-dark-78d0a13e6d35108d84457cbe65748f29.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme quarto-color-alternate" id="quarto-bootstrap" data-mode="dark">
-<link href="site_libs/bootstrap/bootstrap-ea2c01f27a86cd888be845a75ab84aaf.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme-extra" id="quarto-bootstrap" data-mode="light">
-<script id="quarto-search-options" type="application/json">{
+<link href="site_libs/bootstrap/bootstrap-ea2c01f27a86cd888be845a75ab84aaf.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme-extra" id="quarto-bootstrap" data-mode="light"><script id="quarto-search-options" type="application/json">{
   "location": "navbar",
   "copy-button": false,
   "collapse-after": 3,
@@ -109,12 +104,8 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
     "search-submit-button-title": "Submit",
     "search-label": "Search"
   }
-}</script>
-<style>html{ scroll-behavior: smooth; }</style>
-
-
+}</script><style>html{ scroll-behavior: smooth; }</style>
 </head>
-
 <body class="nav-sidebar floating nav-fixed quarto-light"><script id="quarto-html-before-body" type="application/javascript">
     const toggleBodyColorMode = (bsSheetEl) => {
       const mode = bsSheetEl.getAttribute("data-mode");
@@ -280,9 +271,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   </script>
 
 <div id="quarto-search-results"></div>
-  <header id="quarto-header" class="headroom fixed-top">
-    <nav class="navbar navbar-expand-lg " data-bs-theme="dark">
-      <div class="navbar-container container-fluid">
+  <header id="quarto-header" class="headroom fixed-top"><nav class="navbar navbar-expand-lg " data-bs-theme="dark"><div class="navbar-container container-fluid">
       <div class="navbar-brand-container mx-auto">
     <a class="navbar-brand" href="./index.html">
     <span class="navbar-title">Arrow and DuckDB</span>
@@ -294,19 +283,17 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </button>
           <div class="collapse navbar-collapse" id="navbarCollapse">
             <ul class="navbar-nav navbar-nav-scroll me-auto">
-  <li class="nav-item">
+<li class="nav-item">
     <a class="nav-link" href="./index.html"> 
 <span class="menu-text">Home</span></a>
   </li>  
 </ul>
-          </div> <!-- /navcollapse -->
+</div> <!-- /navcollapse -->
             <div class="quarto-navbar-tools">
   <a href="" class="quarto-color-scheme-toggle quarto-navigation-tool  px-1" onclick="window.quartoToggleColorScheme(); return false;" title="Toggle dark mode"><i class="bi"></i></a>
 </div>
       </div> <!-- /container-fluid -->
-    </nav>
-  <nav class="quarto-secondary-nav">
-    <div class="container-fluid d-flex">
+    </nav><nav class="quarto-secondary-nav"><div class="container-fluid d-flex">
       <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" role="button" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
         <i class="bi bi-layout-text-sidebar-reverse"></i>
       </button>
@@ -314,15 +301,11 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
         <a class="flex-grow-1" role="navigation" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
         </a>
     </div>
-  </nav>
-</header>
-<!-- content -->
-<div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article page-navbar">
+  </nav></header><!-- content --><div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article page-navbar">
 <!-- sidebar -->
-  <nav id="quarto-sidebar" class="sidebar collapse collapse-horizontal quarto-sidebar-collapse-item sidebar-navigation floating overflow-auto">
-    <div class="sidebar-menu-container"> 
+  <nav id="quarto-sidebar" class="sidebar collapse collapse-horizontal quarto-sidebar-collapse-item sidebar-navigation floating overflow-auto"><div class="sidebar-menu-container"> 
     <ul class="list-unstyled mt-1">
-        <li class="sidebar-item">
+<li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="./arrow.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">Apache Arrow and Apache Parqet: Ch22 &amp; More</span></a>
@@ -347,31 +330,34 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   </div>
 </li>
     </ul>
-    </div>
-</nav>
-<div id="quarto-sidebar-glass" class="quarto-sidebar-collapse-item" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item"></div>
+</div>
+</nav><div id="quarto-sidebar-glass" class="quarto-sidebar-collapse-item" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item"></div>
 <!-- margin-sidebar -->
     <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
-        <nav id="TOC" role="doc-toc" class="toc-active" data-toc-expanded="1">
-    <h2 id="toc-title">On this page</h2>
+        <nav id="TOC" role="doc-toc" class="toc-active" data-toc-expanded="1"><h2 id="toc-title">On this page</h2>
    
   <ul>
-  <li><a href="#what-is-duckplyr" id="toc-what-is-duckplyr" class="nav-link active" data-scroll-target="#what-is-duckplyr"><span class="header-section-number">1</span> <strong>What is duckplyr?</strong></a></li>
+<li><a href="#what-is-duckplyr" id="toc-what-is-duckplyr" class="nav-link active" data-scroll-target="#what-is-duckplyr"><span class="header-section-number">1</span> <strong>What is duckplyr?</strong></a></li>
   <li><a href="#the-landscape-four-tools-one-job" id="toc-the-landscape-four-tools-one-job" class="nav-link" data-scroll-target="#the-landscape-four-tools-one-job"><span class="header-section-number">2</span> <strong>The Landscape: Four Tools, One Job</strong></a></li>
-  <li><a href="#how-duckplyr-is-different-from-each-tool" id="toc-how-duckplyr-is-different-from-each-tool" class="nav-link" data-scroll-target="#how-duckplyr-is-different-from-each-tool"><span class="header-section-number">3</span> <strong>How duckplyr Is Different from Each Tool</strong></a>
+  <li>
+<a href="#how-duckplyr-is-different-from-each-tool" id="toc-how-duckplyr-is-different-from-each-tool" class="nav-link" data-scroll-target="#how-duckplyr-is-different-from-each-tool"><span class="header-section-number">3</span> <strong>How duckplyr Is Different from Each Tool</strong></a>
   <ul class="collapse">
-  <li><a href="#duckplyr-vs-dplyr" id="toc-duckplyr-vs-dplyr" class="nav-link" data-scroll-target="#duckplyr-vs-dplyr"><span class="header-section-number">3.1</span> duckplyr vs dplyr</a></li>
+<li><a href="#duckplyr-vs-dplyr" id="toc-duckplyr-vs-dplyr" class="nav-link" data-scroll-target="#duckplyr-vs-dplyr"><span class="header-section-number">3.1</span> duckplyr vs dplyr</a></li>
   <li><a href="#duckplyr-vs-duckdb-dbplyr" id="toc-duckplyr-vs-duckdb-dbplyr" class="nav-link" data-scroll-target="#duckplyr-vs-duckdb-dbplyr"><span class="header-section-number">3.2</span> duckplyr vs DuckDB + dbplyr</a></li>
   <li><a href="#the-fallback-system-why-duckplyr-is-safe-to-use" id="toc-the-fallback-system-why-duckplyr-is-safe-to-use" class="nav-link" data-scroll-target="#the-fallback-system-why-duckplyr-is-safe-to-use"><span class="header-section-number">3.3</span> The Fallback System — Why duckplyr Is Safe to Use</a></li>
-  </ul></li>
-  <li><a href="#workfolow-guide" id="toc-workfolow-guide" class="nav-link" data-scroll-target="#workfolow-guide"><span class="header-section-number">4</span> <strong>Workfolow Guide</strong></a>
+  </ul>
+</li>
+  <li>
+<a href="#workfolow-guide" id="toc-workfolow-guide" class="nav-link" data-scroll-target="#workfolow-guide"><span class="header-section-number">4</span> <strong>Workfolow Guide</strong></a>
   <ul class="collapse">
-  <li><a href="#installing-and-setting-up-duckplyr" id="toc-installing-and-setting-up-duckplyr" class="nav-link" data-scroll-target="#installing-and-setting-up-duckplyr"><span class="header-section-number">4.1</span> Installing and Setting Up duckplyr</a></li>
+<li><a href="#installing-and-setting-up-duckplyr" id="toc-installing-and-setting-up-duckplyr" class="nav-link" data-scroll-target="#installing-and-setting-up-duckplyr"><span class="header-section-number">4.1</span> Installing and Setting Up duckplyr</a></li>
   <li><a href="#reading-data-into-duckplyr" id="toc-reading-data-into-duckplyr" class="nav-link" data-scroll-target="#reading-data-into-duckplyr"><span class="header-section-number">4.2</span> Reading Data into duckplyr</a></li>
-  </ul></li>
-  <li><a href="#analyzing-ga4-data-with-duckplyr" id="toc-analyzing-ga4-data-with-duckplyr" class="nav-link" data-scroll-target="#analyzing-ga4-data-with-duckplyr"><span class="header-section-number">5</span> <strong>Analyzing GA4 Data with duckplyr</strong></a>
+  </ul>
+</li>
+  <li>
+<a href="#analyzing-ga4-data-with-duckplyr" id="toc-analyzing-ga4-data-with-duckplyr" class="nav-link" data-scroll-target="#analyzing-ga4-data-with-duckplyr"><span class="header-section-number">5</span> <strong>Analyzing GA4 Data with duckplyr</strong></a>
   <ul class="collapse">
-  <li><a href="#setup" id="toc-setup" class="nav-link" data-scroll-target="#setup"><span class="header-section-number">5.1</span> Setup</a></li>
+<li><a href="#setup" id="toc-setup" class="nav-link" data-scroll-target="#setup"><span class="header-section-number">5.1</span> Setup</a></li>
   <li><a href="#analysis-1-event-volume-overview" id="toc-analysis-1-event-volume-overview" class="nav-link" data-scroll-target="#analysis-1-event-volume-overview"><span class="header-section-number">5.2</span> Analysis 1: Event Volume Overview</a></li>
   <li><a href="#analysis-2-traffic-source-performance" id="toc-analysis-2-traffic-source-performance" class="nav-link" data-scroll-target="#analysis-2-traffic-source-performance"><span class="header-section-number">5.3</span> Analysis 2: Traffic Source Performance</a></li>
   <li><a href="#analysis-3-page-performance-from-event_params" id="toc-analysis-3-page-performance-from-event_params" class="nav-link" data-scroll-target="#analysis-3-page-performance-from-event_params"><span class="header-section-number">5.4</span> Analysis 3: Page Performance from <code>event_params</code></a></li>
@@ -379,18 +365,14 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   <li><a href="#analysis-5-e-commerce-revenue-analysis" id="toc-analysis-5-e-commerce-revenue-analysis" class="nav-link" data-scroll-target="#analysis-5-e-commerce-revenue-analysis"><span class="header-section-number">5.6</span> Analysis 5: E-commerce Revenue Analysis</a></li>
   <li><a href="#analysis-6-product-performance-from-ga4_items" id="toc-analysis-6-product-performance-from-ga4_items" class="nav-link" data-scroll-target="#analysis-6-product-performance-from-ga4_items"><span class="header-section-number">5.7</span> Analysis 6: Product Performance (from <code>ga4_items</code>)</a></li>
   <li><a href="#analysis-7-user-segmentation" id="toc-analysis-7-user-segmentation" class="nav-link" data-scroll-target="#analysis-7-user-segmentation"><span class="header-section-number">5.8</span> Analysis 7: User Segmentation</a></li>
-  </ul></li>
+  </ul>
+</li>
   <li><a href="#performance-comparison" id="toc-performance-comparison" class="nav-link" data-scroll-target="#performance-comparison"><span class="header-section-number">6</span> <strong>Performance Comparison</strong></a></li>
   <li><a href="#when-to-use-each-tool" id="toc-when-to-use-each-tool" class="nav-link" data-scroll-target="#when-to-use-each-tool"><span class="header-section-number">7</span> <strong>When to Use Each Tool</strong></a></li>
-  </ul>
-</nav>
+  </ul></nav>
     </div>
 <!-- main -->
-<main class="content" id="quarto-document-content">
-
-
-<header id="title-block-header" class="quarto-title-block default">
-<div class="quarto-title">
+<main class="content" id="quarto-document-content"><header id="title-block-header" class="quarto-title-block default"><div class="quarto-title">
 <h1 class="title">Duckplyr: The Best of Both Worlds</h1>
 <p class="subtitle lead">drop-in replacement for dplyr</p>
   <div class="quarto-categories">
@@ -430,28 +412,30 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   
 
 
-</header>
-
-<nav id="TOC-body" role="doc-toc">
-    <h2 id="toc-title">On this page</h2>
+</header><nav id="TOC-body" role="doc-toc"><h2 id="toc-title">On this page</h2>
    
   <ul>
-  <li><a href="#what-is-duckplyr" id="toc-what-is-duckplyr"><span class="header-section-number">1</span> <strong>What is duckplyr?</strong></a></li>
+<li><a href="#what-is-duckplyr" id="toc-what-is-duckplyr"><span class="header-section-number">1</span> <strong>What is duckplyr?</strong></a></li>
   <li><a href="#the-landscape-four-tools-one-job" id="toc-the-landscape-four-tools-one-job"><span class="header-section-number">2</span> <strong>The Landscape: Four Tools, One Job</strong></a></li>
-  <li><a href="#how-duckplyr-is-different-from-each-tool" id="toc-how-duckplyr-is-different-from-each-tool"><span class="header-section-number">3</span> <strong>How duckplyr Is Different from Each Tool</strong></a>
+  <li>
+<a href="#how-duckplyr-is-different-from-each-tool" id="toc-how-duckplyr-is-different-from-each-tool"><span class="header-section-number">3</span> <strong>How duckplyr Is Different from Each Tool</strong></a>
   <ul>
-  <li><a href="#duckplyr-vs-dplyr" id="toc-duckplyr-vs-dplyr"><span class="header-section-number">3.1</span> duckplyr vs dplyr</a></li>
+<li><a href="#duckplyr-vs-dplyr" id="toc-duckplyr-vs-dplyr"><span class="header-section-number">3.1</span> duckplyr vs dplyr</a></li>
   <li><a href="#duckplyr-vs-duckdb-dbplyr" id="toc-duckplyr-vs-duckdb-dbplyr"><span class="header-section-number">3.2</span> duckplyr vs DuckDB + dbplyr</a></li>
   <li><a href="#the-fallback-system-why-duckplyr-is-safe-to-use" id="toc-the-fallback-system-why-duckplyr-is-safe-to-use"><span class="header-section-number">3.3</span> The Fallback System — Why duckplyr Is Safe to Use</a></li>
-  </ul></li>
-  <li><a href="#workfolow-guide" id="toc-workfolow-guide"><span class="header-section-number">4</span> <strong>Workfolow Guide</strong></a>
+  </ul>
+</li>
+  <li>
+<a href="#workfolow-guide" id="toc-workfolow-guide"><span class="header-section-number">4</span> <strong>Workfolow Guide</strong></a>
   <ul>
-  <li><a href="#installing-and-setting-up-duckplyr" id="toc-installing-and-setting-up-duckplyr"><span class="header-section-number">4.1</span> Installing and Setting Up duckplyr</a></li>
+<li><a href="#installing-and-setting-up-duckplyr" id="toc-installing-and-setting-up-duckplyr"><span class="header-section-number">4.1</span> Installing and Setting Up duckplyr</a></li>
   <li><a href="#reading-data-into-duckplyr" id="toc-reading-data-into-duckplyr"><span class="header-section-number">4.2</span> Reading Data into duckplyr</a></li>
-  </ul></li>
-  <li><a href="#analyzing-ga4-data-with-duckplyr" id="toc-analyzing-ga4-data-with-duckplyr"><span class="header-section-number">5</span> <strong>Analyzing GA4 Data with duckplyr</strong></a>
+  </ul>
+</li>
+  <li>
+<a href="#analyzing-ga4-data-with-duckplyr" id="toc-analyzing-ga4-data-with-duckplyr"><span class="header-section-number">5</span> <strong>Analyzing GA4 Data with duckplyr</strong></a>
   <ul>
-  <li><a href="#setup" id="toc-setup"><span class="header-section-number">5.1</span> Setup</a></li>
+<li><a href="#setup" id="toc-setup"><span class="header-section-number">5.1</span> Setup</a></li>
   <li><a href="#analysis-1-event-volume-overview" id="toc-analysis-1-event-volume-overview"><span class="header-section-number">5.2</span> Analysis 1: Event Volume Overview</a></li>
   <li><a href="#analysis-2-traffic-source-performance" id="toc-analysis-2-traffic-source-performance"><span class="header-section-number">5.3</span> Analysis 2: Traffic Source Performance</a></li>
   <li><a href="#analysis-3-page-performance-from-event_params" id="toc-analysis-3-page-performance-from-event_params"><span class="header-section-number">5.4</span> Analysis 3: Page Performance from <code>event_params</code></a></li>
@@ -459,21 +443,19 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   <li><a href="#analysis-5-e-commerce-revenue-analysis" id="toc-analysis-5-e-commerce-revenue-analysis"><span class="header-section-number">5.6</span> Analysis 5: E-commerce Revenue Analysis</a></li>
   <li><a href="#analysis-6-product-performance-from-ga4_items" id="toc-analysis-6-product-performance-from-ga4_items"><span class="header-section-number">5.7</span> Analysis 6: Product Performance (from <code>ga4_items</code>)</a></li>
   <li><a href="#analysis-7-user-segmentation" id="toc-analysis-7-user-segmentation"><span class="header-section-number">5.8</span> Analysis 7: User Segmentation</a></li>
-  </ul></li>
+  </ul>
+</li>
   <li><a href="#performance-comparison" id="toc-performance-comparison"><span class="header-section-number">6</span> <strong>Performance Comparison</strong></a></li>
   <li><a href="#when-to-use-each-tool" id="toc-when-to-use-each-tool"><span class="header-section-number">7</span> <strong>When to Use Each Tool</strong></a></li>
-  </ul>
-</nav>
-<section id="what-is-duckplyr" class="level1" data-number="1">
-<h1 data-number="1"><span class="header-section-number">1</span> <strong>What is duckplyr?</strong></h1>
+  </ul></nav><section id="what-is-duckplyr" class="level1" data-number="1"><h1 data-number="1">
+<span class="header-section-number">1</span> <strong>What is duckplyr?</strong>
+</h1>
 <blockquote class="blockquote">
-<p>duckplyr wraps DuckDB’s analytical query processing engine in a dplyr-compatible API. In plain terms: it’s <strong>dplyr, but secretly powered by DuckDB under the hood.</strong> Calling <code>library(duckplyr)</code> overwrites dplyr methods, enabling duckplyr for the entire session. Your existing dplyr code runs unchanged — you just get DuckDB’s speed for free.</p>
+<p>duckplyr wraps DuckDB’s analytical query processing engine in a dplyr-compatible API. In plain terms: it’s <strong>dplyr, but secretly powered by DuckDB under the hood.</strong> Calling <code><a href="https://duckplyr.tidyverse.org">library(duckplyr)</a></code> overwrites dplyr methods, enabling duckplyr for the entire session. Your existing dplyr code runs unchanged — you just get DuckDB’s speed for free.</p>
 <p>Duckplyr is a <strong>drop-in replacement for dplyr that uses DuckDB as its computational engine</strong>. It was created by the same team that built DuckDB and is designed to make DuckDB’s speed available through the exact same interface you already use for dplyr — with zero syntax changes.</p>
 </blockquote>
 <div class="cell">
-<details open="" class="code-fold">
-<summary>Code</summary>
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb1"><pre class="sourceCode markdown code-with-copy"><code class="sourceCode markdown"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
+<details open="" class="code-fold"><summary>Code</summary><div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb1"><pre class="sourceCode markdown code-with-copy"><code class="sourceCode markdown"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
 <span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="co">#| eval: false</span></span>
 <span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="co"># The elevator pitch:</span></span>
 <span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a><span class="co"># dplyr   = friendly syntax, moderate speed, RAM-limited</span></span>
@@ -486,14 +468,12 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <blockquote class="blockquote">
 <p>The key insight is that duckplyr is not a wrapper around dplyr or a translation layer like dbplyr. It <strong>reimplements dplyr’s verbs</strong> using DuckDB’s execution engine directly, so the familiar code you write is executed by DuckDB under the hood — automatically, invisibly.</p>
 </blockquote>
-</section>
-<section id="the-landscape-four-tools-one-job" class="level1" data-number="2">
-<h1 data-number="2"><span class="header-section-number">2</span> <strong>The Landscape: Four Tools, One Job</strong></h1>
+</section><section id="the-landscape-four-tools-one-job" class="level1" data-number="2"><h1 data-number="2">
+<span class="header-section-number">2</span> <strong>The Landscape: Four Tools, One Job</strong>
+</h1>
 <p>Before comparing them, let us be precise about what each tool actually is:</p>
 <div class="cell">
-<details open="" class="code-fold">
-<summary>Code</summary>
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb2"><pre class="sourceCode markdown code-with-copy"><code class="sourceCode markdown"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
+<details open="" class="code-fold"><summary>Code</summary><div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb2"><pre class="sourceCode markdown code-with-copy"><code class="sourceCode markdown"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
 <span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a><span class="co">#| eval: false</span></span>
 <span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a><span class="co"># All four answer the question: "how do I manipulate tabular data in R?"</span></span>
 <span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a><span class="co"># They differ in WHERE computation happens and HOW you write the code</span></span>
@@ -557,15 +537,13 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <span id="cb2-62"><a href="#cb2-62" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </details>
 </div>
-</section>
-<section id="how-duckplyr-is-different-from-each-tool" class="level1" data-number="3">
-<h1 data-number="3"><span class="header-section-number">3</span> <strong>How duckplyr Is Different from Each Tool</strong></h1>
-<section id="duckplyr-vs-dplyr" class="level2" data-number="3.1">
-<h2 data-number="3.1" class="anchored" data-anchor-id="duckplyr-vs-dplyr"><span class="header-section-number">3.1</span> duckplyr vs dplyr</h2>
+</section><section id="how-duckplyr-is-different-from-each-tool" class="level1" data-number="3"><h1 data-number="3">
+<span class="header-section-number">3</span> <strong>How duckplyr Is Different from Each Tool</strong>
+</h1>
+<section id="duckplyr-vs-dplyr" class="level2" data-number="3.1"><h2 data-number="3.1" class="anchored" data-anchor-id="duckplyr-vs-dplyr">
+<span class="header-section-number">3.1</span> duckplyr vs dplyr</h2>
 <div class="cell">
-<details open="" class="code-fold">
-<summary>Code</summary>
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb3"><pre class="sourceCode markdown code-with-copy"><code class="sourceCode markdown"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
+<details open="" class="code-fold"><summary>Code</summary><div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb3"><pre class="sourceCode markdown code-with-copy"><code class="sourceCode markdown"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
 <span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a><span class="co">#| eval: false</span></span>
 <span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a><span class="co"># ── What changes: ─────────────────────────────────────────────────────────────</span></span>
 <span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a><span class="co">#   library(dplyr)    →   library(duckplyr)</span></span>
@@ -588,13 +566,10 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <span id="cb3-21"><a href="#cb3-21" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </details>
 </div>
-</section>
-<section id="duckplyr-vs-duckdb-dbplyr" class="level2" data-number="3.2">
-<h2 data-number="3.2" class="anchored" data-anchor-id="duckplyr-vs-duckdb-dbplyr"><span class="header-section-number">3.2</span> duckplyr vs DuckDB + dbplyr</h2>
+</section><section id="duckplyr-vs-duckdb-dbplyr" class="level2" data-number="3.2"><h2 data-number="3.2" class="anchored" data-anchor-id="duckplyr-vs-duckdb-dbplyr">
+<span class="header-section-number">3.2</span> duckplyr vs DuckDB + dbplyr</h2>
 <div class="cell">
-<details open="" class="code-fold">
-<summary>Code</summary>
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb4"><pre class="sourceCode markdown code-with-copy"><code class="sourceCode markdown"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
+<details open="" class="code-fold"><summary>Code</summary><div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb4"><pre class="sourceCode markdown code-with-copy"><code class="sourceCode markdown"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
 <span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a><span class="co">#| eval: false</span></span>
 <span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a><span class="co"># ── DuckDB + dbplyr requires: ─────────────────────────────────────────────────</span></span>
 <span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a><span class="co"># 1. Create a connection object</span></span>
@@ -634,14 +609,11 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <span id="cb4-38"><a href="#cb4-38" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </details>
 </div>
-</section>
-<section id="the-fallback-system-why-duckplyr-is-safe-to-use" class="level2" data-number="3.3">
-<h2 data-number="3.3" class="anchored" data-anchor-id="the-fallback-system-why-duckplyr-is-safe-to-use"><span class="header-section-number">3.3</span> The Fallback System — Why duckplyr Is Safe to Use</h2>
+</section><section id="the-fallback-system-why-duckplyr-is-safe-to-use" class="level2" data-number="3.3"><h2 data-number="3.3" class="anchored" data-anchor-id="the-fallback-system-why-duckplyr-is-safe-to-use">
+<span class="header-section-number">3.3</span> The Fallback System — Why duckplyr Is Safe to Use</h2>
 <p>This is duckplyr’s most important design feature. When it encounters something it cannot execute in DuckDB, it <strong>silently falls back to dplyr</strong> rather than throwing an error:</p>
 <div class="cell">
-<details open="" class="code-fold">
-<summary>Code</summary>
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb5"><pre class="sourceCode markdown code-with-copy"><code class="sourceCode markdown"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
+<details open="" class="code-fold"><summary>Code</summary><div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb5"><pre class="sourceCode markdown code-with-copy"><code class="sourceCode markdown"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
 <span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a><span class="co">#| eval: false</span></span>
 <span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(duckplyr)</span>
 <span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a></span>
@@ -666,9 +638,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </details>
 </div>
 <div class="cell">
-<details open="" class="code-fold">
-<summary>Code</summary>
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb6"><pre class="sourceCode markdown code-with-copy"><code class="sourceCode markdown"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
+<details open="" class="code-fold"><summary>Code</summary><div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb6"><pre class="sourceCode markdown code-with-copy"><code class="sourceCode markdown"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
 <span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a><span class="co">#| eval: false</span></span>
 <span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a><span class="co"># Control fallback behaviour explicitly</span></span>
 <span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a><span class="fu">options</span>(<span class="at">duckplyr.fallback =</span> <span class="st">"warn"</span>) <span class="co"># Warn when falling back</span></span>
@@ -677,16 +647,13 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <span id="cb6-7"><a href="#cb6-7" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </details>
 </div>
-</section>
-</section>
-<section id="workfolow-guide" class="level1" data-number="4">
-<h1 data-number="4"><span class="header-section-number">4</span> <strong>Workfolow Guide</strong></h1>
-<section id="installing-and-setting-up-duckplyr" class="level2" data-number="4.1">
-<h2 data-number="4.1" class="anchored" data-anchor-id="installing-and-setting-up-duckplyr"><span class="header-section-number">4.1</span> Installing and Setting Up duckplyr</h2>
+</section></section><section id="workfolow-guide" class="level1" data-number="4"><h1 data-number="4">
+<span class="header-section-number">4</span> <strong>Workfolow Guide</strong>
+</h1>
+<section id="installing-and-setting-up-duckplyr" class="level2" data-number="4.1"><h2 data-number="4.1" class="anchored" data-anchor-id="installing-and-setting-up-duckplyr">
+<span class="header-section-number">4.1</span> Installing and Setting Up duckplyr</h2>
 <div class="cell">
-<details open="" class="code-fold">
-<summary>Code</summary>
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb7"><pre class="sourceCode markdown code-with-copy"><code class="sourceCode markdown"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
+<details open="" class="code-fold"><summary>Code</summary><div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb7"><pre class="sourceCode markdown code-with-copy"><code class="sourceCode markdown"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
 <span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a><span class="co">#| eval: false</span></span>
 <span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a><span class="co"># ── Install ───────────────────────────────────────────────────────────────────</span></span>
@@ -712,14 +679,11 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <span id="cb7-24"><a href="#cb7-24" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </details>
 </div>
-</section>
-<section id="reading-data-into-duckplyr" class="level2" data-number="4.2">
-<h2 data-number="4.2" class="anchored" data-anchor-id="reading-data-into-duckplyr"><span class="header-section-number">4.2</span> Reading Data into duckplyr</h2>
+</section><section id="reading-data-into-duckplyr" class="level2" data-number="4.2"><h2 data-number="4.2" class="anchored" data-anchor-id="reading-data-into-duckplyr">
+<span class="header-section-number">4.2</span> Reading Data into duckplyr</h2>
 <p>duckplyr has native methods for reading Parquet and CSV files directly:</p>
 <div class="cell">
-<details open="" class="code-fold">
-<summary>Code</summary>
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb8"><pre class="sourceCode markdown code-with-copy"><code class="sourceCode markdown"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
+<details open="" class="code-fold"><summary>Code</summary><div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb8"><pre class="sourceCode markdown code-with-copy"><code class="sourceCode markdown"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
 <span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a><span class="co">#| eval: false</span></span>
 <span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(duckplyr)</span>
 <span id="cb8-4"><a href="#cb8-4" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(arrow)</span>
@@ -754,17 +718,14 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <span id="cb8-33"><a href="#cb8-33" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </details>
 </div>
-</section>
-</section>
-<section id="analyzing-ga4-data-with-duckplyr" class="level1" data-number="5">
-<h1 data-number="5"><span class="header-section-number">5</span> <strong>Analyzing GA4 Data with duckplyr</strong></h1>
+</section></section><section id="analyzing-ga4-data-with-duckplyr" class="level1" data-number="5"><h1 data-number="5">
+<span class="header-section-number">5</span> <strong>Analyzing GA4 Data with duckplyr</strong>
+</h1>
 <p>Now the practical part. Every analysis below uses <strong>identical syntax to dplyr</strong> but executes in DuckDB.</p>
-<section id="setup" class="level2" data-number="5.1">
-<h2 data-number="5.1" class="anchored" data-anchor-id="setup"><span class="header-section-number">5.1</span> Setup</h2>
+<section id="setup" class="level2" data-number="5.1"><h2 data-number="5.1" class="anchored" data-anchor-id="setup">
+<span class="header-section-number">5.1</span> Setup</h2>
 <div class="cell">
-<details open="" class="code-fold">
-<summary>Code</summary>
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb9"><pre class="sourceCode markdown code-with-copy"><code class="sourceCode markdown"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
+<details open="" class="code-fold"><summary>Code</summary><div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb9"><pre class="sourceCode markdown code-with-copy"><code class="sourceCode markdown"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
 <span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a><span class="co">#| eval: false</span></span>
 <span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(duckplyr)</span>
 <span id="cb9-4"><a href="#cb9-4" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(dplyr)</span>
@@ -793,13 +754,10 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <span id="cb9-27"><a href="#cb9-27" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </details>
 </div>
-</section>
-<section id="analysis-1-event-volume-overview" class="level2" data-number="5.2">
-<h2 data-number="5.2" class="anchored" data-anchor-id="analysis-1-event-volume-overview"><span class="header-section-number">5.2</span> Analysis 1: Event Volume Overview</h2>
+</section><section id="analysis-1-event-volume-overview" class="level2" data-number="5.2"><h2 data-number="5.2" class="anchored" data-anchor-id="analysis-1-event-volume-overview">
+<span class="header-section-number">5.2</span> Analysis 1: Event Volume Overview</h2>
 <div class="cell">
-<details open="" class="code-fold">
-<summary>Code</summary>
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb10"><pre class="sourceCode markdown code-with-copy"><code class="sourceCode markdown"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
+<details open="" class="code-fold"><summary>Code</summary><div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb10"><pre class="sourceCode markdown code-with-copy"><code class="sourceCode markdown"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
 <span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a><span class="co">#| eval: false</span></span>
 <span id="cb10-3"><a href="#cb10-3" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb10-4"><a href="#cb10-4" aria-hidden="true" tabindex="-1"></a><span class="co"># ── Identical to dplyr — but DuckDB executes it ───────────────────────────────</span></span>
@@ -834,13 +792,10 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <span id="cb10-33"><a href="#cb10-33" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </details>
 </div>
-</section>
-<section id="analysis-2-traffic-source-performance" class="level2" data-number="5.3">
-<h2 data-number="5.3" class="anchored" data-anchor-id="analysis-2-traffic-source-performance"><span class="header-section-number">5.3</span> Analysis 2: Traffic Source Performance</h2>
+</section><section id="analysis-2-traffic-source-performance" class="level2" data-number="5.3"><h2 data-number="5.3" class="anchored" data-anchor-id="analysis-2-traffic-source-performance">
+<span class="header-section-number">5.3</span> Analysis 2: Traffic Source Performance</h2>
 <div class="cell">
-<details open="" class="code-fold">
-<summary>Code</summary>
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb11"><pre class="sourceCode markdown code-with-copy"><code class="sourceCode markdown"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
+<details open="" class="code-fold"><summary>Code</summary><div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb11"><pre class="sourceCode markdown code-with-copy"><code class="sourceCode markdown"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
 <span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a><span class="co">#| eval: false</span></span>
 <span id="cb11-3"><a href="#cb11-3" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb11-4"><a href="#cb11-4" aria-hidden="true" tabindex="-1"></a><span class="co"># ── Join sessions with purchase events ────────────────────────────────────────</span></span>
@@ -918,13 +873,11 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <span id="cb11-76"><a href="#cb11-76" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </details>
 </div>
-</section>
-<section id="analysis-3-page-performance-from-event_params" class="level2" data-number="5.4">
-<h2 data-number="5.4" class="anchored" data-anchor-id="analysis-3-page-performance-from-event_params"><span class="header-section-number">5.4</span> Analysis 3: Page Performance from <code>event_params</code></h2>
+</section><section id="analysis-3-page-performance-from-event_params" class="level2" data-number="5.4"><h2 data-number="5.4" class="anchored" data-anchor-id="analysis-3-page-performance-from-event_params">
+<span class="header-section-number">5.4</span> Analysis 3: Page Performance from <code>event_params</code>
+</h2>
 <div class="cell">
-<details open="" class="code-fold">
-<summary>Code</summary>
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb12"><pre class="sourceCode markdown code-with-copy"><code class="sourceCode markdown"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
+<details open="" class="code-fold"><summary>Code</summary><div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb12"><pre class="sourceCode markdown code-with-copy"><code class="sourceCode markdown"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
 <span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a><span class="co">#| eval: false</span></span>
 <span id="cb12-3"><a href="#cb12-3" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb12-4"><a href="#cb12-4" aria-hidden="true" tabindex="-1"></a><span class="co"># ── Work directly with the long-format params table ───────────────────────────</span></span>
@@ -992,13 +945,10 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <span id="cb12-66"><a href="#cb12-66" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </details>
 </div>
-</section>
-<section id="analysis-4-purchase-funnel" class="level2" data-number="5.5">
-<h2 data-number="5.5" class="anchored" data-anchor-id="analysis-4-purchase-funnel"><span class="header-section-number">5.5</span> Analysis 4: Purchase Funnel</h2>
+</section><section id="analysis-4-purchase-funnel" class="level2" data-number="5.5"><h2 data-number="5.5" class="anchored" data-anchor-id="analysis-4-purchase-funnel">
+<span class="header-section-number">5.5</span> Analysis 4: Purchase Funnel</h2>
 <div class="cell">
-<details open="" class="code-fold">
-<summary>Code</summary>
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb13"><pre class="sourceCode markdown code-with-copy"><code class="sourceCode markdown"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
+<details open="" class="code-fold"><summary>Code</summary><div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb13"><pre class="sourceCode markdown code-with-copy"><code class="sourceCode markdown"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
 <span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a><span class="co">#| eval: false</span></span>
 <span id="cb13-3"><a href="#cb13-3" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb13-4"><a href="#cb13-4" aria-hidden="true" tabindex="-1"></a><span class="co"># ── Funnel stages ─────────────────────────────────────────────────────────────</span></span>
@@ -1074,13 +1024,10 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <span id="cb13-74"><a href="#cb13-74" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </details>
 </div>
-</section>
-<section id="analysis-5-e-commerce-revenue-analysis" class="level2" data-number="5.6">
-<h2 data-number="5.6" class="anchored" data-anchor-id="analysis-5-e-commerce-revenue-analysis"><span class="header-section-number">5.6</span> Analysis 5: E-commerce Revenue Analysis</h2>
+</section><section id="analysis-5-e-commerce-revenue-analysis" class="level2" data-number="5.6"><h2 data-number="5.6" class="anchored" data-anchor-id="analysis-5-e-commerce-revenue-analysis">
+<span class="header-section-number">5.6</span> Analysis 5: E-commerce Revenue Analysis</h2>
 <div class="cell">
-<details open="" class="code-fold">
-<summary>Code</summary>
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb14"><pre class="sourceCode markdown code-with-copy"><code class="sourceCode markdown"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
+<details open="" class="code-fold"><summary>Code</summary><div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb14"><pre class="sourceCode markdown code-with-copy"><code class="sourceCode markdown"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
 <span id="cb14-2"><a href="#cb14-2" aria-hidden="true" tabindex="-1"></a><span class="co">#| eval: false</span></span>
 <span id="cb14-3"><a href="#cb14-3" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb14-4"><a href="#cb14-4" aria-hidden="true" tabindex="-1"></a><span class="co"># ── Daily revenue with 7-day rolling average ──────────────────────────────────</span></span>
@@ -1125,13 +1072,10 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <span id="cb14-43"><a href="#cb14-43" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </details>
 </div>
-</section>
-<section id="analysis-6-product-performance-from-ga4_items" class="level2" data-number="5.7">
-<h2 data-number="5.7" class="anchored" data-anchor-id="analysis-6-product-performance-from-ga4_items"><span class="header-section-number">5.7</span> Analysis 6: Product Performance (from <code>ga4_items</code>)</h2>
+</section><section id="analysis-6-product-performance-from-ga4_items" class="level2" data-number="5.7"><h2 data-number="5.7" class="anchored" data-anchor-id="analysis-6-product-performance-from-ga4_items">
+<span class="header-section-number">5.7</span> Analysis 6: Product Performance (from <code>ga4_items</code>)</h2>
 <div class="cell">
-<details open="" class="code-fold">
-<summary>Code</summary>
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb15"><pre class="sourceCode markdown code-with-copy"><code class="sourceCode markdown"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
+<details open="" class="code-fold"><summary>Code</summary><div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb15"><pre class="sourceCode markdown code-with-copy"><code class="sourceCode markdown"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
 <span id="cb15-2"><a href="#cb15-2" aria-hidden="true" tabindex="-1"></a><span class="co">#| eval: false</span></span>
 <span id="cb15-3"><a href="#cb15-3" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb15-4"><a href="#cb15-4" aria-hidden="true" tabindex="-1"></a><span class="co"># ── Top products and categories ────────────────────────────────────────────────</span></span>
@@ -1184,13 +1128,10 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <span id="cb15-51"><a href="#cb15-51" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </details>
 </div>
-</section>
-<section id="analysis-7-user-segmentation" class="level2" data-number="5.8">
-<h2 data-number="5.8" class="anchored" data-anchor-id="analysis-7-user-segmentation"><span class="header-section-number">5.8</span> Analysis 7: User Segmentation</h2>
+</section><section id="analysis-7-user-segmentation" class="level2" data-number="5.8"><h2 data-number="5.8" class="anchored" data-anchor-id="analysis-7-user-segmentation">
+<span class="header-section-number">5.8</span> Analysis 7: User Segmentation</h2>
 <div class="cell">
-<details open="" class="code-fold">
-<summary>Code</summary>
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb16"><pre class="sourceCode markdown code-with-copy"><code class="sourceCode markdown"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
+<details open="" class="code-fold"><summary>Code</summary><div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb16"><pre class="sourceCode markdown code-with-copy"><code class="sourceCode markdown"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
 <span id="cb16-2"><a href="#cb16-2" aria-hidden="true" tabindex="-1"></a><span class="co">#| eval: false</span></span>
 <span id="cb16-3"><a href="#cb16-3" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb16-4"><a href="#cb16-4" aria-hidden="true" tabindex="-1"></a><span class="co"># ── New vs returning user behaviour ───────────────────────────────────────────</span></span>
@@ -1258,14 +1199,11 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <span id="cb16-66"><a href="#cb16-66" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </details>
 </div>
-</section>
-</section>
-<section id="performance-comparison" class="level1" data-number="6">
-<h1 data-number="6"><span class="header-section-number">6</span> <strong>Performance Comparison</strong></h1>
+</section></section><section id="performance-comparison" class="level1" data-number="6"><h1 data-number="6">
+<span class="header-section-number">6</span> <strong>Performance Comparison</strong>
+</h1>
 <div class="cell">
-<details open="" class="code-fold">
-<summary>Code</summary>
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb17"><pre class="sourceCode markdown code-with-copy"><code class="sourceCode markdown"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
+<details open="" class="code-fold"><summary>Code</summary><div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb17"><pre class="sourceCode markdown code-with-copy"><code class="sourceCode markdown"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
 <span id="cb17-2"><a href="#cb17-2" aria-hidden="true" tabindex="-1"></a><span class="co">#| eval: false</span></span>
 <span id="cb17-3"><a href="#cb17-3" aria-hidden="true" tabindex="-1"></a><span class="co">#install.packages("bench")</span></span>
 <span id="cb17-4"><a href="#cb17-4" aria-hidden="true" tabindex="-1"></a><span class="co">#install.packages("duckplyr")</span></span>
@@ -1314,9 +1252,9 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <span id="cb17-47"><a href="#cb17-47" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </details>
 </div>
-</section>
-<section id="when-to-use-each-tool" class="level1" data-number="7">
-<h1 data-number="7"><span class="header-section-number">7</span> <strong>When to Use Each Tool</strong></h1>
+</section><section id="when-to-use-each-tool" class="level1" data-number="7"><h1 data-number="7">
+<span class="header-section-number">7</span> <strong>When to Use Each Tool</strong>
+</h1>
 <div class="cell">
 <div class="cell-output-display">
 <div id="aqdjhtycmi" style="padding-left:0px;padding-right:0px;padding-top:10px;padding-bottom:10px;overflow-x:auto;overflow-y:auto;width:auto;height:auto;">
@@ -1768,7 +1706,6 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   height: 0px !important;
 }
 </style>
-
 <table class="gt_table caption-top table table-sm table-striped small" data-quarto-bootstrap="false">
 <thead>
 <tr class="gt_heading header">
@@ -1836,16 +1773,12 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </tr>
 </tbody>
 </table>
-
 </div>
 </div>
 </div>
 
 
-</section>
-
-</main> <!-- /main -->
-<script id="quarto-html-after-body" type="application/javascript">
+</section></main><!-- /main --><script id="quarto-html-after-body" type="application/javascript">
   window.document.addEventListener("DOMContentLoaded", function (event) {
     // Ensure there is a toggle, if there isn't float one in the top right
     if (window.document.querySelector('.quarto-color-scheme-toggle') === null) {
@@ -2264,7 +2197,6 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   });
   </script>
 </div> <!-- /content -->
-
 
 
 

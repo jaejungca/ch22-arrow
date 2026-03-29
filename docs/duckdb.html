@@ -1,15 +1,12 @@
 <!DOCTYPE html>
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
-
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 <meta charset="utf-8">
 <meta name="generator" content="quarto-1.8.26">
-
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
-
 <meta name="author" content="Jae Jung">
 <meta name="dcterms.date" content="2026-03-28">
 <meta name="description" content="This page describes DuckDB and compares it with Arrow and Parquet and explain how to use them together effectively when dealing with big data">
-
 <title>DuckDB for Marketing Analytics: From Parquet to Powerful Queries – Arrow and DuckDB</title>
 <style>
 code{white-space: pre-wrap;}
@@ -60,7 +57,6 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 }
 </style>
 
-
 <script src="site_libs/quarto-nav/quarto-nav.js"></script>
 <script src="site_libs/quarto-nav/headroom.min.js"></script>
 <script src="site_libs/clipboard/clipboard.min.js"></script>
@@ -82,8 +78,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <link href="site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
 <link href="site_libs/bootstrap/bootstrap-ea2c01f27a86cd888be845a75ab84aaf.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme" id="quarto-bootstrap" data-mode="light">
 <link href="site_libs/bootstrap/bootstrap-dark-78d0a13e6d35108d84457cbe65748f29.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme quarto-color-alternate" id="quarto-bootstrap" data-mode="dark">
-<link href="site_libs/bootstrap/bootstrap-ea2c01f27a86cd888be845a75ab84aaf.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme-extra" id="quarto-bootstrap" data-mode="light">
-<script id="quarto-search-options" type="application/json">{
+<link href="site_libs/bootstrap/bootstrap-ea2c01f27a86cd888be845a75ab84aaf.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme-extra" id="quarto-bootstrap" data-mode="light"><script id="quarto-search-options" type="application/json">{
   "location": "navbar",
   "copy-button": false,
   "collapse-after": 3,
@@ -109,22 +104,11 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
     "search-submit-button-title": "Submit",
     "search-label": "Search"
   }
-}</script>
-<style>html{ scroll-behavior: smooth; }</style>
+}</script><style>html{ scroll-behavior: smooth; }</style>
 <link href="site_libs/htmltools-fill-0.5.9/fill.css" rel="stylesheet">
-
-<script src="site_libs/htmlwidgets-1.6.4/htmlwidgets.js"></script>
-
-<script src="site_libs/viz-1.8.2/viz.js"></script>
-
-<link href="site_libs/DiagrammeR-styles-0.2/styles.css" rel="stylesheet">
-
+<script src="site_libs/htmlwidgets-1.6.4/htmlwidgets.js"></script><script src="site_libs/viz-1.8.2/viz.js"></script><link href="site_libs/DiagrammeR-styles-0.2/styles.css" rel="stylesheet">
 <script src="site_libs/grViz-binding-1.0.11/grViz.js"></script>
-
-
-
 </head>
-
 <body class="nav-sidebar floating nav-fixed quarto-light"><script id="quarto-html-before-body" type="application/javascript">
     const toggleBodyColorMode = (bsSheetEl) => {
       const mode = bsSheetEl.getAttribute("data-mode");
@@ -290,9 +274,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   </script>
 
 <div id="quarto-search-results"></div>
-  <header id="quarto-header" class="headroom fixed-top">
-    <nav class="navbar navbar-expand-lg " data-bs-theme="dark">
-      <div class="navbar-container container-fluid">
+  <header id="quarto-header" class="headroom fixed-top"><nav class="navbar navbar-expand-lg " data-bs-theme="dark"><div class="navbar-container container-fluid">
       <div class="navbar-brand-container mx-auto">
     <a class="navbar-brand" href="./index.html">
     <span class="navbar-title">Arrow and DuckDB</span>
@@ -304,19 +286,17 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </button>
           <div class="collapse navbar-collapse" id="navbarCollapse">
             <ul class="navbar-nav navbar-nav-scroll me-auto">
-  <li class="nav-item">
+<li class="nav-item">
     <a class="nav-link" href="./index.html"> 
 <span class="menu-text">Home</span></a>
   </li>  
 </ul>
-          </div> <!-- /navcollapse -->
+</div> <!-- /navcollapse -->
             <div class="quarto-navbar-tools">
   <a href="" class="quarto-color-scheme-toggle quarto-navigation-tool  px-1" onclick="window.quartoToggleColorScheme(); return false;" title="Toggle dark mode"><i class="bi"></i></a>
 </div>
       </div> <!-- /container-fluid -->
-    </nav>
-  <nav class="quarto-secondary-nav">
-    <div class="container-fluid d-flex">
+    </nav><nav class="quarto-secondary-nav"><div class="container-fluid d-flex">
       <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" role="button" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
         <i class="bi bi-layout-text-sidebar-reverse"></i>
       </button>
@@ -324,15 +304,11 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
         <a class="flex-grow-1" role="navigation" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
         </a>
     </div>
-  </nav>
-</header>
-<!-- content -->
-<div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article page-navbar">
+  </nav></header><!-- content --><div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article page-navbar">
 <!-- sidebar -->
-  <nav id="quarto-sidebar" class="sidebar collapse collapse-horizontal quarto-sidebar-collapse-item sidebar-navigation floating overflow-auto">
-    <div class="sidebar-menu-container"> 
+  <nav id="quarto-sidebar" class="sidebar collapse collapse-horizontal quarto-sidebar-collapse-item sidebar-navigation floating overflow-auto"><div class="sidebar-menu-container"> 
     <ul class="list-unstyled mt-1">
-        <li class="sidebar-item">
+<li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="./arrow.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">Apache Arrow and Apache Parqet: Ch22 &amp; More</span></a>
@@ -357,91 +333,106 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   </div>
 </li>
     </ul>
-    </div>
-</nav>
-<div id="quarto-sidebar-glass" class="quarto-sidebar-collapse-item" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item"></div>
+</div>
+</nav><div id="quarto-sidebar-glass" class="quarto-sidebar-collapse-item" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item"></div>
 <!-- margin-sidebar -->
     <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
-        <nav id="TOC" role="doc-toc" class="toc-active" data-toc-expanded="1">
-    <h2 id="toc-title">On this page</h2>
+        <nav id="TOC" role="doc-toc" class="toc-active" data-toc-expanded="1"><h2 id="toc-title">On this page</h2>
    
   <ul>
-  <li><a href="#introduction" id="toc-introduction" class="nav-link active" data-scroll-target="#introduction"><span class="header-section-number">1</span> Introduction</a>
+<li>
+<a href="#introduction" id="toc-introduction" class="nav-link active" data-scroll-target="#introduction"><span class="header-section-number">1</span> Introduction</a>
   <ul class="collapse">
-  <li><a href="#what-is-duckdb" id="toc-what-is-duckdb" class="nav-link" data-scroll-target="#what-is-duckdb"><span class="header-section-number">1.1</span> What is DuckDB?</a></li>
-  <li><a href="#three-remarkable-features" id="toc-three-remarkable-features" class="nav-link" data-scroll-target="#three-remarkable-features"><span class="header-section-number">1.2</span> Three Remarkable Features</a>
+<li><a href="#what-is-duckdb" id="toc-what-is-duckdb" class="nav-link" data-scroll-target="#what-is-duckdb"><span class="header-section-number">1.1</span> What is DuckDB?</a></li>
+  <li>
+<a href="#three-remarkable-features" id="toc-three-remarkable-features" class="nav-link" data-scroll-target="#three-remarkable-features"><span class="header-section-number">1.2</span> Three Remarkable Features</a>
   <ul class="collapse">
-  <li><a href="#it-lives-inside-r-no-server-needed" id="toc-it-lives-inside-r-no-server-needed" class="nav-link" data-scroll-target="#it-lives-inside-r-no-server-needed"><span class="header-section-number">1.2.1</span> 1. It Lives Inside R — No Server Needed</a></li>
+<li><a href="#it-lives-inside-r-no-server-needed" id="toc-it-lives-inside-r-no-server-needed" class="nav-link" data-scroll-target="#it-lives-inside-r-no-server-needed"><span class="header-section-number">1.2.1</span> 1. It Lives Inside R — No Server Needed</a></li>
   <li><a href="#it-is-shockingly-fast" id="toc-it-is-shockingly-fast" class="nav-link" data-scroll-target="#it-is-shockingly-fast"><span class="header-section-number">1.2.2</span> 2. It Is Shockingly Fast</a></li>
   <li><a href="#it-reads-parquet-directly-without-loading-into-ram" id="toc-it-reads-parquet-directly-without-loading-into-ram" class="nav-link" data-scroll-target="#it-reads-parquet-directly-without-loading-into-ram"><span class="header-section-number">1.2.3</span> 3. It Reads Parquet Directly — Without Loading Into RAM</a></li>
-  </ul></li>
+  </ul>
+</li>
   <li><a href="#why-use-duckdb" id="toc-why-use-duckdb" class="nav-link" data-scroll-target="#why-use-duckdb"><span class="header-section-number">1.3</span> Why use DuckDB?</a></li>
   <li><a href="#duckdb-vs-arrow-vs-parquet" id="toc-duckdb-vs-arrow-vs-parquet" class="nav-link" data-scroll-target="#duckdb-vs-arrow-vs-parquet"><span class="header-section-number">1.4</span> DuckDB vs Arrow vs Parquet</a></li>
-  </ul></li>
-  <li><a href="#setup-connecting-to-bigquery" id="toc-setup-connecting-to-bigquery" class="nav-link" data-scroll-target="#setup-connecting-to-bigquery"><span class="header-section-number">2</span> Setup: Connecting to BigQuery</a>
+  </ul>
+</li>
+  <li>
+<a href="#setup-connecting-to-bigquery" id="toc-setup-connecting-to-bigquery" class="nav-link" data-scroll-target="#setup-connecting-to-bigquery"><span class="header-section-number">2</span> Setup: Connecting to BigQuery</a>
   <ul class="collapse">
-  <li><a href="#authentication-and-connection" id="toc-authentication-and-connection" class="nav-link" data-scroll-target="#authentication-and-connection"><span class="header-section-number">2.1</span> Authentication and Connection</a></li>
-  <li><a href="#downloading-and-caching-the-data" id="toc-downloading-and-caching-the-data" class="nav-link" data-scroll-target="#downloading-and-caching-the-data"><span class="header-section-number">2.2</span> Downloading and Caching the Data</a>
+<li><a href="#authentication-and-connection" id="toc-authentication-and-connection" class="nav-link" data-scroll-target="#authentication-and-connection"><span class="header-section-number">2.1</span> Authentication and Connection</a></li>
+  <li>
+<a href="#downloading-and-caching-the-data" id="toc-downloading-and-caching-the-data" class="nav-link" data-scroll-target="#downloading-and-caching-the-data"><span class="header-section-number">2.2</span> Downloading and Caching the Data</a>
   <ul class="collapse">
-  <li><a href="#option-1-saving-it-as-rds-file" id="toc-option-1-saving-it-as-rds-file" class="nav-link" data-scroll-target="#option-1-saving-it-as-rds-file"><span class="header-section-number">2.2.1</span> Option 1: Saving it as RDS file</a></li>
+<li><a href="#option-1-saving-it-as-rds-file" id="toc-option-1-saving-it-as-rds-file" class="nav-link" data-scroll-target="#option-1-saving-it-as-rds-file"><span class="header-section-number">2.2.1</span> Option 1: Saving it as RDS file</a></li>
   <li><a href="#option-2-saving-as-a-single-parquet-file" id="toc-option-2-saving-as-a-single-parquet-file" class="nav-link" data-scroll-target="#option-2-saving-as-a-single-parquet-file"><span class="header-section-number">2.2.2</span> Option 2: Saving as a single Parquet file</a></li>
   <li><a href="#options-3-saving-as-partitioned-parquet" id="toc-options-3-saving-as-partitioned-parquet" class="nav-link" data-scroll-target="#options-3-saving-as-partitioned-parquet"><span class="header-section-number">2.2.3</span> Options 3: Saving as Partitioned Parquet</a></li>
-  </ul></li>
-  </ul></li>
-  <li><a href="#how-duckdb-works-with-arrow-and-parquet" id="toc-how-duckdb-works-with-arrow-and-parquet" class="nav-link" data-scroll-target="#how-duckdb-works-with-arrow-and-parquet"><span class="header-section-number">3</span> How DuckDB Works with Arrow and Parquet</a>
+  </ul>
+</li>
+  </ul>
+</li>
+  <li>
+<a href="#how-duckdb-works-with-arrow-and-parquet" id="toc-how-duckdb-works-with-arrow-and-parquet" class="nav-link" data-scroll-target="#how-duckdb-works-with-arrow-and-parquet"><span class="header-section-number">3</span> How DuckDB Works with Arrow and Parquet</a>
   <ul class="collapse">
-  <li><a href="#pattern-1.-query-a-parquet-file-directly-with-duckdb-no-loading-into-r" id="toc-pattern-1.-query-a-parquet-file-directly-with-duckdb-no-loading-into-r" class="nav-link" data-scroll-target="#pattern-1.-query-a-parquet-file-directly-with-duckdb-no-loading-into-r"><span class="header-section-number">3.1</span> Pattern 1. Query a Parquet file directly with DuckDB (no loading into R)</a>
+<li>
+<a href="#pattern-1.-query-a-parquet-file-directly-with-duckdb-no-loading-into-r" id="toc-pattern-1.-query-a-parquet-file-directly-with-duckdb-no-loading-into-r" class="nav-link" data-scroll-target="#pattern-1.-query-a-parquet-file-directly-with-duckdb-no-loading-into-r"><span class="header-section-number">3.1</span> Pattern 1. Query a Parquet file directly with DuckDB (no loading into R)</a>
   <ul class="collapse">
-  <li><a href="#simple" id="toc-simple" class="nav-link" data-scroll-target="#simple"><span class="header-section-number">3.1.1</span> Simple:</a></li>
+<li><a href="#simple" id="toc-simple" class="nav-link" data-scroll-target="#simple"><span class="header-section-number">3.1.1</span> Simple:</a></li>
   <li><a href="#advanced" id="toc-advanced" class="nav-link" data-scroll-target="#advanced"><span class="header-section-number">3.1.2</span> Advanced:</a></li>
-  </ul></li>
-  <li><a href="#parttern-2.-use-duckdb-as-a-dplyr-backend-no-sql-required" id="toc-parttern-2.-use-duckdb-as-a-dplyr-backend-no-sql-required" class="nav-link" data-scroll-target="#parttern-2.-use-duckdb-as-a-dplyr-backend-no-sql-required"><span class="header-section-number">3.2</span> Parttern 2. Use DuckDB as a dplyr backend (no SQL required)</a>
+  </ul>
+</li>
+  <li>
+<a href="#parttern-2.-use-duckdb-as-a-dplyr-backend-no-sql-required" id="toc-parttern-2.-use-duckdb-as-a-dplyr-backend-no-sql-required" class="nav-link" data-scroll-target="#parttern-2.-use-duckdb-as-a-dplyr-backend-no-sql-required"><span class="header-section-number">3.2</span> Parttern 2. Use DuckDB as a dplyr backend (no SQL required)</a>
   <ul class="collapse">
-  <li><a href="#simple-1" id="toc-simple-1" class="nav-link" data-scroll-target="#simple-1"><span class="header-section-number">3.2.1</span> Simple:</a></li>
+<li><a href="#simple-1" id="toc-simple-1" class="nav-link" data-scroll-target="#simple-1"><span class="header-section-number">3.2.1</span> Simple:</a></li>
   <li><a href="#advanced-1" id="toc-advanced-1" class="nav-link" data-scroll-target="#advanced-1"><span class="header-section-number">3.2.2</span> Advanced:</a></li>
-  </ul></li>
-  <li><a href="#pattern-3.-query-an-arrow-table-with-duckdb-the-power-combination" id="toc-pattern-3.-query-an-arrow-table-with-duckdb-the-power-combination" class="nav-link" data-scroll-target="#pattern-3.-query-an-arrow-table-with-duckdb-the-power-combination"><span class="header-section-number">3.3</span> Pattern 3. Query an Arrow Table with DuckDB (The Power Combination)</a>
+  </ul>
+</li>
+  <li>
+<a href="#pattern-3.-query-an-arrow-table-with-duckdb-the-power-combination" id="toc-pattern-3.-query-an-arrow-table-with-duckdb-the-power-combination" class="nav-link" data-scroll-target="#pattern-3.-query-an-arrow-table-with-duckdb-the-power-combination"><span class="header-section-number">3.3</span> Pattern 3. Query an Arrow Table with DuckDB (The Power Combination)</a>
   <ul class="collapse">
-  <li><a href="#simple-2" id="toc-simple-2" class="nav-link" data-scroll-target="#simple-2"><span class="header-section-number">3.3.1</span> Simple:</a></li>
+<li><a href="#simple-2" id="toc-simple-2" class="nav-link" data-scroll-target="#simple-2"><span class="header-section-number">3.3.1</span> Simple:</a></li>
   <li><a href="#advanced-2" id="toc-advanced-2" class="nav-link" data-scroll-target="#advanced-2"><span class="header-section-number">3.3.2</span> Advanced:</a></li>
-  </ul></li>
+  </ul>
+</li>
   <li><a href="#pattern-4.-persistent-duckdb-database-best-for-a-course-project" id="toc-pattern-4.-persistent-duckdb-database-best-for-a-course-project" class="nav-link" data-scroll-target="#pattern-4.-persistent-duckdb-database-best-for-a-course-project"><span class="header-section-number">3.4</span> Pattern 4. Persistent DuckDB Database (Best for a Course Project)</a></li>
-  </ul></li>
+  </ul>
+</li>
   <li><a href="#how-the-three-tools-form-a-complete-stack" id="toc-how-the-three-tools-form-a-complete-stack" class="nav-link" data-scroll-target="#how-the-three-tools-form-a-complete-stack"><span class="header-section-number">4</span> How the Three Tools Form a Complete Stack</a></li>
   <li><a href="#the-big-picture-workflow" id="toc-the-big-picture-workflow" class="nav-link" data-scroll-target="#the-big-picture-workflow"><span class="header-section-number">5</span> The Big Picture Workflow</a></li>
-  <li><a href="#open_dataset-vs.-read_parquet-functions" id="toc-open_dataset-vs.-read_parquet-functions" class="nav-link" data-scroll-target="#open_dataset-vs.-read_parquet-functions"><span class="header-section-number">6</span> <code>open_dataset</code> vs.&nbsp;<code>read_parquet</code> functions</a>
+  <li>
+<a href="#open_dataset-vs.-read_parquet-functions" id="toc-open_dataset-vs.-read_parquet-functions" class="nav-link" data-scroll-target="#open_dataset-vs.-read_parquet-functions"><span class="header-section-number">6</span> <code>open_dataset</code> vs.&nbsp;<code>read_parquet</code> functions</a>
   <ul class="collapse">
-  <li><a href="#the-core-difference" id="toc-the-core-difference" class="nav-link" data-scroll-target="#the-core-difference"><span class="header-section-number">6.1</span> The core difference</a></li>
+<li><a href="#the-core-difference" id="toc-the-core-difference" class="nav-link" data-scroll-target="#the-core-difference"><span class="header-section-number">6.1</span> The core difference</a></li>
   <li><a href="#read_parquet-eager-loading" id="toc-read_parquet-eager-loading" class="nav-link" data-scroll-target="#read_parquet-eager-loading"><span class="header-section-number">6.2</span> <code>read_parquet()</code> — Eager Loading</a></li>
   <li><a href="#open_dataset-lazy-loading" id="toc-open_dataset-lazy-loading" class="nav-link" data-scroll-target="#open_dataset-lazy-loading"><span class="header-section-number">6.3</span> <code>open_dataset()</code> — Lazy Loading</a></li>
   <li><a href="#side-by-side-comparison" id="toc-side-by-side-comparison" class="nav-link" data-scroll-target="#side-by-side-comparison"><span class="header-section-number">6.4</span> Side-by-Side Comparison</a></li>
   <li><a href="#the-key-concept-lazy-vs-eager-evaluation" id="toc-the-key-concept-lazy-vs-eager-evaluation" class="nav-link" data-scroll-target="#the-key-concept-lazy-vs-eager-evaluation"><span class="header-section-number">6.5</span> The Key Concept: Lazy vs Eager Evaluation</a></li>
   <li><a href="#the-biggest-difference-multiple-files" id="toc-the-biggest-difference-multiple-files" class="nav-link" data-scroll-target="#the-biggest-difference-multiple-files"><span class="header-section-number">6.6</span> The Biggest Difference: Multiple Files</a></li>
   <li><a href="#hive-partitioned-datasets-the-most-powerful-pattern" id="toc-hive-partitioned-datasets-the-most-powerful-pattern" class="nav-link" data-scroll-target="#hive-partitioned-datasets-the-most-powerful-pattern"><span class="header-section-number">6.7</span> Hive-Partitioned Datasets — The Most Powerful Pattern</a></li>
-  <li><a href="#comparison-table" id="toc-comparison-table" class="nav-link" data-scroll-target="#comparison-table"><span class="header-section-number">6.8</span> Comparison table</a>
+  <li>
+<a href="#comparison-table" id="toc-comparison-table" class="nav-link" data-scroll-target="#comparison-table"><span class="header-section-number">6.8</span> Comparison table</a>
   <ul class="collapse">
-  <li><a href="#detailed-feature-comparison-table" id="toc-detailed-feature-comparison-table" class="nav-link" data-scroll-target="#detailed-feature-comparison-table"><span class="header-section-number">6.8.1</span> Detailed Feature Comparison Table</a></li>
-  </ul></li>
+<li><a href="#detailed-feature-comparison-table" id="toc-detailed-feature-comparison-table" class="nav-link" data-scroll-target="#detailed-feature-comparison-table"><span class="header-section-number">6.8.1</span> Detailed Feature Comparison Table</a></li>
+  </ul>
+</li>
   <li><a href="#similarities-what-they-share" id="toc-similarities-what-they-share" class="nav-link" data-scroll-target="#similarities-what-they-share"><span class="header-section-number">6.9</span> Similarities — What They Share</a></li>
-  <li><a href="#practical-ga4-workflows" id="toc-practical-ga4-workflows" class="nav-link" data-scroll-target="#practical-ga4-workflows"><span class="header-section-number">6.10</span> Practical GA4 Workflows</a>
+  <li>
+<a href="#practical-ga4-workflows" id="toc-practical-ga4-workflows" class="nav-link" data-scroll-target="#practical-ga4-workflows"><span class="header-section-number">6.10</span> Practical GA4 Workflows</a>
   <ul class="collapse">
-  <li><a href="#workflow-1-read_parquet-for-quick-exploration" id="toc-workflow-1-read_parquet-for-quick-exploration" class="nav-link" data-scroll-target="#workflow-1-read_parquet-for-quick-exploration"><span class="header-section-number">6.10.1</span> Workflow 1: <code>read_parquet()</code> for Quick Exploration</a></li>
+<li><a href="#workflow-1-read_parquet-for-quick-exploration" id="toc-workflow-1-read_parquet-for-quick-exploration" class="nav-link" data-scroll-target="#workflow-1-read_parquet-for-quick-exploration"><span class="header-section-number">6.10.1</span> Workflow 1: <code>read_parquet()</code> for Quick Exploration</a></li>
   <li><a href="#workflow-2-open_dataset-for-large-event-params" id="toc-workflow-2-open_dataset-for-large-event-params" class="nav-link" data-scroll-target="#workflow-2-open_dataset-for-large-event-params"><span class="header-section-number">6.10.2</span> Workflow 2: <code>open_dataset()</code> for Large Event Params</a></li>
   <li><a href="#workflow-3-open_dataset-across-all-ga4-daily-files" id="toc-workflow-3-open_dataset-across-all-ga4-daily-files" class="nav-link" data-scroll-target="#workflow-3-open_dataset-across-all-ga4-daily-files"><span class="header-section-number">6.10.3</span> Workflow 3: <code>open_dataset()</code> Across All GA4 Daily Files</a></li>
   <li><a href="#workflow-4-combining-both-in-one-pipeline" id="toc-workflow-4-combining-both-in-one-pipeline" class="nav-link" data-scroll-target="#workflow-4-combining-both-in-one-pipeline"><span class="header-section-number">6.10.4</span> Workflow 4: Combining Both in One Pipeline</a></li>
   <li><a href="#workflow-5-open_dataset-with-duckdb-the-full-stack" id="toc-workflow-5-open_dataset-with-duckdb-the-full-stack" class="nav-link" data-scroll-target="#workflow-5-open_dataset-with-duckdb-the-full-stack"><span class="header-section-number">6.10.5</span> Workflow 5: <code>open_dataset()</code> with DuckDB — The Full Stack</a></li>
-  </ul></li>
-  <li><a href="#which-to-use-for-ga4-data" id="toc-which-to-use-for-ga4-data" class="nav-link" data-scroll-target="#which-to-use-for-ga4-data"><span class="header-section-number">6.11</span> Which to use for GA4 data?</a></li>
-  </ul></li>
   </ul>
-</nav>
+</li>
+  <li><a href="#which-to-use-for-ga4-data" id="toc-which-to-use-for-ga4-data" class="nav-link" data-scroll-target="#which-to-use-for-ga4-data"><span class="header-section-number">6.11</span> Which to use for GA4 data?</a></li>
+  </ul>
+</li>
+  </ul></nav>
     </div>
 <!-- main -->
-<main class="content" id="quarto-document-content">
-
-
-<header id="title-block-header" class="quarto-title-block default">
-<div class="quarto-title">
+<main class="content" id="quarto-document-content"><header id="title-block-header" class="quarto-title-block default"><div class="quarto-title">
 <h1 class="title">DuckDB for Marketing Analytics: From Parquet to Powerful Queries</h1>
 <p class="subtitle lead">How to Combine DuckDB with Arrow + Parquet</p>
   <div class="quarto-categories">
@@ -482,85 +473,102 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   
 
 
-</header>
-
-<nav id="TOC-body" role="doc-toc">
-    <h2 id="toc-title">On this page</h2>
+</header><nav id="TOC-body" role="doc-toc"><h2 id="toc-title">On this page</h2>
    
   <ul>
-  <li><a href="#introduction" id="toc-introduction"><span class="header-section-number">1</span> Introduction</a>
+<li>
+<a href="#introduction" id="toc-introduction"><span class="header-section-number">1</span> Introduction</a>
   <ul>
-  <li><a href="#what-is-duckdb" id="toc-what-is-duckdb"><span class="header-section-number">1.1</span> What is DuckDB?</a></li>
-  <li><a href="#three-remarkable-features" id="toc-three-remarkable-features"><span class="header-section-number">1.2</span> Three Remarkable Features</a>
+<li><a href="#what-is-duckdb" id="toc-what-is-duckdb"><span class="header-section-number">1.1</span> What is DuckDB?</a></li>
+  <li>
+<a href="#three-remarkable-features" id="toc-three-remarkable-features"><span class="header-section-number">1.2</span> Three Remarkable Features</a>
   <ul>
-  <li><a href="#it-lives-inside-r-no-server-needed" id="toc-it-lives-inside-r-no-server-needed"><span class="header-section-number">1.2.1</span> 1. It Lives Inside R — No Server Needed</a></li>
+<li><a href="#it-lives-inside-r-no-server-needed" id="toc-it-lives-inside-r-no-server-needed"><span class="header-section-number">1.2.1</span> 1. It Lives Inside R — No Server Needed</a></li>
   <li><a href="#it-is-shockingly-fast" id="toc-it-is-shockingly-fast"><span class="header-section-number">1.2.2</span> 2. It Is Shockingly Fast</a></li>
   <li><a href="#it-reads-parquet-directly-without-loading-into-ram" id="toc-it-reads-parquet-directly-without-loading-into-ram"><span class="header-section-number">1.2.3</span> 3. It Reads Parquet Directly — Without Loading Into RAM</a></li>
-  </ul></li>
+  </ul>
+</li>
   <li><a href="#why-use-duckdb" id="toc-why-use-duckdb"><span class="header-section-number">1.3</span> Why use DuckDB?</a></li>
   <li><a href="#duckdb-vs-arrow-vs-parquet" id="toc-duckdb-vs-arrow-vs-parquet"><span class="header-section-number">1.4</span> DuckDB vs Arrow vs Parquet</a></li>
-  </ul></li>
-  <li><a href="#setup-connecting-to-bigquery" id="toc-setup-connecting-to-bigquery"><span class="header-section-number">2</span> Setup: Connecting to BigQuery</a>
+  </ul>
+</li>
+  <li>
+<a href="#setup-connecting-to-bigquery" id="toc-setup-connecting-to-bigquery"><span class="header-section-number">2</span> Setup: Connecting to BigQuery</a>
   <ul>
-  <li><a href="#authentication-and-connection" id="toc-authentication-and-connection"><span class="header-section-number">2.1</span> Authentication and Connection</a></li>
-  <li><a href="#downloading-and-caching-the-data" id="toc-downloading-and-caching-the-data"><span class="header-section-number">2.2</span> Downloading and Caching the Data</a>
+<li><a href="#authentication-and-connection" id="toc-authentication-and-connection"><span class="header-section-number">2.1</span> Authentication and Connection</a></li>
+  <li>
+<a href="#downloading-and-caching-the-data" id="toc-downloading-and-caching-the-data"><span class="header-section-number">2.2</span> Downloading and Caching the Data</a>
   <ul>
-  <li><a href="#option-1-saving-it-as-rds-file" id="toc-option-1-saving-it-as-rds-file"><span class="header-section-number">2.2.1</span> Option 1: Saving it as RDS file</a></li>
+<li><a href="#option-1-saving-it-as-rds-file" id="toc-option-1-saving-it-as-rds-file"><span class="header-section-number">2.2.1</span> Option 1: Saving it as RDS file</a></li>
   <li><a href="#option-2-saving-as-a-single-parquet-file" id="toc-option-2-saving-as-a-single-parquet-file"><span class="header-section-number">2.2.2</span> Option 2: Saving as a single Parquet file</a></li>
   <li><a href="#options-3-saving-as-partitioned-parquet" id="toc-options-3-saving-as-partitioned-parquet"><span class="header-section-number">2.2.3</span> Options 3: Saving as Partitioned Parquet</a></li>
-  </ul></li>
-  </ul></li>
-  <li><a href="#how-duckdb-works-with-arrow-and-parquet" id="toc-how-duckdb-works-with-arrow-and-parquet"><span class="header-section-number">3</span> How DuckDB Works with Arrow and Parquet</a>
+  </ul>
+</li>
+  </ul>
+</li>
+  <li>
+<a href="#how-duckdb-works-with-arrow-and-parquet" id="toc-how-duckdb-works-with-arrow-and-parquet"><span class="header-section-number">3</span> How DuckDB Works with Arrow and Parquet</a>
   <ul>
-  <li><a href="#pattern-1.-query-a-parquet-file-directly-with-duckdb-no-loading-into-r" id="toc-pattern-1.-query-a-parquet-file-directly-with-duckdb-no-loading-into-r"><span class="header-section-number">3.1</span> Pattern 1. Query a Parquet file directly with DuckDB (no loading into R)</a>
+<li>
+<a href="#pattern-1.-query-a-parquet-file-directly-with-duckdb-no-loading-into-r" id="toc-pattern-1.-query-a-parquet-file-directly-with-duckdb-no-loading-into-r"><span class="header-section-number">3.1</span> Pattern 1. Query a Parquet file directly with DuckDB (no loading into R)</a>
   <ul>
-  <li><a href="#simple" id="toc-simple"><span class="header-section-number">3.1.1</span> Simple:</a></li>
+<li><a href="#simple" id="toc-simple"><span class="header-section-number">3.1.1</span> Simple:</a></li>
   <li><a href="#advanced" id="toc-advanced"><span class="header-section-number">3.1.2</span> Advanced:</a></li>
-  </ul></li>
-  <li><a href="#parttern-2.-use-duckdb-as-a-dplyr-backend-no-sql-required" id="toc-parttern-2.-use-duckdb-as-a-dplyr-backend-no-sql-required"><span class="header-section-number">3.2</span> Parttern 2. Use DuckDB as a dplyr backend (no SQL required)</a>
+  </ul>
+</li>
+  <li>
+<a href="#parttern-2.-use-duckdb-as-a-dplyr-backend-no-sql-required" id="toc-parttern-2.-use-duckdb-as-a-dplyr-backend-no-sql-required"><span class="header-section-number">3.2</span> Parttern 2. Use DuckDB as a dplyr backend (no SQL required)</a>
   <ul>
-  <li><a href="#simple-1" id="toc-simple-1"><span class="header-section-number">3.2.1</span> Simple:</a></li>
+<li><a href="#simple-1" id="toc-simple-1"><span class="header-section-number">3.2.1</span> Simple:</a></li>
   <li><a href="#advanced-1" id="toc-advanced-1"><span class="header-section-number">3.2.2</span> Advanced:</a></li>
-  </ul></li>
-  <li><a href="#pattern-3.-query-an-arrow-table-with-duckdb-the-power-combination" id="toc-pattern-3.-query-an-arrow-table-with-duckdb-the-power-combination"><span class="header-section-number">3.3</span> Pattern 3. Query an Arrow Table with DuckDB (The Power Combination)</a>
+  </ul>
+</li>
+  <li>
+<a href="#pattern-3.-query-an-arrow-table-with-duckdb-the-power-combination" id="toc-pattern-3.-query-an-arrow-table-with-duckdb-the-power-combination"><span class="header-section-number">3.3</span> Pattern 3. Query an Arrow Table with DuckDB (The Power Combination)</a>
   <ul>
-  <li><a href="#simple-2" id="toc-simple-2"><span class="header-section-number">3.3.1</span> Simple:</a></li>
+<li><a href="#simple-2" id="toc-simple-2"><span class="header-section-number">3.3.1</span> Simple:</a></li>
   <li><a href="#advanced-2" id="toc-advanced-2"><span class="header-section-number">3.3.2</span> Advanced:</a></li>
-  </ul></li>
+  </ul>
+</li>
   <li><a href="#pattern-4.-persistent-duckdb-database-best-for-a-course-project" id="toc-pattern-4.-persistent-duckdb-database-best-for-a-course-project"><span class="header-section-number">3.4</span> Pattern 4. Persistent DuckDB Database (Best for a Course Project)</a></li>
-  </ul></li>
+  </ul>
+</li>
   <li><a href="#how-the-three-tools-form-a-complete-stack" id="toc-how-the-three-tools-form-a-complete-stack"><span class="header-section-number">4</span> How the Three Tools Form a Complete Stack</a></li>
   <li><a href="#the-big-picture-workflow" id="toc-the-big-picture-workflow"><span class="header-section-number">5</span> The Big Picture Workflow</a></li>
-  <li><a href="#open_dataset-vs.-read_parquet-functions" id="toc-open_dataset-vs.-read_parquet-functions"><span class="header-section-number">6</span> <code>open_dataset</code> vs.&nbsp;<code>read_parquet</code> functions</a>
+  <li>
+<a href="#open_dataset-vs.-read_parquet-functions" id="toc-open_dataset-vs.-read_parquet-functions"><span class="header-section-number">6</span> <code>open_dataset</code> vs.&nbsp;<code>read_parquet</code> functions</a>
   <ul>
-  <li><a href="#the-core-difference" id="toc-the-core-difference"><span class="header-section-number">6.1</span> The core difference</a></li>
+<li><a href="#the-core-difference" id="toc-the-core-difference"><span class="header-section-number">6.1</span> The core difference</a></li>
   <li><a href="#read_parquet-eager-loading" id="toc-read_parquet-eager-loading"><span class="header-section-number">6.2</span> <code>read_parquet()</code> — Eager Loading</a></li>
   <li><a href="#open_dataset-lazy-loading" id="toc-open_dataset-lazy-loading"><span class="header-section-number">6.3</span> <code>open_dataset()</code> — Lazy Loading</a></li>
   <li><a href="#side-by-side-comparison" id="toc-side-by-side-comparison"><span class="header-section-number">6.4</span> Side-by-Side Comparison</a></li>
   <li><a href="#the-key-concept-lazy-vs-eager-evaluation" id="toc-the-key-concept-lazy-vs-eager-evaluation"><span class="header-section-number">6.5</span> The Key Concept: Lazy vs Eager Evaluation</a></li>
   <li><a href="#the-biggest-difference-multiple-files" id="toc-the-biggest-difference-multiple-files"><span class="header-section-number">6.6</span> The Biggest Difference: Multiple Files</a></li>
   <li><a href="#hive-partitioned-datasets-the-most-powerful-pattern" id="toc-hive-partitioned-datasets-the-most-powerful-pattern"><span class="header-section-number">6.7</span> Hive-Partitioned Datasets — The Most Powerful Pattern</a></li>
-  <li><a href="#comparison-table" id="toc-comparison-table"><span class="header-section-number">6.8</span> Comparison table</a>
+  <li>
+<a href="#comparison-table" id="toc-comparison-table"><span class="header-section-number">6.8</span> Comparison table</a>
   <ul>
-  <li><a href="#detailed-feature-comparison-table" id="toc-detailed-feature-comparison-table"><span class="header-section-number">6.8.1</span> Detailed Feature Comparison Table</a></li>
-  </ul></li>
+<li><a href="#detailed-feature-comparison-table" id="toc-detailed-feature-comparison-table"><span class="header-section-number">6.8.1</span> Detailed Feature Comparison Table</a></li>
+  </ul>
+</li>
   <li><a href="#similarities-what-they-share" id="toc-similarities-what-they-share"><span class="header-section-number">6.9</span> Similarities — What They Share</a></li>
-  <li><a href="#practical-ga4-workflows" id="toc-practical-ga4-workflows"><span class="header-section-number">6.10</span> Practical GA4 Workflows</a>
+  <li>
+<a href="#practical-ga4-workflows" id="toc-practical-ga4-workflows"><span class="header-section-number">6.10</span> Practical GA4 Workflows</a>
   <ul>
-  <li><a href="#workflow-1-read_parquet-for-quick-exploration" id="toc-workflow-1-read_parquet-for-quick-exploration"><span class="header-section-number">6.10.1</span> Workflow 1: <code>read_parquet()</code> for Quick Exploration</a></li>
+<li><a href="#workflow-1-read_parquet-for-quick-exploration" id="toc-workflow-1-read_parquet-for-quick-exploration"><span class="header-section-number">6.10.1</span> Workflow 1: <code>read_parquet()</code> for Quick Exploration</a></li>
   <li><a href="#workflow-2-open_dataset-for-large-event-params" id="toc-workflow-2-open_dataset-for-large-event-params"><span class="header-section-number">6.10.2</span> Workflow 2: <code>open_dataset()</code> for Large Event Params</a></li>
   <li><a href="#workflow-3-open_dataset-across-all-ga4-daily-files" id="toc-workflow-3-open_dataset-across-all-ga4-daily-files"><span class="header-section-number">6.10.3</span> Workflow 3: <code>open_dataset()</code> Across All GA4 Daily Files</a></li>
   <li><a href="#workflow-4-combining-both-in-one-pipeline" id="toc-workflow-4-combining-both-in-one-pipeline"><span class="header-section-number">6.10.4</span> Workflow 4: Combining Both in One Pipeline</a></li>
   <li><a href="#workflow-5-open_dataset-with-duckdb-the-full-stack" id="toc-workflow-5-open_dataset-with-duckdb-the-full-stack"><span class="header-section-number">6.10.5</span> Workflow 5: <code>open_dataset()</code> with DuckDB — The Full Stack</a></li>
-  </ul></li>
-  <li><a href="#which-to-use-for-ga4-data" id="toc-which-to-use-for-ga4-data"><span class="header-section-number">6.11</span> Which to use for GA4 data?</a></li>
-  </ul></li>
   </ul>
-</nav>
-<section id="introduction" class="level1" data-number="1">
-<h1 data-number="1"><span class="header-section-number">1</span> Introduction</h1>
-<section id="what-is-duckdb" class="level2" data-number="1.1">
-<h2 data-number="1.1" class="anchored" data-anchor-id="what-is-duckdb"><span class="header-section-number">1.1</span> What is DuckDB?</h2>
+</li>
+  <li><a href="#which-to-use-for-ga4-data" id="toc-which-to-use-for-ga4-data"><span class="header-section-number">6.11</span> Which to use for GA4 data?</a></li>
+  </ul>
+</li>
+  </ul></nav><section id="introduction" class="level1" data-number="1"><h1 data-number="1">
+<span class="header-section-number">1</span> Introduction</h1>
+<section id="what-is-duckdb" class="level2" data-number="1.1"><h2 data-number="1.1" class="anchored" data-anchor-id="what-is-duckdb">
+<span class="header-section-number">1.1</span> What is DuckDB?</h2>
 <p>DuckDB is an embedded analytical database engine — think of it as “SQLite, but built for analytics.” It runs entirely inside your R process with no server, no installation, no configuration. You just install the package and it works.</p>
 <p>It was designed from the ground up for <strong>OLAP</strong> (Online Analytical Processing) workloads — the kind of heavy aggregations, joins, and scans that are typical in data analysis, as opposed to transactional row-by-row operations.</p>
 <ul>
@@ -569,19 +577,19 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <li>“Insert one customer order”</li>
 <li>“Update one user’s address”</li>
 <li>“Delete one session record”</li>
-</ul></li>
+</ul>
+</li>
 <li>DuckDB was built for this (analytical — few large scans):
 <ul>
 <li>“What was total revenue by channel across 50 million events?”</li>
 <li>“Which pages had the highest bounce rate last quarter?”</li>
 <li>“Give me the 99th percentile session duration by device type”</li>
-</ul></li>
 </ul>
-</section>
-<section id="three-remarkable-features" class="level2" data-number="1.2">
-<h2 data-number="1.2" class="anchored" data-anchor-id="three-remarkable-features"><span class="header-section-number">1.2</span> Three Remarkable Features</h2>
-<section id="it-lives-inside-r-no-server-needed" class="level3" data-number="1.2.1">
-<h3 data-number="1.2.1" class="anchored" data-anchor-id="it-lives-inside-r-no-server-needed"><span class="header-section-number">1.2.1</span> 1. It Lives Inside R — No Server Needed</h3>
+</li>
+</ul></section><section id="three-remarkable-features" class="level2" data-number="1.2"><h2 data-number="1.2" class="anchored" data-anchor-id="three-remarkable-features">
+<span class="header-section-number">1.2</span> Three Remarkable Features</h2>
+<section id="it-lives-inside-r-no-server-needed" class="level3" data-number="1.2.1"><h3 data-number="1.2.1" class="anchored" data-anchor-id="it-lives-inside-r-no-server-needed">
+<span class="header-section-number">1.2.1</span> 1. It Lives Inside R — No Server Needed</h3>
 <p><strong>Traditional database setup</strong> (PostgreSQL, MySQL, Snowflake):</p>
 <ol type="1">
 <li>Install database server</li>
@@ -593,9 +601,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </ol>
 <p><strong>DuckDB setup</strong>:</p>
 <div class="cell">
-<details open="" class="code-fold">
-<summary>Code</summary>
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb1"><pre class="sourceCode markdown code-with-copy"><code class="sourceCode markdown"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
+<details open="" class="code-fold"><summary>Code</summary><div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb1"><pre class="sourceCode markdown code-with-copy"><code class="sourceCode markdown"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
 <span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="co">#| eval: false         </span></span>
 <span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="fu">install.packages</span>(<span class="st">"duckdb"</span>)</span>
 <span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(duckdb)</span>
@@ -603,9 +609,8 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </details>
 </div>
-</section>
-<section id="it-is-shockingly-fast" class="level3" data-number="1.2.2">
-<h3 data-number="1.2.2" class="anchored" data-anchor-id="it-is-shockingly-fast"><span class="header-section-number">1.2.2</span> 2. It Is Shockingly Fast</h3>
+</section><section id="it-is-shockingly-fast" class="level3" data-number="1.2.2"><h3 data-number="1.2.2" class="anchored" data-anchor-id="it-is-shockingly-fast">
+<span class="header-section-number">1.2.2</span> 2. It Is Shockingly Fast</h3>
 <blockquote class="blockquote">
 <p>DuckDB uses columnar storage and vectorised execution — it reads only the columns your query needs and processes thousands of rows simultaneously using modern CPU instructions:</p>
 </blockquote>
@@ -616,10 +621,8 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <li>dplyr on tibble: ~3.1 seconds</li>
 <li>DuckDB on parquet file: ~0.3 seconds ← faster than data in RAM</li>
 <li>DuckDB on DuckDB file: ~0.1 seconds</li>
-</ul>
-</section>
-<section id="it-reads-parquet-directly-without-loading-into-ram" class="level3" data-number="1.2.3">
-<h3 data-number="1.2.3" class="anchored" data-anchor-id="it-reads-parquet-directly-without-loading-into-ram"><span class="header-section-number">1.2.3</span> 3. It Reads Parquet Directly — Without Loading Into RAM</h3>
+</ul></section><section id="it-reads-parquet-directly-without-loading-into-ram" class="level3" data-number="1.2.3"><h3 data-number="1.2.3" class="anchored" data-anchor-id="it-reads-parquet-directly-without-loading-into-ram">
+<span class="header-section-number">1.2.3</span> 3. It Reads Parquet Directly — Without Loading Into RAM</h3>
 <blockquote class="blockquote">
 <p>This is the feature that changes everything for large datasets:</p>
 </blockquote>
@@ -639,20 +642,16 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <span id="cb2-14"><a href="#cb2-14" aria-hidden="true" tabindex="-1"></a><span class="co"># DuckDB scans only the event_name and event_date columns</span></span>
 <span id="cb2-15"><a href="#cb2-15" aria-hidden="true" tabindex="-1"></a><span class="co"># Never loads price, device, geo, or any other column into RAM</span></span>
 <span id="cb2-16"><a href="#cb2-16" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-</section>
-</section>
-<section id="why-use-duckdb" class="level2" data-number="1.3">
-<h2 data-number="1.3" class="anchored" data-anchor-id="why-use-duckdb"><span class="header-section-number">1.3</span> Why use DuckDB?</h2>
+</section></section><section id="why-use-duckdb" class="level2" data-number="1.3"><h2 data-number="1.3" class="anchored" data-anchor-id="why-use-duckdb">
+<span class="header-section-number">1.3</span> Why use DuckDB?</h2>
 <ol type="1">
 <li><p><strong>It’s fast.</strong> DuckDB uses a columnar execution engine with vectorized query processing, meaning it processes chunks of columns at a time rather than row by row. For analytical queries on large data, this is dramatically faster than base R or even many database solutions.</p></li>
 <li><p><strong>It’s serverless.</strong> No Docker, no Postgres instance, no DBA needed. It lives inside your session like any other R package.</p></li>
 <li><p><strong>It speaks SQL fluently.</strong> You can write standard SQL, or use it as a dplyr backend via dbplyr — so you don’t need to learn a new API.</p></li>
 <li><p><strong>It handles larger-than-memory data.</strong> DuckDB can query files that don’t fit in RAM by streaming and processing them in chunks, making it genuinely useful for big data workflows.</p></li>
 <li><p><strong>It integrates natively with Parquet and Arrow.</strong> It can directly query <code>.parquet</code> files on disk without loading them into memory first — no import step needed.</p></li>
-</ol>
-</section>
-<section id="duckdb-vs-arrow-vs-parquet" class="level2" data-number="1.4">
-<h2 data-number="1.4" class="anchored" data-anchor-id="duckdb-vs-arrow-vs-parquet"><span class="header-section-number">1.4</span> DuckDB vs Arrow vs Parquet</h2>
+</ol></section><section id="duckdb-vs-arrow-vs-parquet" class="level2" data-number="1.4"><h2 data-number="1.4" class="anchored" data-anchor-id="duckdb-vs-arrow-vs-parquet">
+<span class="header-section-number">1.4</span> DuckDB vs Arrow vs Parquet</h2>
 <blockquote class="blockquote">
 <p>These three are complementary, not competing. Understanding the role of each is important:</p>
 </blockquote>
@@ -663,14 +662,12 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <col style="width: 25%">
 <col style="width: 25%">
 </colgroup>
-<thead>
-<tr class="header">
+<thead><tr class="header">
 <th></th>
 <th><strong>Parquet</strong></th>
 <th><strong>Arrow</strong></th>
 <th><strong>DuckDB</strong></th>
-</tr>
-</thead>
+</tr></thead>
 <tbody>
 <tr class="odd">
 <td>What is it?</td>
@@ -755,12 +752,10 @@ Tip
 <p>They work beautifully together — DuckDB can read Arrow tables directly and query Parquet files on disk, and you can pass results back to Arrow or collect into R.</p>
 </div>
 </div>
-</section>
-</section>
-<section id="setup-connecting-to-bigquery" class="level1" data-number="2">
-<h1 data-number="2"><span class="header-section-number">2</span> Setup: Connecting to BigQuery</h1>
-<section id="authentication-and-connection" class="level2" data-number="2.1">
-<h2 data-number="2.1" class="anchored" data-anchor-id="authentication-and-connection"><span class="header-section-number">2.1</span> Authentication and Connection</h2>
+</section></section><section id="setup-connecting-to-bigquery" class="level1" data-number="2"><h1 data-number="2">
+<span class="header-section-number">2</span> Setup: Connecting to BigQuery</h1>
+<section id="authentication-and-connection" class="level2" data-number="2.1"><h2 data-number="2.1" class="anchored" data-anchor-id="authentication-and-connection">
+<span class="header-section-number">2.1</span> Authentication and Connection</h2>
 <div class="callout callout-style-default callout-important callout-titled">
 <div class="callout-header d-flex align-content-center">
 <div class="callout-icon-container">
@@ -773,7 +768,8 @@ Tip
 <div class="callout-body-container callout-body">
 <p>You need a <strong>Google Cloud Platform (GCP) account</strong> with a project that has billing enabled. Querying the public dataset is free in terms of data costs (you won’t be charged for the data itself), but GCP bills for query processing. Small queries on this dataset cost fractions of a cent.</p>
 <ol type="1">
-<li>Go to <a href="https://console.cloud.google.com">console.cloud.google.com</a></li>
+<li>Go to <a href="https://console.cloud.google.com">console.cloud.google.com</a>
+</li>
 <li>Create a project (or use an existing one)</li>
 <li>Enable the BigQuery API for that project</li>
 <li>Copy your <strong>Project ID</strong> — you’ll need it below</li>
@@ -781,9 +777,7 @@ Tip
 </div>
 </div>
 <div class="cell">
-<details open="" class="code-fold">
-<summary>Code</summary>
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb3"><pre class="sourceCode markdown code-with-copy"><code class="sourceCode markdown"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
+<details open="" class="code-fold"><summary>Code</summary><div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb3"><pre class="sourceCode markdown code-with-copy"><code class="sourceCode markdown"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
 <span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a><span class="co">#| label: connection</span></span>
 <span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a><span class="co">#| eval: false</span></span>
 <span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a></span>
@@ -812,16 +806,13 @@ Tip
 <span id="cb3-27"><a href="#cb3-27" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </details>
 </div>
-</section>
-<section id="downloading-and-caching-the-data" class="level2" data-number="2.2">
-<h2 data-number="2.2" class="anchored" data-anchor-id="downloading-and-caching-the-data"><span class="header-section-number">2.2</span> Downloading and Caching the Data</h2>
+</section><section id="downloading-and-caching-the-data" class="level2" data-number="2.2"><h2 data-number="2.2" class="anchored" data-anchor-id="downloading-and-caching-the-data">
+<span class="header-section-number">2.2</span> Downloading and Caching the Data</h2>
 <blockquote class="blockquote">
 <p>GA4 tables are large. For this workshop we download <strong>one week of events</strong> (~150,000 rows) once, then save locally to avoid re-querying BigQuery on every render.</p>
 </blockquote>
 <div class="cell">
-<details open="" class="code-fold">
-<summary>Code</summary>
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb4"><pre class="sourceCode markdown code-with-copy"><code class="sourceCode markdown"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
+<details open="" class="code-fold"><summary>Code</summary><div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb4"><pre class="sourceCode markdown code-with-copy"><code class="sourceCode markdown"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
 <span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a><span class="co">#| label: download-data</span></span>
 <span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a><span class="co">#| eval: false</span></span>
 <span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a></span>
@@ -872,12 +863,10 @@ Tip
 </ul>
 </div>
 </div>
-<section id="option-1-saving-it-as-rds-file" class="level3" data-number="2.2.1">
-<h3 data-number="2.2.1" class="anchored" data-anchor-id="option-1-saving-it-as-rds-file"><span class="header-section-number">2.2.1</span> Option 1: Saving it as RDS file</h3>
+<section id="option-1-saving-it-as-rds-file" class="level3" data-number="2.2.1"><h3 data-number="2.2.1" class="anchored" data-anchor-id="option-1-saving-it-as-rds-file">
+<span class="header-section-number">2.2.1</span> Option 1: Saving it as RDS file</h3>
 <div class="cell">
-<details open="" class="code-fold">
-<summary>Code</summary>
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb5"><pre class="sourceCode markdown code-with-copy"><code class="sourceCode markdown"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
+<details open="" class="code-fold"><summary>Code</summary><div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb5"><pre class="sourceCode markdown code-with-copy"><code class="sourceCode markdown"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
 <span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a><span class="co">#| label: save-rds</span></span>
 <span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a><span class="co">#| eval: false</span></span>
 <span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a><span class="fu">saveRDS</span>(ga4_raw, <span class="st">"data/ga4_raw.rds"</span>)</span>
@@ -889,9 +878,7 @@ Tip
 <p><strong>Note</strong>: RDS stands for R Data Serialization</p>
 </blockquote>
 <div class="cell">
-<details open="" class="code-fold">
-<summary>Code</summary>
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb6"><pre class="sourceCode markdown code-with-copy"><code class="sourceCode markdown"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
+<details open="" class="code-fold"><summary>Code</summary><div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb6"><pre class="sourceCode markdown code-with-copy"><code class="sourceCode markdown"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
 <span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a><span class="co">#| label: load-rds</span></span>
 <span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a><span class="co">#| eval: false</span></span>
 <span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a></span>
@@ -900,13 +887,10 @@ Tip
 <span id="cb6-7"><a href="#cb6-7" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </details>
 </div>
-</section>
-<section id="option-2-saving-as-a-single-parquet-file" class="level3" data-number="2.2.2">
-<h3 data-number="2.2.2" class="anchored" data-anchor-id="option-2-saving-as-a-single-parquet-file"><span class="header-section-number">2.2.2</span> Option 2: Saving as a single Parquet file</h3>
+</section><section id="option-2-saving-as-a-single-parquet-file" class="level3" data-number="2.2.2"><h3 data-number="2.2.2" class="anchored" data-anchor-id="option-2-saving-as-a-single-parquet-file">
+<span class="header-section-number">2.2.2</span> Option 2: Saving as a single Parquet file</h3>
 <div class="cell">
-<details open="" class="code-fold">
-<summary>Code</summary>
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb7"><pre class="sourceCode markdown code-with-copy"><code class="sourceCode markdown"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
+<details open="" class="code-fold"><summary>Code</summary><div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb7"><pre class="sourceCode markdown code-with-copy"><code class="sourceCode markdown"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
 <span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a><span class="co">#| label: save-parquet</span></span>
 <span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a><span class="co">#| eval: false</span></span>
 <span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a></span>
@@ -918,9 +902,7 @@ Tip
 </details>
 </div>
 <div class="cell">
-<details open="" class="code-fold">
-<summary>Code</summary>
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb8"><pre class="sourceCode markdown code-with-copy"><code class="sourceCode markdown"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
+<details open="" class="code-fold"><summary>Code</summary><div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb8"><pre class="sourceCode markdown code-with-copy"><code class="sourceCode markdown"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
 <span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a><span class="co">#| label: load-parquet</span></span>
 <span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a><span class="co">#| eval: false</span></span>
 <span id="cb8-4"><a href="#cb8-4" aria-hidden="true" tabindex="-1"></a></span>
@@ -928,16 +910,13 @@ Tip
 <span id="cb8-6"><a href="#cb8-6" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </details>
 </div>
-</section>
-<section id="options-3-saving-as-partitioned-parquet" class="level3" data-number="2.2.3">
-<h3 data-number="2.2.3" class="anchored" data-anchor-id="options-3-saving-as-partitioned-parquet"><span class="header-section-number">2.2.3</span> Options 3: Saving as Partitioned Parquet</h3>
+</section><section id="options-3-saving-as-partitioned-parquet" class="level3" data-number="2.2.3"><h3 data-number="2.2.3" class="anchored" data-anchor-id="options-3-saving-as-partitioned-parquet">
+<span class="header-section-number">2.2.3</span> Options 3: Saving as Partitioned Parquet</h3>
 <blockquote class="blockquote">
 <p>Also no iteration needed — write_dataset() handles the partitioning automatically:</p>
 </blockquote>
 <div class="cell">
-<details open="" class="code-fold">
-<summary>Code</summary>
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb9"><pre class="sourceCode markdown code-with-copy"><code class="sourceCode markdown"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
+<details open="" class="code-fold"><summary>Code</summary><div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb9"><pre class="sourceCode markdown code-with-copy"><code class="sourceCode markdown"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
 <span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a><span class="co">#| label: save-partitioned</span></span>
 <span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a><span class="co">#| eval: false</span></span>
 <span id="cb9-4"><a href="#cb9-4" aria-hidden="true" tabindex="-1"></a></span>
@@ -956,9 +935,7 @@ Tip
 <p><strong>Note</strong>: <code>write_dataset()</code> automatically creates one subfolder per <code>event_date</code>, e.g.&nbsp;<code>data/ga4_parquet/event_date=20210101/part-0.parquet</code></p>
 </blockquote>
 <div class="cell">
-<details open="" class="code-fold">
-<summary>Code</summary>
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb10"><pre class="sourceCode markdown code-with-copy"><code class="sourceCode markdown"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
+<details open="" class="code-fold"><summary>Code</summary><div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb10"><pre class="sourceCode markdown code-with-copy"><code class="sourceCode markdown"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
 <span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a><span class="co">#| label: load-partitioned</span></span>
 <span id="cb10-3"><a href="#cb10-3" aria-hidden="true" tabindex="-1"></a><span class="co">#| eval: false</span></span>
 <span id="cb10-4"><a href="#cb10-4" aria-hidden="true" tabindex="-1"></a></span>
@@ -966,11 +943,8 @@ Tip
 <span id="cb10-6"><a href="#cb10-6" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </details>
 </div>
-</section>
-</section>
-</section>
-<section id="how-duckdb-works-with-arrow-and-parquet" class="level1" data-number="3">
-<h1 data-number="3"><span class="header-section-number">3</span> How DuckDB Works with Arrow and Parquet</h1>
+</section></section></section><section id="how-duckdb-works-with-arrow-and-parquet" class="level1" data-number="3"><h1 data-number="3">
+<span class="header-section-number">3</span> How DuckDB Works with Arrow and Parquet</h1>
 <blockquote class="blockquote">
 <p>There are <strong>four integration patterns</strong>, each suited to different situations:</p>
 </blockquote>
@@ -980,18 +954,16 @@ Tip
 <span id="cb11-3"><a href="#cb11-3" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(arrow)</span>
 <span id="cb11-4"><a href="#cb11-4" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(dplyr)</span>
 <span id="cb11-5"><a href="#cb11-5" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-<section id="pattern-1.-query-a-parquet-file-directly-with-duckdb-no-loading-into-r" class="level2" data-number="3.1">
-<h2 data-number="3.1" class="anchored" data-anchor-id="pattern-1.-query-a-parquet-file-directly-with-duckdb-no-loading-into-r"><span class="header-section-number">3.1</span> Pattern 1. Query a Parquet file directly with DuckDB (no loading into R)</h2>
+<section id="pattern-1.-query-a-parquet-file-directly-with-duckdb-no-loading-into-r" class="level2" data-number="3.1"><h2 data-number="3.1" class="anchored" data-anchor-id="pattern-1.-query-a-parquet-file-directly-with-duckdb-no-loading-into-r">
+<span class="header-section-number">3.1</span> Pattern 1. Query a Parquet file directly with DuckDB (no loading into R)</h2>
 <ul>
 <li><p>The most direct approach — point DuckDB at a <code>Parquet</code> file and query it with SQL, no loading required:</p></li>
 <li><p>DuckDB can scan Parquet files on disk using <code>SQL</code> — nothing enters R memory until you <code>collect()</code>.</p></li>
 </ul>
-<section id="simple" class="level3" data-number="3.1.1">
-<h3 data-number="3.1.1" class="anchored" data-anchor-id="simple"><span class="header-section-number">3.1.1</span> Simple:</h3>
+<section id="simple" class="level3" data-number="3.1.1"><h3 data-number="3.1.1" class="anchored" data-anchor-id="simple">
+<span class="header-section-number">3.1.1</span> Simple:</h3>
 <div class="cell">
-<details open="" class="code-fold">
-<summary>Code</summary>
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb12"><pre class="sourceCode markdown code-with-copy"><code class="sourceCode markdown"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
+<details open="" class="code-fold"><summary>Code</summary><div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb12"><pre class="sourceCode markdown code-with-copy"><code class="sourceCode markdown"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
 <span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a><span class="co">#| eval: false</span></span>
 <span id="cb12-3"><a href="#cb12-3" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb12-4"><a href="#cb12-4" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(duckdb)</span>
@@ -1008,13 +980,10 @@ Tip
 <span id="cb12-15"><a href="#cb12-15" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </details>
 </div>
-</section>
-<section id="advanced" class="level3" data-number="3.1.2">
-<h3 data-number="3.1.2" class="anchored" data-anchor-id="advanced"><span class="header-section-number">3.1.2</span> Advanced:</h3>
+</section><section id="advanced" class="level3" data-number="3.1.2"><h3 data-number="3.1.2" class="anchored" data-anchor-id="advanced">
+<span class="header-section-number">3.1.2</span> Advanced:</h3>
 <div class="cell">
-<details open="" class="code-fold">
-<summary>Code</summary>
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb13"><pre class="sourceCode markdown code-with-copy"><code class="sourceCode markdown"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
+<details open="" class="code-fold"><summary>Code</summary><div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb13"><pre class="sourceCode markdown code-with-copy"><code class="sourceCode markdown"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
 <span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a><span class="co">#| eval: false</span></span>
 <span id="cb13-3"><a href="#cb13-3" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb13-4"><a href="#cb13-4" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(duckdb)</span>
@@ -1084,20 +1053,16 @@ Tip
 <blockquote class="blockquote">
 <p>This is powerful — DuckDB pushes the entire query down to the file, reading only the columns and rows it needs (thanks to Parquet’s columnar layout).</p>
 </blockquote>
-</section>
-</section>
-<section id="parttern-2.-use-duckdb-as-a-dplyr-backend-no-sql-required" class="level2" data-number="3.2">
-<h2 data-number="3.2" class="anchored" data-anchor-id="parttern-2.-use-duckdb-as-a-dplyr-backend-no-sql-required"><span class="header-section-number">3.2</span> Parttern 2. Use DuckDB as a dplyr backend (no SQL required)</h2>
+</section></section><section id="parttern-2.-use-duckdb-as-a-dplyr-backend-no-sql-required" class="level2" data-number="3.2"><h2 data-number="3.2" class="anchored" data-anchor-id="parttern-2.-use-duckdb-as-a-dplyr-backend-no-sql-required">
+<span class="header-section-number">3.2</span> Parttern 2. Use DuckDB as a dplyr backend (no SQL required)</h2>
 <blockquote class="blockquote">
 <p>If you prefer dplyr verbs over SQL, you can register the <strong>Parquet file</strong> as a <strong>virtual table</strong> and query it lazily.</p>
 <p><code>dbplyr</code> translates dplyr verbs into DuckDB SQL automatically:</p>
 </blockquote>
-<section id="simple-1" class="level3" data-number="3.2.1">
-<h3 data-number="3.2.1" class="anchored" data-anchor-id="simple-1"><span class="header-section-number">3.2.1</span> Simple:</h3>
+<section id="simple-1" class="level3" data-number="3.2.1"><h3 data-number="3.2.1" class="anchored" data-anchor-id="simple-1">
+<span class="header-section-number">3.2.1</span> Simple:</h3>
 <div class="cell">
-<details open="" class="code-fold">
-<summary>Code</summary>
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb14"><pre class="sourceCode markdown code-with-copy"><code class="sourceCode markdown"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
+<details open="" class="code-fold"><summary>Code</summary><div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb14"><pre class="sourceCode markdown code-with-copy"><code class="sourceCode markdown"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
 <span id="cb14-2"><a href="#cb14-2" aria-hidden="true" tabindex="-1"></a><span class="co">#| eval: false</span></span>
 <span id="cb14-3"><a href="#cb14-3" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(duckdb)</span>
 <span id="cb14-4"><a href="#cb14-4" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(dplyr)</span>
@@ -1117,13 +1082,10 @@ Tip
 <span id="cb14-18"><a href="#cb14-18" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </details>
 </div>
-</section>
-<section id="advanced-1" class="level3" data-number="3.2.2">
-<h3 data-number="3.2.2" class="anchored" data-anchor-id="advanced-1"><span class="header-section-number">3.2.2</span> Advanced:</h3>
+</section><section id="advanced-1" class="level3" data-number="3.2.2"><h3 data-number="3.2.2" class="anchored" data-anchor-id="advanced-1">
+<span class="header-section-number">3.2.2</span> Advanced:</h3>
 <div class="cell">
-<details open="" class="code-fold">
-<summary>Code</summary>
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb15"><pre class="sourceCode markdown code-with-copy"><code class="sourceCode markdown"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
+<details open="" class="code-fold"><summary>Code</summary><div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb15"><pre class="sourceCode markdown code-with-copy"><code class="sourceCode markdown"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
 <span id="cb15-2"><a href="#cb15-2" aria-hidden="true" tabindex="-1"></a><span class="co">#| eval: false</span></span>
 <span id="cb15-3"><a href="#cb15-3" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(duckdb)</span>
 <span id="cb15-4"><a href="#cb15-4" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(dplyr)</span>
@@ -1185,21 +1147,17 @@ Tip
 <span id="cb15-60"><a href="#cb15-60" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </details>
 </div>
-</section>
-</section>
-<section id="pattern-3.-query-an-arrow-table-with-duckdb-the-power-combination" class="level2" data-number="3.3">
-<h2 data-number="3.3" class="anchored" data-anchor-id="pattern-3.-query-an-arrow-table-with-duckdb-the-power-combination"><span class="header-section-number">3.3</span> Pattern 3. Query an Arrow Table with DuckDB (The Power Combination)</h2>
+</section></section><section id="pattern-3.-query-an-arrow-table-with-duckdb-the-power-combination" class="level2" data-number="3.3"><h2 data-number="3.3" class="anchored" data-anchor-id="pattern-3.-query-an-arrow-table-with-duckdb-the-power-combination">
+<span class="header-section-number">3.3</span> Pattern 3. Query an Arrow Table with DuckDB (The Power Combination)</h2>
 <blockquote class="blockquote">
 <p>Arrow and DuckDB are designed to work together. Arrow handles file I/O and in-memory transformation; DuckDB handles querying.</p>
 <p>They share data without copying, using the Apache Arrow memory format.</p>
 <p>If you already have an Arrow table in memory, DuckDB can query it directly — zero copying involved:</p>
 </blockquote>
-<section id="simple-2" class="level3" data-number="3.3.1">
-<h3 data-number="3.3.1" class="anchored" data-anchor-id="simple-2"><span class="header-section-number">3.3.1</span> Simple:</h3>
+<section id="simple-2" class="level3" data-number="3.3.1"><h3 data-number="3.3.1" class="anchored" data-anchor-id="simple-2">
+<span class="header-section-number">3.3.1</span> Simple:</h3>
 <div class="cell">
-<details open="" class="code-fold">
-<summary>Code</summary>
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb16"><pre class="sourceCode markdown code-with-copy"><code class="sourceCode markdown"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
+<details open="" class="code-fold"><summary>Code</summary><div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb16"><pre class="sourceCode markdown code-with-copy"><code class="sourceCode markdown"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
 <span id="cb16-2"><a href="#cb16-2" aria-hidden="true" tabindex="-1"></a><span class="co">#| eval: false</span></span>
 <span id="cb16-3"><a href="#cb16-3" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(arrow)</span>
 <span id="cb16-4"><a href="#cb16-4" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(duckdb)</span>
@@ -1218,13 +1176,10 @@ Tip
 <span id="cb16-17"><a href="#cb16-17" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </details>
 </div>
-</section>
-<section id="advanced-2" class="level3" data-number="3.3.2">
-<h3 data-number="3.3.2" class="anchored" data-anchor-id="advanced-2"><span class="header-section-number">3.3.2</span> Advanced:</h3>
+</section><section id="advanced-2" class="level3" data-number="3.3.2"><h3 data-number="3.3.2" class="anchored" data-anchor-id="advanced-2">
+<span class="header-section-number">3.3.2</span> Advanced:</h3>
 <div class="cell">
-<details open="" class="code-fold">
-<summary>Code</summary>
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb17"><pre class="sourceCode markdown code-with-copy"><code class="sourceCode markdown"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
+<details open="" class="code-fold"><summary>Code</summary><div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb17"><pre class="sourceCode markdown code-with-copy"><code class="sourceCode markdown"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
 <span id="cb17-2"><a href="#cb17-2" aria-hidden="true" tabindex="-1"></a><span class="co">#| eval: false</span></span>
 <span id="cb17-3"><a href="#cb17-3" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb17-4"><a href="#cb17-4" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(arrow)</span>
@@ -1309,17 +1264,13 @@ Tip
 <span id="cb17-83"><a href="#cb17-83" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </details>
 </div>
-</section>
-</section>
-<section id="pattern-4.-persistent-duckdb-database-best-for-a-course-project" class="level2" data-number="3.4">
-<h2 data-number="3.4" class="anchored" data-anchor-id="pattern-4.-persistent-duckdb-database-best-for-a-course-project"><span class="header-section-number">3.4</span> Pattern 4. Persistent DuckDB Database (Best for a Course Project)</h2>
+</section></section><section id="pattern-4.-persistent-duckdb-database-best-for-a-course-project" class="level2" data-number="3.4"><h2 data-number="3.4" class="anchored" data-anchor-id="pattern-4.-persistent-duckdb-database-best-for-a-course-project">
+<span class="header-section-number">3.4</span> Pattern 4. Persistent DuckDB Database (Best for a Course Project)</h2>
 <blockquote class="blockquote">
 <p>Write your rectangled GA4 tables once into a <code>.duckdb</code> file. Every subsequent analysis opens this one file — no BigQuery, no Parquet management, no RAM issues:</p>
 </blockquote>
 <div class="cell">
-<details open="" class="code-fold">
-<summary>Code</summary>
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb18"><pre class="sourceCode markdown code-with-copy"><code class="sourceCode markdown"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
+<details open="" class="code-fold"><summary>Code</summary><div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb18"><pre class="sourceCode markdown code-with-copy"><code class="sourceCode markdown"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
 <span id="cb18-2"><a href="#cb18-2" aria-hidden="true" tabindex="-1"></a><span class="co">#| eval: false</span></span>
 <span id="cb18-3"><a href="#cb18-3" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb18-4"><a href="#cb18-4" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(duckdb)</span>
@@ -1380,9 +1331,7 @@ Tip
 </details>
 </div>
 <div class="cell">
-<details open="" class="code-fold">
-<summary>Code</summary>
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb19"><pre class="sourceCode markdown code-with-copy"><code class="sourceCode markdown"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
+<details open="" class="code-fold"><summary>Code</summary><div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb19"><pre class="sourceCode markdown code-with-copy"><code class="sourceCode markdown"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
 <span id="cb19-2"><a href="#cb19-2" aria-hidden="true" tabindex="-1"></a><span class="co">#| eval: false</span></span>
 <span id="cb19-3"><a href="#cb19-3" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb19-4"><a href="#cb19-4" aria-hidden="true" tabindex="-1"></a><span class="co"># ── ANALYSIS: Open the database for every subsequent session ──────────────────</span></span>
@@ -1455,10 +1404,8 @@ Tip
 <span id="cb19-71"><a href="#cb19-71" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </details>
 </div>
-</section>
-</section>
-<section id="how-the-three-tools-form-a-complete-stack" class="level1" data-number="4">
-<h1 data-number="4"><span class="header-section-number">4</span> How the Three Tools Form a Complete Stack</h1>
+</section></section><section id="how-the-three-tools-form-a-complete-stack" class="level1" data-number="4"><h1 data-number="4">
+<span class="header-section-number">4</span> How the Three Tools Form a Complete Stack</h1>
 <pre><code># The complete GA4 analytics stack:
 
 # ┌─────────────────────────────────────────────────────────────┐
@@ -1492,9 +1439,8 @@ Tip
 # Arrow   = the loading dock (moves data efficiently)
 # DuckDB  = the analyst (asks and answers questions)
 # Parquet = the filing system (stores data efficiently)</code></pre>
-</section>
-<section id="the-big-picture-workflow" class="level1" data-number="5">
-<h1 data-number="5"><span class="header-section-number">5</span> The Big Picture Workflow</h1>
+</section><section id="the-big-picture-workflow" class="level1" data-number="5"><h1 data-number="5">
+<span class="header-section-number">5</span> The Big Picture Workflow</h1>
 <div class="cell">
 <div class="cell-output-display">
 <div class="grViz html-widget html-fill-item" id="htmlwidget-b56069e3ebba8a05dc20" style="width:100%;height:464px;"></div>
@@ -1502,11 +1448,10 @@ Tip
 </div>
 </div>
 <p><strong>Parquet is your warehouse, Arrow is your forklift, DuckDB is your analyst.</strong> Each does its job, and they hand off to each other seamlessly.</p>
-</section>
-<section id="open_dataset-vs.-read_parquet-functions" class="level1" data-number="6">
-<h1 data-number="6"><span class="header-section-number">6</span> <code>open_dataset</code> vs.&nbsp;<code>read_parquet</code> functions</h1>
-<section id="the-core-difference" class="level2" data-number="6.1">
-<h2 data-number="6.1" class="anchored" data-anchor-id="the-core-difference"><span class="header-section-number">6.1</span> The core difference</h2>
+</section><section id="open_dataset-vs.-read_parquet-functions" class="level1" data-number="6"><h1 data-number="6">
+<span class="header-section-number">6</span> <code>open_dataset</code> vs.&nbsp;<code>read_parquet</code> functions</h1>
+<section id="the-core-difference" class="level2" data-number="6.1"><h2 data-number="6.1" class="anchored" data-anchor-id="the-core-difference">
+<span class="header-section-number">6.1</span> The core difference</h2>
 <blockquote class="blockquote">
 <p><code>open_dataset()</code> is for <strong>many files or a folder</strong> — it creates a lazy connection without loading anything into memory. <code>read_parquet()</code> is for <strong>a single file</strong> — it reads the file directly, by default into R memory.</p>
 <p><strong>The One-Sentence Description</strong>:</p>
@@ -1516,13 +1461,10 @@ Tip
 <span id="cb21-3"><a href="#cb21-3" aria-hidden="true" tabindex="-1"></a><span class="co"># open_dataset()  — creates a POINTER to data on disk, loads nothing yet</span></span>
 <span id="cb21-4"><a href="#cb21-4" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <p>&gt; Everything else flows from this single difference. &gt; &gt; <strong>What Each Function Actually Does</strong>:</p>
-</section>
-<section id="read_parquet-eager-loading" class="level2" data-number="6.2">
-<h2 data-number="6.2" class="anchored" data-anchor-id="read_parquet-eager-loading"><span class="header-section-number">6.2</span> <code>read_parquet()</code> — Eager Loading</h2>
+</section><section id="read_parquet-eager-loading" class="level2" data-number="6.2"><h2 data-number="6.2" class="anchored" data-anchor-id="read_parquet-eager-loading">
+<span class="header-section-number">6.2</span> <code>read_parquet()</code> — Eager Loading</h2>
 <div class="cell">
-<details open="" class="code-fold">
-<summary>Code</summary>
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb22"><pre class="sourceCode markdown code-with-copy"><code class="sourceCode markdown"><span id="cb22-1"><a href="#cb22-1" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
+<details open="" class="code-fold"><summary>Code</summary><div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb22"><pre class="sourceCode markdown code-with-copy"><code class="sourceCode markdown"><span id="cb22-1"><a href="#cb22-1" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
 <span id="cb22-2"><a href="#cb22-2" aria-hidden="true" tabindex="-1"></a><span class="co">#| eval: false</span></span>
 <span id="cb22-3"><a href="#cb22-3" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(arrow)</span>
 <span id="cb22-4"><a href="#cb22-4" aria-hidden="true" tabindex="-1"></a></span>
@@ -1546,13 +1488,10 @@ Tip
 <span id="cb22-22"><a href="#cb22-22" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </details>
 </div>
-</section>
-<section id="open_dataset-lazy-loading" class="level2" data-number="6.3">
-<h2 data-number="6.3" class="anchored" data-anchor-id="open_dataset-lazy-loading"><span class="header-section-number">6.3</span> <code>open_dataset()</code> — Lazy Loading</h2>
+</section><section id="open_dataset-lazy-loading" class="level2" data-number="6.3"><h2 data-number="6.3" class="anchored" data-anchor-id="open_dataset-lazy-loading">
+<span class="header-section-number">6.3</span> <code>open_dataset()</code> — Lazy Loading</h2>
 <div class="cell">
-<details open="" class="code-fold">
-<summary>Code</summary>
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb23"><pre class="sourceCode markdown code-with-copy"><code class="sourceCode markdown"><span id="cb23-1"><a href="#cb23-1" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
+<details open="" class="code-fold"><summary>Code</summary><div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb23"><pre class="sourceCode markdown code-with-copy"><code class="sourceCode markdown"><span id="cb23-1"><a href="#cb23-1" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
 <span id="cb23-2"><a href="#cb23-2" aria-hidden="true" tabindex="-1"></a><span class="co">#| eval: false</span></span>
 <span id="cb23-3"><a href="#cb23-3" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(arrow)</span>
 <span id="cb23-4"><a href="#cb23-4" aria-hidden="true" tabindex="-1"></a></span>
@@ -1577,13 +1516,10 @@ Tip
 <span id="cb23-23"><a href="#cb23-23" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </details>
 </div>
-</section>
-<section id="side-by-side-comparison" class="level2" data-number="6.4">
-<h2 data-number="6.4" class="anchored" data-anchor-id="side-by-side-comparison"><span class="header-section-number">6.4</span> Side-by-Side Comparison</h2>
+</section><section id="side-by-side-comparison" class="level2" data-number="6.4"><h2 data-number="6.4" class="anchored" data-anchor-id="side-by-side-comparison">
+<span class="header-section-number">6.4</span> Side-by-Side Comparison</h2>
 <div class="cell">
-<details open="" class="code-fold">
-<summary>Code</summary>
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb24"><pre class="sourceCode markdown code-with-copy"><code class="sourceCode markdown"><span id="cb24-1"><a href="#cb24-1" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
+<details open="" class="code-fold"><summary>Code</summary><div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb24"><pre class="sourceCode markdown code-with-copy"><code class="sourceCode markdown"><span id="cb24-1"><a href="#cb24-1" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
 <span id="cb24-2"><a href="#cb24-2" aria-hidden="true" tabindex="-1"></a><span class="co">#| eval: false</span></span>
 <span id="cb24-3"><a href="#cb24-3" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(arrow)</span>
 <span id="cb24-4"><a href="#cb24-4" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(dplyr)</span>
@@ -1614,13 +1550,10 @@ Tip
 <span id="cb24-29"><a href="#cb24-29" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </details>
 </div>
-</section>
-<section id="the-key-concept-lazy-vs-eager-evaluation" class="level2" data-number="6.5">
-<h2 data-number="6.5" class="anchored" data-anchor-id="the-key-concept-lazy-vs-eager-evaluation"><span class="header-section-number">6.5</span> The Key Concept: Lazy vs Eager Evaluation</h2>
+</section><section id="the-key-concept-lazy-vs-eager-evaluation" class="level2" data-number="6.5"><h2 data-number="6.5" class="anchored" data-anchor-id="the-key-concept-lazy-vs-eager-evaluation">
+<span class="header-section-number">6.5</span> The Key Concept: Lazy vs Eager Evaluation</h2>
 <div class="cell">
-<details open="" class="code-fold">
-<summary>Code</summary>
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb25"><pre class="sourceCode markdown code-with-copy"><code class="sourceCode markdown"><span id="cb25-1"><a href="#cb25-1" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
+<details open="" class="code-fold"><summary>Code</summary><div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb25"><pre class="sourceCode markdown code-with-copy"><code class="sourceCode markdown"><span id="cb25-1"><a href="#cb25-1" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
 <span id="cb25-2"><a href="#cb25-2" aria-hidden="true" tabindex="-1"></a><span class="co">#| eval: false</span></span>
 <span id="cb25-3"><a href="#cb25-3" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(arrow)</span>
 <span id="cb25-4"><a href="#cb25-4" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(dplyr)</span>
@@ -1659,14 +1592,11 @@ Tip
 <span id="cb25-37"><a href="#cb25-37" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </details>
 </div>
-</section>
-<section id="the-biggest-difference-multiple-files" class="level2" data-number="6.6">
-<h2 data-number="6.6" class="anchored" data-anchor-id="the-biggest-difference-multiple-files"><span class="header-section-number">6.6</span> The Biggest Difference: Multiple Files</h2>
+</section><section id="the-biggest-difference-multiple-files" class="level2" data-number="6.6"><h2 data-number="6.6" class="anchored" data-anchor-id="the-biggest-difference-multiple-files">
+<span class="header-section-number">6.6</span> The Biggest Difference: Multiple Files</h2>
 <p>This is where <code>open_dataset()</code> becomes <strong>dramatically</strong> more powerful. <code>read_parquet()</code> reads one file. <code>open_dataset()</code> reads many files as if they were one:</p>
 <div class="cell">
-<details open="" class="code-fold">
-<summary>Code</summary>
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb26"><pre class="sourceCode markdown code-with-copy"><code class="sourceCode markdown"><span id="cb26-1"><a href="#cb26-1" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
+<details open="" class="code-fold"><summary>Code</summary><div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb26"><pre class="sourceCode markdown code-with-copy"><code class="sourceCode markdown"><span id="cb26-1"><a href="#cb26-1" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
 <span id="cb26-2"><a href="#cb26-2" aria-hidden="true" tabindex="-1"></a><span class="co">#| eval: false</span></span>
 <span id="cb26-3"><a href="#cb26-3" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(arrow)</span>
 <span id="cb26-4"><a href="#cb26-4" aria-hidden="true" tabindex="-1"></a></span>
@@ -1709,13 +1639,10 @@ Tip
 <span id="cb26-41"><a href="#cb26-41" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </details>
 </div>
-</section>
-<section id="hive-partitioned-datasets-the-most-powerful-pattern" class="level2" data-number="6.7">
-<h2 data-number="6.7" class="anchored" data-anchor-id="hive-partitioned-datasets-the-most-powerful-pattern"><span class="header-section-number">6.7</span> Hive-Partitioned Datasets — The Most Powerful Pattern</h2>
+</section><section id="hive-partitioned-datasets-the-most-powerful-pattern" class="level2" data-number="6.7"><h2 data-number="6.7" class="anchored" data-anchor-id="hive-partitioned-datasets-the-most-powerful-pattern">
+<span class="header-section-number">6.7</span> Hive-Partitioned Datasets — The Most Powerful Pattern</h2>
 <div class="cell">
-<details open="" class="code-fold">
-<summary>Code</summary>
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb27"><pre class="sourceCode markdown code-with-copy"><code class="sourceCode markdown"><span id="cb27-1"><a href="#cb27-1" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
+<details open="" class="code-fold"><summary>Code</summary><div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb27"><pre class="sourceCode markdown code-with-copy"><code class="sourceCode markdown"><span id="cb27-1"><a href="#cb27-1" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
 <span id="cb27-2"><a href="#cb27-2" aria-hidden="true" tabindex="-1"></a><span class="co">#| eval: false</span></span>
 <span id="cb27-3"><a href="#cb27-3" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(arrow)</span>
 <span id="cb27-4"><a href="#cb27-4" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(dplyr)</span>
@@ -1779,22 +1706,19 @@ Tip
 <span id="cb27-62"><a href="#cb27-62" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </details>
 </div>
-</section>
-<section id="comparison-table" class="level2" data-number="6.8">
-<h2 data-number="6.8" class="anchored" data-anchor-id="comparison-table"><span class="header-section-number">6.8</span> Comparison table</h2>
+</section><section id="comparison-table" class="level2" data-number="6.8"><h2 data-number="6.8" class="anchored" data-anchor-id="comparison-table">
+<span class="header-section-number">6.8</span> Comparison table</h2>
 <table class="caption-top table">
 <colgroup>
 <col style="width: 33%">
 <col style="width: 33%">
 <col style="width: 33%">
 </colgroup>
-<thead>
-<tr class="header">
+<thead><tr class="header">
 <th></th>
 <th><code>open_dataset()</code></th>
 <th><code>read_parquet()</code></th>
-</tr>
-</thead>
+</tr></thead>
 <tbody>
 <tr class="odd">
 <td>Input</td>
@@ -1833,8 +1757,8 @@ Tip
 </tr>
 </tbody>
 </table>
-<section id="detailed-feature-comparison-table" class="level3" data-number="6.8.1">
-<h3 data-number="6.8.1" class="anchored" data-anchor-id="detailed-feature-comparison-table"><span class="header-section-number">6.8.1</span> Detailed Feature Comparison Table</h3>
+<section id="detailed-feature-comparison-table" class="level3" data-number="6.8.1"><h3 data-number="6.8.1" class="anchored" data-anchor-id="detailed-feature-comparison-table">
+<span class="header-section-number">6.8.1</span> Detailed Feature Comparison Table</h3>
 <div class="cell">
 <div class="cell-output-display">
 <div id="uyefdtrcgt" style="padding-left:0px;padding-right:0px;padding-top:10px;padding-bottom:10px;overflow-x:auto;overflow-y:auto;width:auto;height:auto;">
@@ -2286,7 +2210,6 @@ Tip
   height: 0px !important;
 }
 </style>
-
 <table class="gt_table caption-top table table-sm table-striped small" data-quarto-bootstrap="false">
 <thead>
 <tr class="gt_heading header">
@@ -2374,18 +2297,13 @@ Tip
 </tr>
 </tbody>
 </table>
-
 </div>
 </div>
 </div>
-</section>
-</section>
-<section id="similarities-what-they-share" class="level2" data-number="6.9">
-<h2 data-number="6.9" class="anchored" data-anchor-id="similarities-what-they-share"><span class="header-section-number">6.9</span> Similarities — What They Share</h2>
+</section></section><section id="similarities-what-they-share" class="level2" data-number="6.9"><h2 data-number="6.9" class="anchored" data-anchor-id="similarities-what-they-share">
+<span class="header-section-number">6.9</span> Similarities — What They Share</h2>
 <div class="cell">
-<details open="" class="code-fold">
-<summary>Code</summary>
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb28"><pre class="sourceCode markdown code-with-copy"><code class="sourceCode markdown"><span id="cb28-1"><a href="#cb28-1" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
+<details open="" class="code-fold"><summary>Code</summary><div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb28"><pre class="sourceCode markdown code-with-copy"><code class="sourceCode markdown"><span id="cb28-1"><a href="#cb28-1" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
 <span id="cb28-2"><a href="#cb28-2" aria-hidden="true" tabindex="-1"></a><span class="co">#| eval: false</span></span>
 <span id="cb28-3"><a href="#cb28-3" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(arrow)</span>
 <span id="cb28-4"><a href="#cb28-4" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(dplyr)</span>
@@ -2444,15 +2362,12 @@ Tip
 <span id="cb28-57"><a href="#cb28-57" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </details>
 </div>
-</section>
-<section id="practical-ga4-workflows" class="level2" data-number="6.10">
-<h2 data-number="6.10" class="anchored" data-anchor-id="practical-ga4-workflows"><span class="header-section-number">6.10</span> Practical GA4 Workflows</h2>
-<section id="workflow-1-read_parquet-for-quick-exploration" class="level3" data-number="6.10.1">
-<h3 data-number="6.10.1" class="anchored" data-anchor-id="workflow-1-read_parquet-for-quick-exploration"><span class="header-section-number">6.10.1</span> Workflow 1: <code>read_parquet()</code> for Quick Exploration</h3>
+</section><section id="practical-ga4-workflows" class="level2" data-number="6.10"><h2 data-number="6.10" class="anchored" data-anchor-id="practical-ga4-workflows">
+<span class="header-section-number">6.10</span> Practical GA4 Workflows</h2>
+<section id="workflow-1-read_parquet-for-quick-exploration" class="level3" data-number="6.10.1"><h3 data-number="6.10.1" class="anchored" data-anchor-id="workflow-1-read_parquet-for-quick-exploration">
+<span class="header-section-number">6.10.1</span> Workflow 1: <code>read_parquet()</code> for Quick Exploration</h3>
 <div class="cell">
-<details open="" class="code-fold">
-<summary>Code</summary>
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb29"><pre class="sourceCode markdown code-with-copy"><code class="sourceCode markdown"><span id="cb29-1"><a href="#cb29-1" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
+<details open="" class="code-fold"><summary>Code</summary><div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb29"><pre class="sourceCode markdown code-with-copy"><code class="sourceCode markdown"><span id="cb29-1"><a href="#cb29-1" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
 <span id="cb29-2"><a href="#cb29-2" aria-hidden="true" tabindex="-1"></a><span class="co">#| eval: false</span></span>
 <span id="cb29-3"><a href="#cb29-3" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(arrow)</span>
 <span id="cb29-4"><a href="#cb29-4" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(dplyr)</span>
@@ -2475,13 +2390,10 @@ Tip
 <span id="cb29-21"><a href="#cb29-21" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </details>
 </div>
-</section>
-<section id="workflow-2-open_dataset-for-large-event-params" class="level3" data-number="6.10.2">
-<h3 data-number="6.10.2" class="anchored" data-anchor-id="workflow-2-open_dataset-for-large-event-params"><span class="header-section-number">6.10.2</span> Workflow 2: <code>open_dataset()</code> for Large Event Params</h3>
+</section><section id="workflow-2-open_dataset-for-large-event-params" class="level3" data-number="6.10.2"><h3 data-number="6.10.2" class="anchored" data-anchor-id="workflow-2-open_dataset-for-large-event-params">
+<span class="header-section-number">6.10.2</span> Workflow 2: <code>open_dataset()</code> for Large Event Params</h3>
 <div class="cell">
-<details open="" class="code-fold">
-<summary>Code</summary>
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb30"><pre class="sourceCode markdown code-with-copy"><code class="sourceCode markdown"><span id="cb30-1"><a href="#cb30-1" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
+<details open="" class="code-fold"><summary>Code</summary><div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb30"><pre class="sourceCode markdown code-with-copy"><code class="sourceCode markdown"><span id="cb30-1"><a href="#cb30-1" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
 <span id="cb30-2"><a href="#cb30-2" aria-hidden="true" tabindex="-1"></a><span class="co">#| eval: false</span></span>
 <span id="cb30-3"><a href="#cb30-3" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(arrow)</span>
 <span id="cb30-4"><a href="#cb30-4" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(dplyr)</span>
@@ -2506,13 +2418,10 @@ Tip
 <span id="cb30-23"><a href="#cb30-23" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </details>
 </div>
-</section>
-<section id="workflow-3-open_dataset-across-all-ga4-daily-files" class="level3" data-number="6.10.3">
-<h3 data-number="6.10.3" class="anchored" data-anchor-id="workflow-3-open_dataset-across-all-ga4-daily-files"><span class="header-section-number">6.10.3</span> Workflow 3: <code>open_dataset()</code> Across All GA4 Daily Files</h3>
+</section><section id="workflow-3-open_dataset-across-all-ga4-daily-files" class="level3" data-number="6.10.3"><h3 data-number="6.10.3" class="anchored" data-anchor-id="workflow-3-open_dataset-across-all-ga4-daily-files">
+<span class="header-section-number">6.10.3</span> Workflow 3: <code>open_dataset()</code> Across All GA4 Daily Files</h3>
 <div class="cell">
-<details open="" class="code-fold">
-<summary>Code</summary>
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb31"><pre class="sourceCode markdown code-with-copy"><code class="sourceCode markdown"><span id="cb31-1"><a href="#cb31-1" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
+<details open="" class="code-fold"><summary>Code</summary><div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb31"><pre class="sourceCode markdown code-with-copy"><code class="sourceCode markdown"><span id="cb31-1"><a href="#cb31-1" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
 <span id="cb31-2"><a href="#cb31-2" aria-hidden="true" tabindex="-1"></a><span class="co">#| eval: false</span></span>
 <span id="cb31-3"><a href="#cb31-3" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(arrow)</span>
 <span id="cb31-4"><a href="#cb31-4" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(dplyr)</span>
@@ -2575,13 +2484,10 @@ Tip
 <span id="cb31-61"><a href="#cb31-61" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </details>
 </div>
-</section>
-<section id="workflow-4-combining-both-in-one-pipeline" class="level3" data-number="6.10.4">
-<h3 data-number="6.10.4" class="anchored" data-anchor-id="workflow-4-combining-both-in-one-pipeline"><span class="header-section-number">6.10.4</span> Workflow 4: Combining Both in One Pipeline</h3>
+</section><section id="workflow-4-combining-both-in-one-pipeline" class="level3" data-number="6.10.4"><h3 data-number="6.10.4" class="anchored" data-anchor-id="workflow-4-combining-both-in-one-pipeline">
+<span class="header-section-number">6.10.4</span> Workflow 4: Combining Both in One Pipeline</h3>
 <div class="cell">
-<details open="" class="code-fold">
-<summary>Code</summary>
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb32"><pre class="sourceCode markdown code-with-copy"><code class="sourceCode markdown"><span id="cb32-1"><a href="#cb32-1" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
+<details open="" class="code-fold"><summary>Code</summary><div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb32"><pre class="sourceCode markdown code-with-copy"><code class="sourceCode markdown"><span id="cb32-1"><a href="#cb32-1" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
 <span id="cb32-2"><a href="#cb32-2" aria-hidden="true" tabindex="-1"></a><span class="co">#| eval: false</span></span>
 <span id="cb32-3"><a href="#cb32-3" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(arrow)</span>
 <span id="cb32-4"><a href="#cb32-4" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(dplyr)</span>
@@ -2617,13 +2523,10 @@ Tip
 <span id="cb32-34"><a href="#cb32-34" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </details>
 </div>
-</section>
-<section id="workflow-5-open_dataset-with-duckdb-the-full-stack" class="level3" data-number="6.10.5">
-<h3 data-number="6.10.5" class="anchored" data-anchor-id="workflow-5-open_dataset-with-duckdb-the-full-stack"><span class="header-section-number">6.10.5</span> Workflow 5: <code>open_dataset()</code> with DuckDB — The Full Stack</h3>
+</section><section id="workflow-5-open_dataset-with-duckdb-the-full-stack" class="level3" data-number="6.10.5"><h3 data-number="6.10.5" class="anchored" data-anchor-id="workflow-5-open_dataset-with-duckdb-the-full-stack">
+<span class="header-section-number">6.10.5</span> Workflow 5: <code>open_dataset()</code> with DuckDB — The Full Stack</h3>
 <div class="cell">
-<details open="" class="code-fold">
-<summary>Code</summary>
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb33"><pre class="sourceCode markdown code-with-copy"><code class="sourceCode markdown"><span id="cb33-1"><a href="#cb33-1" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
+<details open="" class="code-fold"><summary>Code</summary><div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb33"><pre class="sourceCode markdown code-with-copy"><code class="sourceCode markdown"><span id="cb33-1"><a href="#cb33-1" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
 <span id="cb33-2"><a href="#cb33-2" aria-hidden="true" tabindex="-1"></a><span class="co">#| eval: false</span></span>
 <span id="cb33-3"><a href="#cb33-3" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(arrow)</span>
 <span id="cb33-4"><a href="#cb33-4" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(duckdb)</span>
@@ -2658,10 +2561,8 @@ Tip
 <span id="cb33-33"><a href="#cb33-33" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </details>
 </div>
-</section>
-</section>
-<section id="which-to-use-for-ga4-data" class="level2" data-number="6.11">
-<h2 data-number="6.11" class="anchored" data-anchor-id="which-to-use-for-ga4-data"><span class="header-section-number">6.11</span> Which to use for GA4 data?</h2>
+</section></section><section id="which-to-use-for-ga4-data" class="level2" data-number="6.11"><h2 data-number="6.11" class="anchored" data-anchor-id="which-to-use-for-ga4-data">
+<span class="header-section-number">6.11</span> Which to use for GA4 data?</h2>
 <div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb34"><pre class="sourceCode markdown code-with-copy"><code class="sourceCode markdown"><span id="cb34-1"><a href="#cb34-1" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
 <span id="cb34-2"><a href="#cb34-2" aria-hidden="true" tabindex="-1"></a><span class="co"># Ask these questions in order:</span></span>
 <span id="cb34-3"><a href="#cb34-3" aria-hidden="true" tabindex="-1"></a></span>
@@ -2687,11 +2588,7 @@ Tip
 <span id="cb34-23"><a href="#cb34-23" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 
 
-</section>
-</section>
-
-</main> <!-- /main -->
-<script id="quarto-html-after-body" type="application/javascript">
+</section></section></main><!-- /main --><script id="quarto-html-after-body" type="application/javascript">
   window.document.addEventListener("DOMContentLoaded", function (event) {
     // Ensure there is a toggle, if there isn't float one in the top right
     if (window.document.querySelector('.quarto-color-scheme-toggle') === null) {
@@ -3110,7 +3007,6 @@ Tip
   });
   </script>
 </div> <!-- /content -->
-
 
 
 

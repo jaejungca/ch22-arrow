@@ -1,15 +1,12 @@
 <!DOCTYPE html>
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
-
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 <meta charset="utf-8">
 <meta name="generator" content="quarto-1.8.26">
-
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
-
 <meta name="author" content="Jae Jung">
 <meta name="dcterms.date" content="2026-03-28">
 <meta name="description" content="This guide walks through the complete process of downloading three months of GA4 public event data from BigQuery and saving it in multiple formats — raw RDS, flat Parquet, and Hive-partitioned Parquet — so that all subsequent analyses run entirely from local files without requiring a BigQuery connection.">
-
 <title>Data Acquisition Guide for GA4 Public Data: Comprehensive – Arrow and DuckDB</title>
 <style>
 code{white-space: pre-wrap;}
@@ -60,7 +57,6 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 }
 </style>
 
-
 <script src="site_libs/quarto-nav/quarto-nav.js"></script>
 <script src="site_libs/quarto-nav/headroom.min.js"></script>
 <script src="site_libs/clipboard/clipboard.min.js"></script>
@@ -82,8 +78,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <link href="site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
 <link href="site_libs/bootstrap/bootstrap-ea2c01f27a86cd888be845a75ab84aaf.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme" id="quarto-bootstrap" data-mode="light">
 <link href="site_libs/bootstrap/bootstrap-dark-78d0a13e6d35108d84457cbe65748f29.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme quarto-color-alternate" id="quarto-bootstrap" data-mode="dark">
-<link href="site_libs/bootstrap/bootstrap-ea2c01f27a86cd888be845a75ab84aaf.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme-extra" id="quarto-bootstrap" data-mode="light">
-<script id="quarto-search-options" type="application/json">{
+<link href="site_libs/bootstrap/bootstrap-ea2c01f27a86cd888be845a75ab84aaf.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme-extra" id="quarto-bootstrap" data-mode="light"><script id="quarto-search-options" type="application/json">{
   "location": "navbar",
   "copy-button": false,
   "collapse-after": 3,
@@ -109,12 +104,8 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
     "search-submit-button-title": "Submit",
     "search-label": "Search"
   }
-}</script>
-<style>html{ scroll-behavior: smooth; }</style>
-
-
+}</script><style>html{ scroll-behavior: smooth; }</style>
 </head>
-
 <body class="nav-sidebar floating nav-fixed quarto-light"><script id="quarto-html-before-body" type="application/javascript">
     const toggleBodyColorMode = (bsSheetEl) => {
       const mode = bsSheetEl.getAttribute("data-mode");
@@ -280,9 +271,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   </script>
 
 <div id="quarto-search-results"></div>
-  <header id="quarto-header" class="headroom fixed-top">
-    <nav class="navbar navbar-expand-lg " data-bs-theme="dark">
-      <div class="navbar-container container-fluid">
+  <header id="quarto-header" class="headroom fixed-top"><nav class="navbar navbar-expand-lg " data-bs-theme="dark"><div class="navbar-container container-fluid">
       <div class="navbar-brand-container mx-auto">
     <a class="navbar-brand" href="./index.html">
     <span class="navbar-title">Arrow and DuckDB</span>
@@ -294,19 +283,17 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </button>
           <div class="collapse navbar-collapse" id="navbarCollapse">
             <ul class="navbar-nav navbar-nav-scroll me-auto">
-  <li class="nav-item">
+<li class="nav-item">
     <a class="nav-link" href="./index.html"> 
 <span class="menu-text">Home</span></a>
   </li>  
 </ul>
-          </div> <!-- /navcollapse -->
+</div> <!-- /navcollapse -->
             <div class="quarto-navbar-tools">
   <a href="" class="quarto-color-scheme-toggle quarto-navigation-tool  px-1" onclick="window.quartoToggleColorScheme(); return false;" title="Toggle dark mode"><i class="bi"></i></a>
 </div>
       </div> <!-- /container-fluid -->
-    </nav>
-  <nav class="quarto-secondary-nav">
-    <div class="container-fluid d-flex">
+    </nav><nav class="quarto-secondary-nav"><div class="container-fluid d-flex">
       <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" role="button" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
         <i class="bi bi-layout-text-sidebar-reverse"></i>
       </button>
@@ -314,15 +301,11 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
         <a class="flex-grow-1" role="navigation" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
         </a>
     </div>
-  </nav>
-</header>
-<!-- content -->
-<div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article page-navbar">
+  </nav></header><!-- content --><div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article page-navbar">
 <!-- sidebar -->
-  <nav id="quarto-sidebar" class="sidebar collapse collapse-horizontal quarto-sidebar-collapse-item sidebar-navigation floating overflow-auto">
-    <div class="sidebar-menu-container"> 
+  <nav id="quarto-sidebar" class="sidebar collapse collapse-horizontal quarto-sidebar-collapse-item sidebar-navigation floating overflow-auto"><div class="sidebar-menu-container"> 
     <ul class="list-unstyled mt-1">
-        <li class="sidebar-item">
+<li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="./arrow.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">Apache Arrow and Apache Parqet: Ch22 &amp; More</span></a>
@@ -347,80 +330,91 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   </div>
 </li>
     </ul>
-    </div>
-</nav>
-<div id="quarto-sidebar-glass" class="quarto-sidebar-collapse-item" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item"></div>
+</div>
+</nav><div id="quarto-sidebar-glass" class="quarto-sidebar-collapse-item" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item"></div>
 <!-- margin-sidebar -->
     <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
-        <nav id="TOC" role="doc-toc" class="toc-active" data-toc-expanded="1">
-    <h2 id="toc-title">On this page</h2>
+        <nav id="TOC" role="doc-toc" class="toc-active" data-toc-expanded="1"><h2 id="toc-title">On this page</h2>
    
   <ul>
-  <li><a href="#overview" id="toc-overview" class="nav-link active" data-scroll-target="#overview">Overview</a>
+<li>
+<a href="#overview" id="toc-overview" class="nav-link active" data-scroll-target="#overview">Overview</a>
   <ul class="collapse">
-  <li><a href="#what-you-will-have-when-this-is-done" id="toc-what-you-will-have-when-this-is-done" class="nav-link" data-scroll-target="#what-you-will-have-when-this-is-done"><span class="header-section-number">0.1</span> What You Will Have When This Is Done</a></li>
+<li><a href="#what-you-will-have-when-this-is-done" id="toc-what-you-will-have-when-this-is-done" class="nav-link" data-scroll-target="#what-you-will-have-when-this-is-done"><span class="header-section-number">0.1</span> What You Will Have When This Is Done</a></li>
   <li><a href="#why-three-formats" id="toc-why-three-formats" class="nav-link" data-scroll-target="#why-three-formats"><span class="header-section-number">0.2</span> Why Three Formats?</a></li>
-  </ul></li>
-  <li><a href="#prerequisites" id="toc-prerequisites" class="nav-link" data-scroll-target="#prerequisites"><span class="header-section-number">1</span> Prerequisites</a>
+  </ul>
+</li>
+  <li>
+<a href="#prerequisites" id="toc-prerequisites" class="nav-link" data-scroll-target="#prerequisites"><span class="header-section-number">1</span> Prerequisites</a>
   <ul class="collapse">
-  <li><a href="#required-packages" id="toc-required-packages" class="nav-link" data-scroll-target="#required-packages"><span class="header-section-number">1.1</span> Required Packages</a></li>
+<li><a href="#required-packages" id="toc-required-packages" class="nav-link" data-scroll-target="#required-packages"><span class="header-section-number">1.1</span> Required Packages</a></li>
   <li><a href="#google-cloud-platform-account-setup" id="toc-google-cloud-platform-account-setup" class="nav-link" data-scroll-target="#google-cloud-platform-account-setup"><span class="header-section-number">1.2</span> Google Cloud Platform Account Setup</a></li>
   <li><a href="#set-your-project-id" id="toc-set-your-project-id" class="nav-link" data-scroll-target="#set-your-project-id"><span class="header-section-number">1.3</span> Set Your Project ID</a></li>
-  </ul></li>
-  <li><a href="#connect-to-bigquery" id="toc-connect-to-bigquery" class="nav-link" data-scroll-target="#connect-to-bigquery"><span class="header-section-number">2</span> Connect to BigQuery</a>
+  </ul>
+</li>
+  <li>
+<a href="#connect-to-bigquery" id="toc-connect-to-bigquery" class="nav-link" data-scroll-target="#connect-to-bigquery"><span class="header-section-number">2</span> Connect to BigQuery</a>
   <ul class="collapse">
-  <li><a href="#authenticate-with-google" id="toc-authenticate-with-google" class="nav-link" data-scroll-target="#authenticate-with-google"><span class="header-section-number">2.1</span> Authenticate with Google</a></li>
+<li><a href="#authenticate-with-google" id="toc-authenticate-with-google" class="nav-link" data-scroll-target="#authenticate-with-google"><span class="header-section-number">2.1</span> Authenticate with Google</a></li>
   <li><a href="#establish-the-connection" id="toc-establish-the-connection" class="nav-link" data-scroll-target="#establish-the-connection"><span class="header-section-number">2.2</span> Establish the Connection</a></li>
-  </ul></li>
-  <li><a href="#understand-the-data" id="toc-understand-the-data" class="nav-link" data-scroll-target="#understand-the-data"><span class="header-section-number">3</span> Understand the Data</a>
+  </ul>
+</li>
+  <li>
+<a href="#understand-the-data" id="toc-understand-the-data" class="nav-link" data-scroll-target="#understand-the-data"><span class="header-section-number">3</span> Understand the Data</a>
   <ul class="collapse">
-  <li><a href="#schema-inspection" id="toc-schema-inspection" class="nav-link" data-scroll-target="#schema-inspection"><span class="header-section-number">3.1</span> Schema Inspection</a></li>
+<li><a href="#schema-inspection" id="toc-schema-inspection" class="nav-link" data-scroll-target="#schema-inspection"><span class="header-section-number">3.1</span> Schema Inspection</a></li>
   <li><a href="#check-row-counts-per-day" id="toc-check-row-counts-per-day" class="nav-link" data-scroll-target="#check-row-counts-per-day"><span class="header-section-number">3.2</span> Check Row Counts Per Day</a></li>
   <li><a href="#plan-the-download" id="toc-plan-the-download" class="nav-link" data-scroll-target="#plan-the-download"><span class="header-section-number">3.3</span> Plan the Download</a></li>
-  </ul></li>
+  </ul>
+</li>
   <li><a href="#create-the-folder-structure" id="toc-create-the-folder-structure" class="nav-link" data-scroll-target="#create-the-folder-structure"><span class="header-section-number">4</span> Create the Folder Structure</a></li>
-  <li><a href="#define-rectangling-helper-functions" id="toc-define-rectangling-helper-functions" class="nav-link" data-scroll-target="#define-rectangling-helper-functions"><span class="header-section-number">5</span> Define Rectangling Helper Functions</a>
+  <li>
+<a href="#define-rectangling-helper-functions" id="toc-define-rectangling-helper-functions" class="nav-link" data-scroll-target="#define-rectangling-helper-functions"><span class="header-section-number">5</span> Define Rectangling Helper Functions</a>
   <ul class="collapse">
-  <li><a href="#struct-flattening-helper" id="toc-struct-flattening-helper" class="nav-link" data-scroll-target="#struct-flattening-helper"><span class="header-section-number">5.1</span> Struct Flattening Helper</a></li>
+<li><a href="#struct-flattening-helper" id="toc-struct-flattening-helper" class="nav-link" data-scroll-target="#struct-flattening-helper"><span class="header-section-number">5.1</span> Struct Flattening Helper</a></li>
   <li><a href="#event-params-flattening-helper" id="toc-event-params-flattening-helper" class="nav-link" data-scroll-target="#event-params-flattening-helper"><span class="header-section-number">5.2</span> Event Params Flattening Helper</a></li>
   <li><a href="#items-flattening-helper" id="toc-items-flattening-helper" class="nav-link" data-scroll-target="#items-flattening-helper"><span class="header-section-number">5.3</span> Items Flattening Helper</a></li>
-  </ul></li>
+  </ul>
+</li>
   <li><a href="#download-day-by-day-loop" id="toc-download-day-by-day-loop" class="nav-link" data-scroll-target="#download-day-by-day-loop"><span class="header-section-number">6</span> Download: Day-by-Day Loop</a></li>
-  <li><a href="#build-partitioned-datasets" id="toc-build-partitioned-datasets" class="nav-link" data-scroll-target="#build-partitioned-datasets"><span class="header-section-number">7</span> Build Partitioned Datasets</a>
+  <li>
+<a href="#build-partitioned-datasets" id="toc-build-partitioned-datasets" class="nav-link" data-scroll-target="#build-partitioned-datasets"><span class="header-section-number">7</span> Build Partitioned Datasets</a>
   <ul class="collapse">
-  <li><a href="#events-partitioned-dataset" id="toc-events-partitioned-dataset" class="nav-link" data-scroll-target="#events-partitioned-dataset"><span class="header-section-number">7.1</span> Events Partitioned Dataset</a></li>
+<li><a href="#events-partitioned-dataset" id="toc-events-partitioned-dataset" class="nav-link" data-scroll-target="#events-partitioned-dataset"><span class="header-section-number">7.1</span> Events Partitioned Dataset</a></li>
   <li><a href="#event-params-partitioned-dataset" id="toc-event-params-partitioned-dataset" class="nav-link" data-scroll-target="#event-params-partitioned-dataset"><span class="header-section-number">7.2</span> Event Params Partitioned Dataset</a></li>
   <li><a href="#items-partitioned-dataset" id="toc-items-partitioned-dataset" class="nav-link" data-scroll-target="#items-partitioned-dataset"><span class="header-section-number">7.3</span> Items Partitioned Dataset</a></li>
-  </ul></li>
-  <li><a href="#verify-the-download" id="toc-verify-the-download" class="nav-link" data-scroll-target="#verify-the-download"><span class="header-section-number">8</span> Verify the Download</a>
+  </ul>
+</li>
+  <li>
+<a href="#verify-the-download" id="toc-verify-the-download" class="nav-link" data-scroll-target="#verify-the-download"><span class="header-section-number">8</span> Verify the Download</a>
   <ul class="collapse">
-  <li><a href="#file-count-check" id="toc-file-count-check" class="nav-link" data-scroll-target="#file-count-check"><span class="header-section-number">8.1</span> File Count Check</a></li>
+<li><a href="#file-count-check" id="toc-file-count-check" class="nav-link" data-scroll-target="#file-count-check"><span class="header-section-number">8.1</span> File Count Check</a></li>
   <li><a href="#storage-summary" id="toc-storage-summary" class="nav-link" data-scroll-target="#storage-summary"><span class="header-section-number">8.2</span> Storage Summary</a></li>
   <li><a href="#partition-structure-check" id="toc-partition-structure-check" class="nav-link" data-scroll-target="#partition-structure-check"><span class="header-section-number">8.3</span> Partition Structure Check</a></li>
   <li><a href="#sample-data-check" id="toc-sample-data-check" class="nav-link" data-scroll-target="#sample-data-check"><span class="header-section-number">8.4</span> Sample Data Check</a></li>
-  </ul></li>
+  </ul>
+</li>
   <li><a href="#download-summary-report" id="toc-download-summary-report" class="nav-link" data-scroll-target="#download-summary-report"><span class="header-section-number">9</span> Download Summary Report</a></li>
   <li><a href="#disconnect-from-bigquery" id="toc-disconnect-from-bigquery" class="nav-link" data-scroll-target="#disconnect-from-bigquery"><span class="header-section-number">10</span> Disconnect from BigQuery</a></li>
-  <li><a href="#how-to-load-data-in-future-sessions" id="toc-how-to-load-data-in-future-sessions" class="nav-link" data-scroll-target="#how-to-load-data-in-future-sessions"><span class="header-section-number">11</span> How to Load Data in Future Sessions</a>
+  <li>
+<a href="#how-to-load-data-in-future-sessions" id="toc-how-to-load-data-in-future-sessions" class="nav-link" data-scroll-target="#how-to-load-data-in-future-sessions"><span class="header-section-number">11</span> How to Load Data in Future Sessions</a>
   <ul class="collapse">
-  <li><a href="#the-five-loading-patterns" id="toc-the-five-loading-patterns" class="nav-link" data-scroll-target="#the-five-loading-patterns"><span class="header-section-number">11.1</span> The Five Loading Patterns</a></li>
-  </ul></li>
+<li><a href="#the-five-loading-patterns" id="toc-the-five-loading-patterns" class="nav-link" data-scroll-target="#the-five-loading-patterns"><span class="header-section-number">11.1</span> The Five Loading Patterns</a></li>
+  </ul>
+</li>
   <li><a href="#troubleshooting" id="toc-troubleshooting" class="nav-link" data-scroll-target="#troubleshooting"><span class="header-section-number">12</span> Troubleshooting</a></li>
-  <li><a href="#appendix" id="toc-appendix" class="nav-link" data-scroll-target="#appendix"><span class="header-section-number">13</span> Appendix</a>
+  <li>
+<a href="#appendix" id="toc-appendix" class="nav-link" data-scroll-target="#appendix"><span class="header-section-number">13</span> Appendix</a>
   <ul class="collapse">
-  <li><a href="#cli-package" id="toc-cli-package" class="nav-link" data-scroll-target="#cli-package"><span class="header-section-number">13.1</span> <code>cli</code> Package</a></li>
+<li><a href="#cli-package" id="toc-cli-package" class="nav-link" data-scroll-target="#cli-package"><span class="header-section-number">13.1</span> <code>cli</code> Package</a></li>
   <li><a href="#most-important-functions" id="toc-most-important-functions" class="nav-link" data-scroll-target="#most-important-functions"><span class="header-section-number">13.2</span> Most Important Functions</a></li>
   <li><a href="#summary" id="toc-summary" class="nav-link" data-scroll-target="#summary"><span class="header-section-number">13.3</span> Summary</a></li>
-  </ul></li>
   </ul>
-</nav>
+</li>
+  </ul></nav>
     </div>
 <!-- main -->
-<main class="content" id="quarto-document-content">
-
-
-<header id="title-block-header" class="quarto-title-block default">
-<div class="quarto-title">
+<main class="content" id="quarto-document-content"><header id="title-block-header" class="quarto-title-block default"><div class="quarto-title">
 <h1 class="title">Data Acquisition Guide for GA4 Public Data: Comprehensive</h1>
 <p class="subtitle lead">90 days of GA4 data in multiple formats</p>
   <div class="quarto-categories">
@@ -463,72 +457,84 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   
 
 
-</header>
-
-<nav id="TOC-body" role="doc-toc">
-    <h2 id="toc-title">On this page</h2>
+</header><nav id="TOC-body" role="doc-toc"><h2 id="toc-title">On this page</h2>
    
   <ul>
-  <li><a href="#overview" id="toc-overview">Overview</a>
+<li>
+<a href="#overview" id="toc-overview">Overview</a>
   <ul>
-  <li><a href="#what-you-will-have-when-this-is-done" id="toc-what-you-will-have-when-this-is-done"><span class="header-section-number">0.1</span> What You Will Have When This Is Done</a></li>
+<li><a href="#what-you-will-have-when-this-is-done" id="toc-what-you-will-have-when-this-is-done"><span class="header-section-number">0.1</span> What You Will Have When This Is Done</a></li>
   <li><a href="#why-three-formats" id="toc-why-three-formats"><span class="header-section-number">0.2</span> Why Three Formats?</a></li>
-  </ul></li>
-  <li><a href="#prerequisites" id="toc-prerequisites"><span class="header-section-number">1</span> Prerequisites</a>
+  </ul>
+</li>
+  <li>
+<a href="#prerequisites" id="toc-prerequisites"><span class="header-section-number">1</span> Prerequisites</a>
   <ul>
-  <li><a href="#required-packages" id="toc-required-packages"><span class="header-section-number">1.1</span> Required Packages</a></li>
+<li><a href="#required-packages" id="toc-required-packages"><span class="header-section-number">1.1</span> Required Packages</a></li>
   <li><a href="#google-cloud-platform-account-setup" id="toc-google-cloud-platform-account-setup"><span class="header-section-number">1.2</span> Google Cloud Platform Account Setup</a></li>
   <li><a href="#set-your-project-id" id="toc-set-your-project-id"><span class="header-section-number">1.3</span> Set Your Project ID</a></li>
-  </ul></li>
-  <li><a href="#connect-to-bigquery" id="toc-connect-to-bigquery"><span class="header-section-number">2</span> Connect to BigQuery</a>
+  </ul>
+</li>
+  <li>
+<a href="#connect-to-bigquery" id="toc-connect-to-bigquery"><span class="header-section-number">2</span> Connect to BigQuery</a>
   <ul>
-  <li><a href="#authenticate-with-google" id="toc-authenticate-with-google"><span class="header-section-number">2.1</span> Authenticate with Google</a></li>
+<li><a href="#authenticate-with-google" id="toc-authenticate-with-google"><span class="header-section-number">2.1</span> Authenticate with Google</a></li>
   <li><a href="#establish-the-connection" id="toc-establish-the-connection"><span class="header-section-number">2.2</span> Establish the Connection</a></li>
-  </ul></li>
-  <li><a href="#understand-the-data" id="toc-understand-the-data"><span class="header-section-number">3</span> Understand the Data</a>
+  </ul>
+</li>
+  <li>
+<a href="#understand-the-data" id="toc-understand-the-data"><span class="header-section-number">3</span> Understand the Data</a>
   <ul>
-  <li><a href="#schema-inspection" id="toc-schema-inspection"><span class="header-section-number">3.1</span> Schema Inspection</a></li>
+<li><a href="#schema-inspection" id="toc-schema-inspection"><span class="header-section-number">3.1</span> Schema Inspection</a></li>
   <li><a href="#check-row-counts-per-day" id="toc-check-row-counts-per-day"><span class="header-section-number">3.2</span> Check Row Counts Per Day</a></li>
   <li><a href="#plan-the-download" id="toc-plan-the-download"><span class="header-section-number">3.3</span> Plan the Download</a></li>
-  </ul></li>
+  </ul>
+</li>
   <li><a href="#create-the-folder-structure" id="toc-create-the-folder-structure"><span class="header-section-number">4</span> Create the Folder Structure</a></li>
-  <li><a href="#define-rectangling-helper-functions" id="toc-define-rectangling-helper-functions"><span class="header-section-number">5</span> Define Rectangling Helper Functions</a>
+  <li>
+<a href="#define-rectangling-helper-functions" id="toc-define-rectangling-helper-functions"><span class="header-section-number">5</span> Define Rectangling Helper Functions</a>
   <ul>
-  <li><a href="#struct-flattening-helper" id="toc-struct-flattening-helper"><span class="header-section-number">5.1</span> Struct Flattening Helper</a></li>
+<li><a href="#struct-flattening-helper" id="toc-struct-flattening-helper"><span class="header-section-number">5.1</span> Struct Flattening Helper</a></li>
   <li><a href="#event-params-flattening-helper" id="toc-event-params-flattening-helper"><span class="header-section-number">5.2</span> Event Params Flattening Helper</a></li>
   <li><a href="#items-flattening-helper" id="toc-items-flattening-helper"><span class="header-section-number">5.3</span> Items Flattening Helper</a></li>
-  </ul></li>
+  </ul>
+</li>
   <li><a href="#download-day-by-day-loop" id="toc-download-day-by-day-loop"><span class="header-section-number">6</span> Download: Day-by-Day Loop</a></li>
-  <li><a href="#build-partitioned-datasets" id="toc-build-partitioned-datasets"><span class="header-section-number">7</span> Build Partitioned Datasets</a>
+  <li>
+<a href="#build-partitioned-datasets" id="toc-build-partitioned-datasets"><span class="header-section-number">7</span> Build Partitioned Datasets</a>
   <ul>
-  <li><a href="#events-partitioned-dataset" id="toc-events-partitioned-dataset"><span class="header-section-number">7.1</span> Events Partitioned Dataset</a></li>
+<li><a href="#events-partitioned-dataset" id="toc-events-partitioned-dataset"><span class="header-section-number">7.1</span> Events Partitioned Dataset</a></li>
   <li><a href="#event-params-partitioned-dataset" id="toc-event-params-partitioned-dataset"><span class="header-section-number">7.2</span> Event Params Partitioned Dataset</a></li>
   <li><a href="#items-partitioned-dataset" id="toc-items-partitioned-dataset"><span class="header-section-number">7.3</span> Items Partitioned Dataset</a></li>
-  </ul></li>
-  <li><a href="#verify-the-download" id="toc-verify-the-download"><span class="header-section-number">8</span> Verify the Download</a>
+  </ul>
+</li>
+  <li>
+<a href="#verify-the-download" id="toc-verify-the-download"><span class="header-section-number">8</span> Verify the Download</a>
   <ul>
-  <li><a href="#file-count-check" id="toc-file-count-check"><span class="header-section-number">8.1</span> File Count Check</a></li>
+<li><a href="#file-count-check" id="toc-file-count-check"><span class="header-section-number">8.1</span> File Count Check</a></li>
   <li><a href="#storage-summary" id="toc-storage-summary"><span class="header-section-number">8.2</span> Storage Summary</a></li>
   <li><a href="#partition-structure-check" id="toc-partition-structure-check"><span class="header-section-number">8.3</span> Partition Structure Check</a></li>
   <li><a href="#sample-data-check" id="toc-sample-data-check"><span class="header-section-number">8.4</span> Sample Data Check</a></li>
-  </ul></li>
+  </ul>
+</li>
   <li><a href="#download-summary-report" id="toc-download-summary-report"><span class="header-section-number">9</span> Download Summary Report</a></li>
   <li><a href="#disconnect-from-bigquery" id="toc-disconnect-from-bigquery"><span class="header-section-number">10</span> Disconnect from BigQuery</a></li>
-  <li><a href="#how-to-load-data-in-future-sessions" id="toc-how-to-load-data-in-future-sessions"><span class="header-section-number">11</span> How to Load Data in Future Sessions</a>
+  <li>
+<a href="#how-to-load-data-in-future-sessions" id="toc-how-to-load-data-in-future-sessions"><span class="header-section-number">11</span> How to Load Data in Future Sessions</a>
   <ul>
-  <li><a href="#the-five-loading-patterns" id="toc-the-five-loading-patterns"><span class="header-section-number">11.1</span> The Five Loading Patterns</a></li>
-  </ul></li>
+<li><a href="#the-five-loading-patterns" id="toc-the-five-loading-patterns"><span class="header-section-number">11.1</span> The Five Loading Patterns</a></li>
+  </ul>
+</li>
   <li><a href="#troubleshooting" id="toc-troubleshooting"><span class="header-section-number">12</span> Troubleshooting</a></li>
-  <li><a href="#appendix" id="toc-appendix"><span class="header-section-number">13</span> Appendix</a>
+  <li>
+<a href="#appendix" id="toc-appendix"><span class="header-section-number">13</span> Appendix</a>
   <ul>
-  <li><a href="#cli-package" id="toc-cli-package"><span class="header-section-number">13.1</span> <code>cli</code> Package</a></li>
+<li><a href="#cli-package" id="toc-cli-package"><span class="header-section-number">13.1</span> <code>cli</code> Package</a></li>
   <li><a href="#most-important-functions" id="toc-most-important-functions"><span class="header-section-number">13.2</span> Most Important Functions</a></li>
   <li><a href="#summary" id="toc-summary"><span class="header-section-number">13.3</span> Summary</a></li>
-  </ul></li>
   </ul>
-</nav>
-<section id="overview" class="level2 unnumbered">
-<h2 class="unnumbered anchored" data-anchor-id="overview">Overview</h2>
+</li>
+  </ul></nav><section id="overview" class="level2 unnumbered"><h2 class="unnumbered anchored" data-anchor-id="overview">Overview</h2>
 <p>This notebook walks through the <strong>one-time process</strong> of downloading three months of GA4 public event data from Google BigQuery and saving it in multiple local formats. Once this process completes, every other notebook in this course loads data from your local machine — no BigQuery connection, no query costs, no waiting.</p>
 <div class="callout callout-style-default callout-important callout-titled">
 <div class="callout-header d-flex align-content-center">
@@ -544,8 +550,8 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <p>Total download time: approximately <strong>20–40 minutes</strong> depending on your internet connection.</p>
 </div>
 </div>
-<section id="what-you-will-have-when-this-is-done" class="level3" data-number="0.1">
-<h3 data-number="0.1" class="anchored" data-anchor-id="what-you-will-have-when-this-is-done"><span class="header-section-number">0.1</span> What You Will Have When This Is Done</h3>
+<section id="what-you-will-have-when-this-is-done" class="level3" data-number="0.1"><h3 data-number="0.1" class="anchored" data-anchor-id="what-you-will-have-when-this-is-done">
+<span class="header-section-number">0.1</span> What You Will Have When This Is Done</h3>
 <p>After running this notebook you will have the following folder structure in your project directory:</p>
 <pre><code>data/
 ├── ga4_raw/                         ← Raw nested .rds (one per day, 90 files)
@@ -570,20 +576,17 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 │       └── month=1/
 ├── ga4_params_partitioned/          ← Hive-partitioned params dataset
 └── ga4_items_partitioned/           ← Hive-partitioned items dataset</code></pre>
-</section>
-<section id="why-three-formats" class="level3" data-number="0.2">
-<h3 data-number="0.2" class="anchored" data-anchor-id="why-three-formats"><span class="header-section-number">0.2</span> Why Three Formats?</h3>
+</section><section id="why-three-formats" class="level3" data-number="0.2"><h3 data-number="0.2" class="anchored" data-anchor-id="why-three-formats">
+<span class="header-section-number">0.2</span> Why Three Formats?</h3>
 <table class="caption-top table">
 <colgroup>
 <col style="width: 25%">
 <col style="width: 75%">
 </colgroup>
-<thead>
-<tr class="header">
+<thead><tr class="header">
 <th>Format</th>
 <th>Where Used in This Course</th>
-</tr>
-</thead>
+</tr></thead>
 <tbody>
 <tr class="odd">
 <td><code>ga4_raw/*.rds</code></td>
@@ -591,11 +594,13 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </tr>
 <tr class="even">
 <td><code>ga4_parquet/*.parquet</code></td>
-<td>Single-day analyses, learning <code>read_parquet()</code></td>
+<td>Single-day analyses, learning <code><a href="https://arrow.apache.org/docs/r/reference/read_parquet.html">read_parquet()</a></code>
+</td>
 </tr>
 <tr class="odd">
 <td><code>ga4_partitioned/</code></td>
-<td>Multi-day analyses, learning <code>open_dataset()</code></td>
+<td>Multi-day analyses, learning <code><a href="https://arrow.apache.org/docs/r/reference/open_dataset.html">open_dataset()</a></code>
+</td>
 </tr>
 <tr class="even">
 <td><code>ga4_params_partitioned/</code></td>
@@ -607,13 +612,10 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </tr>
 </tbody>
 </table>
-<hr>
-</section>
-</section>
-<section id="prerequisites" class="level2" data-number="1">
-<h2 data-number="1" class="anchored" data-anchor-id="prerequisites"><span class="header-section-number">1</span> Prerequisites</h2>
-<section id="required-packages" class="level3" data-number="1.1">
-<h3 data-number="1.1" class="anchored" data-anchor-id="required-packages"><span class="header-section-number">1.1</span> Required Packages</h3>
+<hr></section></section><section id="prerequisites" class="level2" data-number="1"><h2 data-number="1" class="anchored" data-anchor-id="prerequisites">
+<span class="header-section-number">1</span> Prerequisites</h2>
+<section id="required-packages" class="level3" data-number="1.1"><h3 data-number="1.1" class="anchored" data-anchor-id="required-packages">
+<span class="header-section-number">1.1</span> Required Packages</h3>
 <div class="cell">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb2"><pre class="sourceCode markdown code-with-copy"><code class="sourceCode markdown"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
 <span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a><span class="co">#| label: install-packages</span></span>
@@ -677,9 +679,8 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <span id="cb3-19"><a href="#cb3-19" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(qs2) <span class="co"># for qsave() and qread() if you prefer that over RDS for raw data storage</span></span>
 <span id="cb3-20"><a href="#cb3-20" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
-</section>
-<section id="google-cloud-platform-account-setup" class="level3" data-number="1.2">
-<h3 data-number="1.2" class="anchored" data-anchor-id="google-cloud-platform-account-setup"><span class="header-section-number">1.2</span> Google Cloud Platform Account Setup</h3>
+</section><section id="google-cloud-platform-account-setup" class="level3" data-number="1.2"><h3 data-number="1.2" class="anchored" data-anchor-id="google-cloud-platform-account-setup">
+<span class="header-section-number">1.2</span> Google Cloud Platform Account Setup</h3>
 <div class="callout callout-style-default callout-important callout-titled">
 <div class="callout-header d-flex align-content-center">
 <div class="callout-icon-container">
@@ -695,35 +696,40 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <p><strong>Step 2 — Create a project</strong></p>
 <ul>
 <li>Click the project selector dropdown at the top of the page</li>
-<li>Click <strong>New Project</strong></li>
+<li>Click <strong>New Project</strong>
+</li>
 <li>Give it any name (e.g., <code>"marketing-analytics"</code>)</li>
 <li>Click <strong>Create</strong> and wait for the project to be created</li>
 </ul>
 <p><strong>Step 3 — Find your Project ID</strong></p>
 <ul>
 <li>Your Project ID appears under the project name in the dashboard</li>
-<li>It looks like: <code>"marketing-analytics-391408"</code></li>
+<li>It looks like: <code>"marketing-analytics-391408"</code>
+</li>
 <li>It is <strong>not</strong> the same as the project name — it includes numbers</li>
 <li>Copy it — you will paste it into the code below</li>
 </ul>
 <p><strong>Step 4 — Enable the BigQuery API</strong></p>
 <ul>
-<li>Go to: <a href="https://console.cloud.google.com/apis/library/bigquery.googleapis.com">console.cloud.google.com/apis/library/bigquery.googleapis.com</a></li>
+<li>Go to: <a href="https://console.cloud.google.com/apis/library/bigquery.googleapis.com">console.cloud.google.com/apis/library/bigquery.googleapis.com</a>
+</li>
 <li>Confirm your new project is selected in the top navigation bar</li>
-<li>Click <strong>Enable</strong></li>
+<li>Click <strong>Enable</strong>
+</li>
 <li>Wait approximately 60 seconds</li>
 </ul>
 <p><strong>Step 5 — Set up billing</strong></p>
 <ul>
-<li>Go to: <a href="https://console.cloud.google.com/billing">console.cloud.google.com/billing</a></li>
+<li>Go to: <a href="https://console.cloud.google.com/billing">console.cloud.google.com/billing</a>
+</li>
 <li>Link a credit card to your account</li>
-<li><strong>Cost</strong>: Querying the public GA4 dataset costs approximately $0.00–$0.05 for the entire 90-day download. Google also provides $300 in free credits to all new accounts.</li>
+<li>
+<strong>Cost</strong>: Querying the public GA4 dataset costs approximately $0.00–$0.05 for the entire 90-day download. Google also provides $300 in free credits to all new accounts.</li>
 </ul>
 </div>
 </div>
-</section>
-<section id="set-your-project-id" class="level3" data-number="1.3">
-<h3 data-number="1.3" class="anchored" data-anchor-id="set-your-project-id"><span class="header-section-number">1.3</span> Set Your Project ID</h3>
+</section><section id="set-your-project-id" class="level3" data-number="1.3"><h3 data-number="1.3" class="anchored" data-anchor-id="set-your-project-id">
+<span class="header-section-number">1.3</span> Set Your Project ID</h3>
 <div class="callout callout-style-default callout-warning callout-titled">
 <div class="callout-header d-flex align-content-center">
 <div class="callout-icon-container">
@@ -770,13 +776,10 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <span id="cb4-30"><a href="#cb4-30" aria-hidden="true" tabindex="-1"></a>cli<span class="sc">::</span><span class="fu">cli_alert_success</span>(<span class="st">"Billing project set to: {.val {BILLING_PROJECT}}"</span>)</span>
 <span id="cb4-31"><a href="#cb4-31" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
-<hr>
-</section>
-</section>
-<section id="connect-to-bigquery" class="level2" data-number="2">
-<h2 data-number="2" class="anchored" data-anchor-id="connect-to-bigquery"><span class="header-section-number">2</span> Connect to BigQuery</h2>
-<section id="authenticate-with-google" class="level3" data-number="2.1">
-<h3 data-number="2.1" class="anchored" data-anchor-id="authenticate-with-google"><span class="header-section-number">2.1</span> Authenticate with Google</h3>
+<hr></section></section><section id="connect-to-bigquery" class="level2" data-number="2"><h2 data-number="2" class="anchored" data-anchor-id="connect-to-bigquery">
+<span class="header-section-number">2</span> Connect to BigQuery</h2>
+<section id="authenticate-with-google" class="level3" data-number="2.1"><h3 data-number="2.1" class="anchored" data-anchor-id="authenticate-with-google">
+<span class="header-section-number">2.1</span> Authenticate with Google</h3>
 <div class="cell">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb5"><pre class="sourceCode markdown code-with-copy"><code class="sourceCode markdown"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
 <span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a><span class="co">#| label: authenticate</span></span>
@@ -809,9 +812,8 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <p><code>bq_auth()</code> handles the OAuth2 authentication handshake between R and Google. It opens your browser, asks you to grant R permission to access your Google Cloud account, and then caches the resulting token locally. On subsequent R sessions, the cached token is used automatically — you will only see the browser prompt on your first run.</p>
 </div>
 </div>
-</section>
-<section id="establish-the-connection" class="level3" data-number="2.2">
-<h3 data-number="2.2" class="anchored" data-anchor-id="establish-the-connection"><span class="header-section-number">2.2</span> Establish the Connection</h3>
+</section><section id="establish-the-connection" class="level3" data-number="2.2"><h3 data-number="2.2" class="anchored" data-anchor-id="establish-the-connection">
+<span class="header-section-number">2.2</span> Establish the Connection</h3>
 <div class="cell">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb6"><pre class="sourceCode markdown code-with-copy"><code class="sourceCode markdown"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
 <span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a><span class="co">#| label: connect</span></span>
@@ -855,14 +857,11 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <p>The dataset <code>ga4_obfuscated_sample_ecommerce</code> is provided by Google and contains real event data from the <a href="https://shop.merch.google">Google Merchandise Store</a> — an actual e-commerce site selling Google-branded products. User identifiers have been obfuscated for privacy. The data covers <strong>November 2020 through January 2022</strong>, stored as one BigQuery table per day in the format <code>events_YYYYMMDD</code>.</p>
 </div>
 </div>
-<hr>
-</section>
-</section>
-<section id="understand-the-data" class="level2" data-number="3">
-<h2 data-number="3" class="anchored" data-anchor-id="understand-the-data"><span class="header-section-number">3</span> Understand the Data</h2>
+<hr></section></section><section id="understand-the-data" class="level2" data-number="3"><h2 data-number="3" class="anchored" data-anchor-id="understand-the-data">
+<span class="header-section-number">3</span> Understand the Data</h2>
 <p>Before downloading 90 days of data, take a moment to understand the structure and volume of what you are working with.</p>
-<section id="schema-inspection" class="level3" data-number="3.1">
-<h3 data-number="3.1" class="anchored" data-anchor-id="schema-inspection"><span class="header-section-number">3.1</span> Schema Inspection</h3>
+<section id="schema-inspection" class="level3" data-number="3.1"><h3 data-number="3.1" class="anchored" data-anchor-id="schema-inspection">
+<span class="header-section-number">3.1</span> Schema Inspection</h3>
 <div class="cell">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb7"><pre class="sourceCode markdown code-with-copy"><code class="sourceCode markdown"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
 <span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a><span class="co">#| label: inspect-schema</span></span>
@@ -921,13 +920,11 @@ $ items                         &lt;list&lt;df[,26]&gt;&gt; [&lt;data.frame[0 x 
 <col style="width: 24%">
 <col style="width: 51%">
 </colgroup>
-<thead>
-<tr class="header">
+<thead><tr class="header">
 <th>Column</th>
 <th>Type</th>
 <th>Notes</th>
-</tr>
-</thead>
+</tr></thead>
 <tbody>
 <tr class="odd">
 <td><code>event_date</code></td>
@@ -964,9 +961,8 @@ $ items                         &lt;list&lt;df[,26]&gt;&gt; [&lt;data.frame[0 x 
 <p>These nested columns are why we need the rectangling techniques taught in the previous notebook for Ch23.</p>
 </div>
 </div>
-</section>
-<section id="check-row-counts-per-day" class="level3" data-number="3.2">
-<h3 data-number="3.2" class="anchored" data-anchor-id="check-row-counts-per-day"><span class="header-section-number">3.2</span> Check Row Counts Per Day</h3>
+</section><section id="check-row-counts-per-day" class="level3" data-number="3.2"><h3 data-number="3.2" class="anchored" data-anchor-id="check-row-counts-per-day">
+<span class="header-section-number">3.2</span> Check Row Counts Per Day</h3>
 <div class="cell">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb9"><pre class="sourceCode markdown code-with-copy"><code class="sourceCode markdown"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
 <span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a><span class="co">#| label: check-row-counts</span></span>
@@ -1006,13 +1002,11 @@ $ items                         &lt;list&lt;df[,26]&gt;&gt; [&lt;data.frame[0 x 
 <div class="cell-output-display">
 <table class="caption-top table table-sm table-striped small">
 <caption>Sample row counts by day</caption>
-<thead>
-<tr class="header">
+<thead><tr class="header">
 <th style="text-align: left;">Table</th>
 <th style="text-align: left;">Date</th>
 <th style="text-align: left;">Row Count</th>
-</tr>
-</thead>
+</tr></thead>
 <tbody>
 <tr class="odd">
 <td style="text-align: left;">events_20201101</td>
@@ -1033,9 +1027,8 @@ $ items                         &lt;list&lt;df[,26]&gt;&gt; [&lt;data.frame[0 x 
 </table>
 </div>
 </div>
-</section>
-<section id="plan-the-download" class="level3" data-number="3.3">
-<h3 data-number="3.3" class="anchored" data-anchor-id="plan-the-download"><span class="header-section-number">3.3</span> Plan the Download</h3>
+</section><section id="plan-the-download" class="level3" data-number="3.3"><h3 data-number="3.3" class="anchored" data-anchor-id="plan-the-download">
+<span class="header-section-number">3.3</span> Plan the Download</h3>
 <div class="cell">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb10"><pre class="sourceCode markdown code-with-copy"><code class="sourceCode markdown"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
 <span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a><span class="co">#| label: plan-download</span></span>
@@ -1077,11 +1070,8 @@ $ items                         &lt;list&lt;df[,26]&gt;&gt; [&lt;data.frame[0 x 
 <span id="cb10-38"><a href="#cb10-38" aria-hidden="true" tabindex="-1"></a>))</span>
 <span id="cb10-39"><a href="#cb10-39" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
-<hr>
-</section>
-</section>
-<section id="create-the-folder-structure" class="level2" data-number="4">
-<h2 data-number="4" class="anchored" data-anchor-id="create-the-folder-structure"><span class="header-section-number">4</span> Create the Folder Structure</h2>
+<hr></section></section><section id="create-the-folder-structure" class="level2" data-number="4"><h2 data-number="4" class="anchored" data-anchor-id="create-the-folder-structure">
+<span class="header-section-number">4</span> Create the Folder Structure</h2>
 <div class="cell">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb11"><pre class="sourceCode markdown code-with-copy"><code class="sourceCode markdown"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
 <span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a><span class="co">#| label: create-folders</span></span>
@@ -1113,10 +1103,8 @@ $ items                         &lt;list&lt;df[,26]&gt;&gt; [&lt;data.frame[0 x 
 <span id="cb11-28"><a href="#cb11-28" aria-hidden="true" tabindex="-1"></a>  <span class="fu">walk</span>(\(d) cli<span class="sc">::</span><span class="fu">cli_alert_info</span>(<span class="st">"  {d}"</span>))</span>
 <span id="cb11-29"><a href="#cb11-29" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
-<hr>
-</section>
-<section id="define-rectangling-helper-functions" class="level2" data-number="5">
-<h2 data-number="5" class="anchored" data-anchor-id="define-rectangling-helper-functions"><span class="header-section-number">5</span> Define Rectangling Helper Functions</h2>
+<hr></section><section id="define-rectangling-helper-functions" class="level2" data-number="5"><h2 data-number="5" class="anchored" data-anchor-id="define-rectangling-helper-functions">
+<span class="header-section-number">5</span> Define Rectangling Helper Functions</h2>
 <p>GA4 data arrives from BigQuery with nested columns — arrays of structs and structs of structs. The functions below flatten each type of nested column into a form that can be saved as <code>Parquet</code>. These are applied to each day’s data immediately after download.</p>
 <div class="callout callout-style-default callout-important callout-titled">
 <div class="callout-header d-flex align-content-center">
@@ -1145,15 +1133,15 @@ $ items                         &lt;list&lt;df[,26]&gt;&gt; [&lt;data.frame[0 x 
 </div>
 </div>
 <div class="callout-body-container callout-body">
-<p>The helper functions below flatten GA4’s nested columns before saving to Parquet. These techniques — <code>unnest_wider()</code>, <code>unnest_longer()</code>, and <code>coalesce()</code> — are covered in depth in a dedicated site:</p>
+<p>The helper functions below flatten GA4’s nested columns before saving to Parquet. These techniques — <code>unnest_wider()</code>, <code>unnest_longer()</code>, and <code><a href="https://dplyr.tidyverse.org/reference/coalesce.html">coalesce()</a></code> — are covered in depth in a dedicated site:</p>
 <ul>
 <li><a href="https://jaejungca.github.io/ch23-hierarchical_data/hierarchical-data-0.html"><strong>Rectangling Hierarchical Data with GA4</strong></a></li>
 </ul>
 <p>If the code below looks unfamiliar, visit that site first and return here when you are ready.</p>
 </div>
 </div>
-<section id="struct-flattening-helper" class="level3" data-number="5.1">
-<h3 data-number="5.1" class="anchored" data-anchor-id="struct-flattening-helper"><span class="header-section-number">5.1</span> Struct Flattening Helper</h3>
+<section id="struct-flattening-helper" class="level3" data-number="5.1"><h3 data-number="5.1" class="anchored" data-anchor-id="struct-flattening-helper">
+<span class="header-section-number">5.1</span> Struct Flattening Helper</h3>
 <div class="cell">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb12"><pre class="sourceCode markdown code-with-copy"><code class="sourceCode markdown"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
 <span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a><span class="co">#| label: helper-flatten-structs</span></span>
@@ -1207,9 +1195,8 @@ $ items                         &lt;list&lt;df[,26]&gt;&gt; [&lt;data.frame[0 x 
 <span id="cb12-50"><a href="#cb12-50" aria-hidden="true" tabindex="-1"></a>}</span>
 <span id="cb12-51"><a href="#cb12-51" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
-</section>
-<section id="event-params-flattening-helper" class="level3" data-number="5.2">
-<h3 data-number="5.2" class="anchored" data-anchor-id="event-params-flattening-helper"><span class="header-section-number">5.2</span> Event Params Flattening Helper</h3>
+</section><section id="event-params-flattening-helper" class="level3" data-number="5.2"><h3 data-number="5.2" class="anchored" data-anchor-id="event-params-flattening-helper">
+<span class="header-section-number">5.2</span> Event Params Flattening Helper</h3>
 <div class="cell">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb13"><pre class="sourceCode markdown code-with-copy"><code class="sourceCode markdown"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
 <span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a><span class="co">#| label: helper-flatten-params</span></span>
@@ -1298,9 +1285,8 @@ $ items                         &lt;list&lt;df[,26]&gt;&gt; [&lt;data.frame[0 x 
 <span id="cb13-85"><a href="#cb13-85" aria-hidden="true" tabindex="-1"></a>}</span>
 <span id="cb13-86"><a href="#cb13-86" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
-</section>
-<section id="items-flattening-helper" class="level3" data-number="5.3">
-<h3 data-number="5.3" class="anchored" data-anchor-id="items-flattening-helper"><span class="header-section-number">5.3</span> Items Flattening Helper</h3>
+</section><section id="items-flattening-helper" class="level3" data-number="5.3"><h3 data-number="5.3" class="anchored" data-anchor-id="items-flattening-helper">
+<span class="header-section-number">5.3</span> Items Flattening Helper</h3>
 <div class="cell">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb14"><pre class="sourceCode markdown code-with-copy"><code class="sourceCode markdown"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
 <span id="cb14-2"><a href="#cb14-2" aria-hidden="true" tabindex="-1"></a><span class="co">#| label: helper-flatten-items</span></span>
@@ -1357,16 +1343,14 @@ $ items                         &lt;list&lt;df[,26]&gt;&gt; [&lt;data.frame[0 x 
 <span id="cb15-9"><a href="#cb15-9" aria-hidden="true" tabindex="-1"></a>))</span>
 <span id="cb15-10"><a href="#cb15-10" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
-<hr>
-</section>
-</section>
-<section id="download-day-by-day-loop" class="level2" data-number="6">
-<h2 data-number="6" class="anchored" data-anchor-id="download-day-by-day-loop"><span class="header-section-number">6</span> Download: Day-by-Day Loop</h2>
+<hr></section></section><section id="download-day-by-day-loop" class="level2" data-number="6"><h2 data-number="6" class="anchored" data-anchor-id="download-day-by-day-loop">
+<span class="header-section-number">6</span> Download: Day-by-Day Loop</h2>
 <p>This is the main download process. Each iteration:</p>
 <ol type="1">
 <li>Checks if the files already exist (skips if so — safe to re-run)</li>
 <li>Downloads one day’s data from BigQuery</li>
-<li>Saves the raw nested data as <code>.rds</code></li>
+<li>Saves the raw nested data as <code>.rds</code>
+</li>
 <li>Flattens struct columns and saves as Parquet</li>
 <li>Flattens <code>event_params</code> and saves as Parquet</li>
 <li>Flattens <code>items</code> and saves as Parquet</li>
@@ -1499,10 +1483,8 @@ $ items                         &lt;list&lt;df[,26]&gt;&gt; [&lt;data.frame[0 x 
 <span id="cb17-100"><a href="#cb17-100" aria-hidden="true" tabindex="-1"></a>cli<span class="sc">::</span><span class="fu">cli_alert_success</span>(<span class="st">"Download loop complete!"</span>)</span>
 <span id="cb17-101"><a href="#cb17-101" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
-<hr>
-</section>
-<section id="build-partitioned-datasets" class="level2" data-number="7">
-<h2 data-number="7" class="anchored" data-anchor-id="build-partitioned-datasets"><span class="header-section-number">7</span> Build Partitioned Datasets</h2>
+<hr></section><section id="build-partitioned-datasets" class="level2" data-number="7"><h2 data-number="7" class="anchored" data-anchor-id="build-partitioned-datasets">
+<span class="header-section-number">7</span> Build Partitioned Datasets</h2>
 <p>Now combine all daily Parquet files into Hive-partitioned datasets. This is the format used for all multi-day analyses in subsequent notebooks.</p>
 <div class="callout callout-style-default callout-note callout-titled">
 <div class="callout-header d-flex align-content-center">
@@ -1517,8 +1499,8 @@ $ items                         &lt;list&lt;df[,26]&gt;&gt; [&lt;data.frame[0 x 
 <p>Hive partitioning stores data in a folder hierarchy where folder names encode column values: <code>year=2020/month=11/part-0.parquet</code>. When you query <code>filter(year == 2020, month == 11)</code>, Arrow and DuckDB skip every other folder entirely — they never open those files. This makes date-filtered queries dramatically faster on large datasets.</p>
 </div>
 </div>
-<section id="events-partitioned-dataset" class="level3" data-number="7.1">
-<h3 data-number="7.1" class="anchored" data-anchor-id="events-partitioned-dataset"><span class="header-section-number">7.1</span> Events Partitioned Dataset</h3>
+<section id="events-partitioned-dataset" class="level3" data-number="7.1"><h3 data-number="7.1" class="anchored" data-anchor-id="events-partitioned-dataset">
+<span class="header-section-number">7.1</span> Events Partitioned Dataset</h3>
 <div class="cell">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb18"><pre class="sourceCode markdown code-with-copy"><code class="sourceCode markdown"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
 <span id="cb18-2"><a href="#cb18-2" aria-hidden="true" tabindex="-1"></a><span class="co">#| label: partition-events</span></span>
@@ -1556,9 +1538,8 @@ $ items                         &lt;list&lt;df[,26]&gt;&gt; [&lt;data.frame[0 x 
 <span id="cb18-34"><a href="#cb18-34" aria-hidden="true" tabindex="-1"></a>)</span>
 <span id="cb18-35"><a href="#cb18-35" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
-</section>
-<section id="event-params-partitioned-dataset" class="level3" data-number="7.2">
-<h3 data-number="7.2" class="anchored" data-anchor-id="event-params-partitioned-dataset"><span class="header-section-number">7.2</span> Event Params Partitioned Dataset</h3>
+</section><section id="event-params-partitioned-dataset" class="level3" data-number="7.2"><h3 data-number="7.2" class="anchored" data-anchor-id="event-params-partitioned-dataset">
+<span class="header-section-number">7.2</span> Event Params Partitioned Dataset</h3>
 <div class="cell">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb19"><pre class="sourceCode markdown code-with-copy"><code class="sourceCode markdown"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
 <span id="cb19-2"><a href="#cb19-2" aria-hidden="true" tabindex="-1"></a><span class="co">#| label: partition-params</span></span>
@@ -1599,9 +1580,8 @@ $ items                         &lt;list&lt;df[,26]&gt;&gt; [&lt;data.frame[0 x 
 <span id="cb19-37"><a href="#cb19-37" aria-hidden="true" tabindex="-1"></a>}</span>
 <span id="cb19-38"><a href="#cb19-38" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
-</section>
-<section id="items-partitioned-dataset" class="level3" data-number="7.3">
-<h3 data-number="7.3" class="anchored" data-anchor-id="items-partitioned-dataset"><span class="header-section-number">7.3</span> Items Partitioned Dataset</h3>
+</section><section id="items-partitioned-dataset" class="level3" data-number="7.3"><h3 data-number="7.3" class="anchored" data-anchor-id="items-partitioned-dataset">
+<span class="header-section-number">7.3</span> Items Partitioned Dataset</h3>
 <div class="cell">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb20"><pre class="sourceCode markdown code-with-copy"><code class="sourceCode markdown"><span id="cb20-1"><a href="#cb20-1" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
 <span id="cb20-2"><a href="#cb20-2" aria-hidden="true" tabindex="-1"></a><span class="co">#| label: partition-items</span></span>
@@ -1644,14 +1624,11 @@ $ items                         &lt;list&lt;df[,26]&gt;&gt; [&lt;data.frame[0 x 
 <span id="cb20-39"><a href="#cb20-39" aria-hidden="true" tabindex="-1"></a>}</span>
 <span id="cb20-40"><a href="#cb20-40" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
-<hr>
-</section>
-</section>
-<section id="verify-the-download" class="level2" data-number="8">
-<h2 data-number="8" class="anchored" data-anchor-id="verify-the-download"><span class="header-section-number">8</span> Verify the Download</h2>
+<hr></section></section><section id="verify-the-download" class="level2" data-number="8"><h2 data-number="8" class="anchored" data-anchor-id="verify-the-download">
+<span class="header-section-number">8</span> Verify the Download</h2>
 <p>Run these checks after the download completes to confirm everything is correct before closing the connection.</p>
-<section id="file-count-check" class="level3" data-number="8.1">
-<h3 data-number="8.1" class="anchored" data-anchor-id="file-count-check"><span class="header-section-number">8.1</span> File Count Check</h3>
+<section id="file-count-check" class="level3" data-number="8.1"><h3 data-number="8.1" class="anchored" data-anchor-id="file-count-check">
+<span class="header-section-number">8.1</span> File Count Check</h3>
 <div class="cell">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb21"><pre class="sourceCode markdown code-with-copy"><code class="sourceCode markdown"><span id="cb21-1"><a href="#cb21-1" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
 <span id="cb21-2"><a href="#cb21-2" aria-hidden="true" tabindex="-1"></a><span class="co">#| label: verify-file-counts</span></span>
@@ -1703,14 +1680,12 @@ $ items                         &lt;list&lt;df[,26]&gt;&gt; [&lt;data.frame[0 x 
 <col style="width: 7%">
 <col style="width: 14%">
 </colgroup>
-<thead>
-<tr class="header">
+<thead><tr class="header">
 <th style="text-align: left;">Dataset</th>
 <th style="text-align: left;">Folder</th>
 <th style="text-align: right;">Files</th>
 <th style="text-align: left;">Status</th>
-</tr>
-</thead>
+</tr></thead>
 <tbody>
 <tr class="odd">
 <td style="text-align: left;">Raw nested .rds files</td>
@@ -1740,9 +1715,8 @@ $ items                         &lt;list&lt;df[,26]&gt;&gt; [&lt;data.frame[0 x 
 </table>
 </div>
 </div>
-</section>
-<section id="storage-summary" class="level3" data-number="8.2">
-<h3 data-number="8.2" class="anchored" data-anchor-id="storage-summary"><span class="header-section-number">8.2</span> Storage Summary</h3>
+</section><section id="storage-summary" class="level3" data-number="8.2"><h3 data-number="8.2" class="anchored" data-anchor-id="storage-summary">
+<span class="header-section-number">8.2</span> Storage Summary</h3>
 <div class="cell">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb22"><pre class="sourceCode markdown code-with-copy"><code class="sourceCode markdown"><span id="cb22-1"><a href="#cb22-1" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
 <span id="cb22-2"><a href="#cb22-2" aria-hidden="true" tabindex="-1"></a><span class="co">#| label: verify-storage</span></span>
@@ -1788,13 +1762,11 @@ $ items                         &lt;list&lt;df[,26]&gt;&gt; [&lt;data.frame[0 x 
 <div class="cell-output-display">
 <table class="caption-top table table-sm table-striped small">
 <caption>Storage used by folder</caption>
-<thead>
-<tr class="header">
+<thead><tr class="header">
 <th style="text-align: left;">Folder</th>
 <th style="text-align: right;">Files</th>
 <th style="text-align: left;">Size</th>
-</tr>
-</thead>
+</tr></thead>
 <tbody>
 <tr class="odd">
 <td style="text-align: left;">data/ga4_raw</td>
@@ -1835,9 +1807,8 @@ $ items                         &lt;list&lt;df[,26]&gt;&gt; [&lt;data.frame[0 x 
 </table>
 </div>
 </div>
-</section>
-<section id="partition-structure-check" class="level3" data-number="8.3">
-<h3 data-number="8.3" class="anchored" data-anchor-id="partition-structure-check"><span class="header-section-number">8.3</span> Partition Structure Check</h3>
+</section><section id="partition-structure-check" class="level3" data-number="8.3"><h3 data-number="8.3" class="anchored" data-anchor-id="partition-structure-check">
+<span class="header-section-number">8.3</span> Partition Structure Check</h3>
 <div class="cell">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb23"><pre class="sourceCode markdown code-with-copy"><code class="sourceCode markdown"><span id="cb23-1"><a href="#cb23-1" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
 <span id="cb23-2"><a href="#cb23-2" aria-hidden="true" tabindex="-1"></a><span class="co">#| label: verify-partitions</span></span>
@@ -1943,9 +1914,8 @@ year: int32
 month: int32</code></pre>
 </div>
 </div>
-</section>
-<section id="sample-data-check" class="level3" data-number="8.4">
-<h3 data-number="8.4" class="anchored" data-anchor-id="sample-data-check"><span class="header-section-number">8.4</span> Sample Data Check</h3>
+</section><section id="sample-data-check" class="level3" data-number="8.4"><h3 data-number="8.4" class="anchored" data-anchor-id="sample-data-check">
+<span class="header-section-number">8.4</span> Sample Data Check</h3>
 <div class="cell">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb25"><pre class="sourceCode markdown code-with-copy"><code class="sourceCode markdown"><span id="cb25-1"><a href="#cb25-1" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
 <span id="cb25-2"><a href="#cb25-2" aria-hidden="true" tabindex="-1"></a><span class="co">#| label: verify-sample-data</span></span>
@@ -2017,15 +1987,13 @@ month: int32</code></pre>
 <col style="width: 22%">
 <col style="width: 19%">
 </colgroup>
-<thead>
-<tr class="header">
+<thead><tr class="header">
 <th style="text-align: left;">event_date</th>
 <th style="text-align: left;">event_name</th>
 <th style="text-align: left;">user_pseudo_id</th>
 <th style="text-align: left;">device_category</th>
 <th style="text-align: left;">geo_country</th>
-</tr>
-</thead>
+</tr></thead>
 <tbody>
 <tr class="odd">
 <td style="text-align: left;">20201122</td>
@@ -2078,15 +2046,13 @@ month: int32</code></pre>
 <col style="width: 13%">
 <col style="width: 56%">
 </colgroup>
-<thead>
-<tr class="header">
+<thead><tr class="header">
 <th style="text-align: left;">event_date</th>
 <th style="text-align: left;">event_name</th>
 <th style="text-align: left;">user_pseudo_id</th>
 <th style="text-align: left;">key</th>
 <th style="text-align: left;">param_value</th>
-</tr>
-</thead>
+</tr></thead>
 <tbody>
 <tr class="odd">
 <td style="text-align: left;">20201101</td>
@@ -2140,16 +2106,14 @@ month: int32</code></pre>
 <col style="width: 6%">
 <col style="width: 9%">
 </colgroup>
-<thead>
-<tr class="header">
+<thead><tr class="header">
 <th style="text-align: left;">event_date</th>
 <th style="text-align: left;">user_pseudo_id</th>
 <th style="text-align: left;">item_id</th>
 <th style="text-align: left;">item_name</th>
 <th style="text-align: right;">price</th>
 <th style="text-align: right;">quantity</th>
-</tr>
-</thead>
+</tr></thead>
 <tbody>
 <tr class="odd">
 <td style="text-align: left;">20201102</td>
@@ -2195,11 +2159,8 @@ month: int32</code></pre>
 </table>
 </div>
 </div>
-<hr>
-</section>
-</section>
-<section id="download-summary-report" class="level2" data-number="9">
-<h2 data-number="9" class="anchored" data-anchor-id="download-summary-report"><span class="header-section-number">9</span> Download Summary Report</h2>
+<hr></section></section><section id="download-summary-report" class="level2" data-number="9"><h2 data-number="9" class="anchored" data-anchor-id="download-summary-report">
+<span class="header-section-number">9</span> Download Summary Report</h2>
 <div class="cell">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb29"><pre class="sourceCode markdown code-with-copy"><code class="sourceCode markdown"><span id="cb29-1"><a href="#cb29-1" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
 <span id="cb29-2"><a href="#cb29-2" aria-hidden="true" tabindex="-1"></a><span class="co">#| label: download-summary</span></span>
@@ -2268,10 +2229,8 @@ month: int32</code></pre>
 <span id="cb29-65"><a href="#cb29-65" aria-hidden="true" tabindex="-1"></a>}</span>
 <span id="cb29-66"><a href="#cb29-66" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
-<hr>
-</section>
-<section id="disconnect-from-bigquery" class="level2" data-number="10">
-<h2 data-number="10" class="anchored" data-anchor-id="disconnect-from-bigquery"><span class="header-section-number">10</span> Disconnect from BigQuery</h2>
+<hr></section><section id="disconnect-from-bigquery" class="level2" data-number="10"><h2 data-number="10" class="anchored" data-anchor-id="disconnect-from-bigquery">
+<span class="header-section-number">10</span> Disconnect from BigQuery</h2>
 <div class="cell">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb30"><pre class="sourceCode markdown code-with-copy"><code class="sourceCode markdown"><span id="cb30-1"><a href="#cb30-1" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
 <span id="cb30-2"><a href="#cb30-2" aria-hidden="true" tabindex="-1"></a><span class="co">#| label: disconnect</span></span>
@@ -2286,10 +2245,8 @@ month: int32</code></pre>
 <span id="cb30-11"><a href="#cb30-11" aria-hidden="true" tabindex="-1"></a>)</span>
 <span id="cb30-12"><a href="#cb30-12" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
-<hr>
-</section>
-<section id="how-to-load-data-in-future-sessions" class="level2" data-number="11">
-<h2 data-number="11" class="anchored" data-anchor-id="how-to-load-data-in-future-sessions"><span class="header-section-number">11</span> How to Load Data in Future Sessions</h2>
+<hr></section><section id="how-to-load-data-in-future-sessions" class="level2" data-number="11"><h2 data-number="11" class="anchored" data-anchor-id="how-to-load-data-in-future-sessions">
+<span class="header-section-number">11</span> How to Load Data in Future Sessions</h2>
 <div class="callout callout-style-default callout-tip callout-titled">
 <div class="callout-header d-flex align-content-center">
 <div class="callout-icon-container">
@@ -2301,17 +2258,17 @@ month: int32</code></pre>
 </div>
 <div class="callout-body-container callout-body">
 <p>Paste this code block at the top of each subsequent notebook to load all three datasets:</p>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb31"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb31-1"><a href="#cb31-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(arrow)</span>
-<span id="cb31-2"><a href="#cb31-2" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(dplyr)</span>
-<span id="cb31-3"><a href="#cb31-3" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb31-4"><a href="#cb31-4" aria-hidden="true" tabindex="-1"></a>ga4_events <span class="ot">&lt;-</span> <span class="fu">open_dataset</span>(<span class="st">"data/ga4_partitioned"</span>)</span>
-<span id="cb31-5"><a href="#cb31-5" aria-hidden="true" tabindex="-1"></a>ga4_params <span class="ot">&lt;-</span> <span class="fu">open_dataset</span>(<span class="st">"data/ga4_params_partitioned"</span>)</span>
-<span id="cb31-6"><a href="#cb31-6" aria-hidden="true" tabindex="-1"></a>ga4_items  <span class="ot">&lt;-</span> <span class="fu">open_dataset</span>(<span class="st">"data/ga4_items_partitioned"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb31"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/apache/arrow/">arrow</a></span><span class="op">)</span></span>
+<span><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://dplyr.tidyverse.org">dplyr</a></span><span class="op">)</span></span>
+<span></span>
+<span><span class="va">ga4_events</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://arrow.apache.org/docs/r/reference/open_dataset.html">open_dataset</a></span><span class="op">(</span><span class="st">"data/ga4_partitioned"</span><span class="op">)</span></span>
+<span><span class="va">ga4_params</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://arrow.apache.org/docs/r/reference/open_dataset.html">open_dataset</a></span><span class="op">(</span><span class="st">"data/ga4_params_partitioned"</span><span class="op">)</span></span>
+<span><span class="va">ga4_items</span>  <span class="op">&lt;-</span> <span class="fu"><a href="https://arrow.apache.org/docs/r/reference/open_dataset.html">open_dataset</a></span><span class="op">(</span><span class="st">"data/ga4_items_partitioned"</span><span class="op">)</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <p>That is all you need. No BigQuery, no authentication, no waiting.</p>
 </div>
 </div>
-<section id="the-five-loading-patterns" class="level3" data-number="11.1">
-<h3 data-number="11.1" class="anchored" data-anchor-id="the-five-loading-patterns"><span class="header-section-number">11.1</span> The Five Loading Patterns</h3>
+<section id="the-five-loading-patterns" class="level3" data-number="11.1"><h3 data-number="11.1" class="anchored" data-anchor-id="the-five-loading-patterns">
+<span class="header-section-number">11.1</span> The Five Loading Patterns</h3>
 <div class="cell">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb32"><pre class="sourceCode markdown code-with-copy"><code class="sourceCode markdown"><span id="cb32-1"><a href="#cb32-1" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
 <span id="cb32-2"><a href="#cb32-2" aria-hidden="true" tabindex="-1"></a><span class="co">#| label: loading-patterns</span></span>
@@ -2562,11 +2519,8 @@ $ event_dt                          &lt;dttm&gt; NA, NA, NA, NA, NA, NA, NA, NA,
 10 select_item       31007</code></pre>
 </div>
 </div>
-<hr>
-</section>
-</section>
-<section id="troubleshooting" class="level2" data-number="12">
-<h2 data-number="12" class="anchored" data-anchor-id="troubleshooting"><span class="header-section-number">12</span> Troubleshooting</h2>
+<hr></section></section><section id="troubleshooting" class="level2" data-number="12"><h2 data-number="12" class="anchored" data-anchor-id="troubleshooting">
+<span class="header-section-number">12</span> Troubleshooting</h2>
 <div class="cell">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb34"><pre class="sourceCode markdown code-with-copy"><code class="sourceCode markdown"><span id="cb34-1"><a href="#cb34-1" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
 <span id="cb34-2"><a href="#cb34-2" aria-hidden="true" tabindex="-1"></a><span class="co">#| label: troubleshooting</span></span>
@@ -2640,14 +2594,12 @@ $ event_dt                          &lt;dttm&gt; NA, NA, NA, NA, NA, NA, NA, NA,
 <span id="cb34-70"><a href="#cb34-70" aria-hidden="true" tabindex="-1"></a><span class="co"># year and month should appear as int32 or int64</span></span>
 <span id="cb34-71"><a href="#cb34-71" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
-<hr>
-</section>
-<section id="appendix" class="level2" data-number="13">
-<h2 data-number="13" class="anchored" data-anchor-id="appendix"><span class="header-section-number">13</span> Appendix</h2>
-<section id="cli-package" class="level3" data-number="13.1">
-<h3 data-number="13.1" class="anchored" data-anchor-id="cli-package"><span class="header-section-number">13.1</span> <code>cli</code> Package</h3>
+<hr></section><section id="appendix" class="level2" data-number="13"><h2 data-number="13" class="anchored" data-anchor-id="appendix">
+<span class="header-section-number">13</span> Appendix</h2>
+<section id="cli-package" class="level3" data-number="13.1"><h3 data-number="13.1" class="anchored" data-anchor-id="cli-package">
+<span class="header-section-number">13.1</span> <code>cli</code> Package</h3>
 <p><code>cli</code> stands for <strong>Command Line Interface</strong>. It is an R package for printing <strong>clean, formatted, and informative messages</strong> to the console during long-running tasks like loops and pipelines. It is developed by Posit (the makers of RStudio).</p>
-<p>Why Use <code>cli</code> over <code>message()</code> or <code>print()</code>?</p>
+<p>Why Use <code>cli</code> over <code><a href="https://rdrr.io/r/base/message.html">message()</a></code> or <code><a href="https://rdrr.io/r/base/print.html">print()</a></code>?</p>
 <div class="cell">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb35"><pre class="sourceCode markdown code-with-copy"><code class="sourceCode markdown"><span id="cb35-1"><a href="#cb35-1" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
 <span id="cb35-2"><a href="#cb35-2" aria-hidden="true" tabindex="-1"></a><span class="co"># ❌ Base R - plain and hard to scan</span></span>
@@ -2662,11 +2614,10 @@ $ event_dt                          &lt;dttm&gt; NA, NA, NA, NA, NA, NA, NA, NA,
 <pre><code>[1] "Done: 51941 rows saved"</code></pre>
 </div>
 </div>
-</section>
-<section id="most-important-functions" class="level3" data-number="13.2">
-<h3 data-number="13.2" class="anchored" data-anchor-id="most-important-functions"><span class="header-section-number">13.2</span> Most Important Functions</h3>
-<section id="status-alerts" class="level4" data-number="13.2.1">
-<h4 data-number="13.2.1" class="anchored" data-anchor-id="status-alerts"><span class="header-section-number">13.2.1</span> 1. Status Alerts</h4>
+</section><section id="most-important-functions" class="level3" data-number="13.2"><h3 data-number="13.2" class="anchored" data-anchor-id="most-important-functions">
+<span class="header-section-number">13.2</span> Most Important Functions</h3>
+<section id="status-alerts" class="level4" data-number="13.2.1"><h4 data-number="13.2.1" class="anchored" data-anchor-id="status-alerts">
+<span class="header-section-number">13.2.1</span> 1. Status Alerts</h4>
 <div class="cell">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb37"><pre class="sourceCode markdown code-with-copy"><code class="sourceCode markdown"><span id="cb37-1"><a href="#cb37-1" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
 <span id="cb37-2"><a href="#cb37-2" aria-hidden="true" tabindex="-1"></a>cli<span class="sc">::</span><span class="fu">cli_alert_info</span>(<span class="st">"Starting download..."</span>) <span class="co"># ℹ blue  - general info</span></span>
@@ -2675,9 +2626,8 @@ $ event_dt                          &lt;dttm&gt; NA, NA, NA, NA, NA, NA, NA, NA,
 <span id="cb37-5"><a href="#cb37-5" aria-hidden="true" tabindex="-1"></a>cli<span class="sc">::</span><span class="fu">cli_alert_danger</span>(<span class="st">"Download failed!"</span>) <span class="co"># ✖ red   - error</span></span>
 <span id="cb37-6"><a href="#cb37-6" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
-</section>
-<section id="section-headers" class="level4" data-number="13.2.2">
-<h4 data-number="13.2.2" class="anchored" data-anchor-id="section-headers"><span class="header-section-number">13.2.2</span> 2. Section Headers</h4>
+</section><section id="section-headers" class="level4" data-number="13.2.2"><h4 data-number="13.2.2" class="anchored" data-anchor-id="section-headers">
+<span class="header-section-number">13.2.2</span> 2. Section Headers</h4>
 <div class="cell">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb38"><pre class="sourceCode markdown code-with-copy"><code class="sourceCode markdown"><span id="cb38-1"><a href="#cb38-1" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
 <span id="cb38-2"><a href="#cb38-2" aria-hidden="true" tabindex="-1"></a>cli<span class="sc">::</span><span class="fu">cli_h1</span>(<span class="st">"GA4 Download Pipeline"</span>) <span class="co"># Large header</span></span>
@@ -2685,9 +2635,8 @@ $ event_dt                          &lt;dttm&gt; NA, NA, NA, NA, NA, NA, NA, NA,
 <span id="cb38-4"><a href="#cb38-4" aria-hidden="true" tabindex="-1"></a>cli<span class="sc">::</span><span class="fu">cli_h3</span>(<span class="st">"Flattening structs"</span>) <span class="co"># Small header</span></span>
 <span id="cb38-5"><a href="#cb38-5" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
-</section>
-<section id="progress-bar-for-loops" class="level4" data-number="13.2.3">
-<h4 data-number="13.2.3" class="anchored" data-anchor-id="progress-bar-for-loops"><span class="header-section-number">13.2.3</span> 3. Progress Bar for Loops</h4>
+</section><section id="progress-bar-for-loops" class="level4" data-number="13.2.3"><h4 data-number="13.2.3" class="anchored" data-anchor-id="progress-bar-for-loops">
+<span class="header-section-number">13.2.3</span> 3. Progress Bar for Loops</h4>
 <div class="cell">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb39"><pre class="sourceCode markdown code-with-copy"><code class="sourceCode markdown"><span id="cb39-1"><a href="#cb39-1" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
 <span id="cb39-2"><a href="#cb39-2" aria-hidden="true" tabindex="-1"></a>pb <span class="ot">&lt;-</span> cli<span class="sc">::</span><span class="fu">cli_progress_bar</span>(</span>
@@ -2703,9 +2652,9 @@ $ event_dt                          &lt;dttm&gt; NA, NA, NA, NA, NA, NA, NA, NA,
 <span id="cb39-12"><a href="#cb39-12" aria-hidden="true" tabindex="-1"></a>cli<span class="sc">::</span><span class="fu">cli_progress_done</span>(<span class="at">id =</span> pb)</span>
 <span id="cb39-13"><a href="#cb39-13" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
-</section>
-<section id="string-interpolation-with" class="level4" data-number="13.2.4">
-<h4 data-number="13.2.4" class="anchored" data-anchor-id="string-interpolation-with"><span class="header-section-number">13.2.4</span> 4. String Interpolation with <code>{}</code></h4>
+</section><section id="string-interpolation-with" class="level4" data-number="13.2.4"><h4 data-number="13.2.4" class="anchored" data-anchor-id="string-interpolation-with">
+<span class="header-section-number">13.2.4</span> 4. String Interpolation with <code>{}</code>
+</h4>
 <div class="cell">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb40"><pre class="sourceCode markdown code-with-copy"><code class="sourceCode markdown"><span id="cb40-1"><a href="#cb40-1" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
 <span id="cb40-2"><a href="#cb40-2" aria-hidden="true" tabindex="-1"></a>date <span class="ot">&lt;-</span> <span class="st">"20201101"</span></span>
@@ -2716,18 +2665,14 @@ $ event_dt                          &lt;dttm&gt; NA, NA, NA, NA, NA, NA, NA, NA,
 <span id="cb40-7"><a href="#cb40-7" aria-hidden="true" tabindex="-1"></a><span class="co"># ✔ Downloaded 20201101: 51,941 rows</span></span>
 <span id="cb40-8"><a href="#cb40-8" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
-</section>
-</section>
-<section id="summary" class="level3" data-number="13.3">
-<h3 data-number="13.3" class="anchored" data-anchor-id="summary"><span class="header-section-number">13.3</span> Summary</h3>
+</section></section><section id="summary" class="level3" data-number="13.3"><h3 data-number="13.3" class="anchored" data-anchor-id="summary">
+<span class="header-section-number">13.3</span> Summary</h3>
 <table class="caption-top table">
-<thead>
-<tr class="header">
+<thead><tr class="header">
 <th>Function</th>
 <th>Symbol</th>
 <th>Use Case</th>
-</tr>
-</thead>
+</tr></thead>
 <tbody>
 <tr class="odd">
 <td><code>cli_alert_info()</code></td>
@@ -2763,11 +2708,7 @@ $ event_dt                          &lt;dttm&gt; NA, NA, NA, NA, NA, NA, NA, NA,
 </table>
 
 
-</section>
-</section>
-
-</main> <!-- /main -->
-<script id="quarto-html-after-body" type="application/javascript">
+</section></section></main><!-- /main --><script id="quarto-html-after-body" type="application/javascript">
   window.document.addEventListener("DOMContentLoaded", function (event) {
     // Ensure there is a toggle, if there isn't float one in the top right
     if (window.document.querySelector('.quarto-color-scheme-toggle') === null) {
@@ -3186,7 +3127,6 @@ $ event_dt                          &lt;dttm&gt; NA, NA, NA, NA, NA, NA, NA, NA,
   });
   </script>
 </div> <!-- /content -->
-
 
 
 

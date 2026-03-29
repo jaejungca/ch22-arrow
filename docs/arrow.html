@@ -1,15 +1,12 @@
 <!DOCTYPE html>
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
-
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 <meta charset="utf-8">
 <meta name="generator" content="quarto-1.8.26">
-
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
-
 <meta name="author" content="Jae Jung">
 <meta name="dcterms.date" content="2026-03-28">
 <meta name="description" content="This page describes Apache Arrow and Apache Parquet and explain how to use them effectively when dealing with big data. It also briefly touches on how to hand off Arrow dataset to DuckDB dataset at the end of the note">
-
 <title>Apache Arrow and Apache Parqet: Ch22 &amp; More – Arrow and DuckDB</title>
 <style>
 code{white-space: pre-wrap;}
@@ -60,7 +57,6 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 }
 </style>
 
-
 <script src="site_libs/quarto-nav/quarto-nav.js"></script>
 <script src="site_libs/quarto-nav/headroom.min.js"></script>
 <script src="site_libs/clipboard/clipboard.min.js"></script>
@@ -82,8 +78,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <link href="site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
 <link href="site_libs/bootstrap/bootstrap-ea2c01f27a86cd888be845a75ab84aaf.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme" id="quarto-bootstrap" data-mode="light">
 <link href="site_libs/bootstrap/bootstrap-dark-78d0a13e6d35108d84457cbe65748f29.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme quarto-color-alternate" id="quarto-bootstrap" data-mode="dark">
-<link href="site_libs/bootstrap/bootstrap-ea2c01f27a86cd888be845a75ab84aaf.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme-extra" id="quarto-bootstrap" data-mode="light">
-<script id="quarto-search-options" type="application/json">{
+<link href="site_libs/bootstrap/bootstrap-ea2c01f27a86cd888be845a75ab84aaf.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme-extra" id="quarto-bootstrap" data-mode="light"><script id="quarto-search-options" type="application/json">{
   "location": "navbar",
   "copy-button": false,
   "collapse-after": 3,
@@ -109,12 +104,8 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
     "search-submit-button-title": "Submit",
     "search-label": "Search"
   }
-}</script>
-<style>html{ scroll-behavior: smooth; }</style>
-
-
+}</script><style>html{ scroll-behavior: smooth; }</style>
 </head>
-
 <body class="nav-sidebar floating nav-fixed quarto-light"><script id="quarto-html-before-body" type="application/javascript">
     const toggleBodyColorMode = (bsSheetEl) => {
       const mode = bsSheetEl.getAttribute("data-mode");
@@ -280,9 +271,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   </script>
 
 <div id="quarto-search-results"></div>
-  <header id="quarto-header" class="headroom fixed-top">
-    <nav class="navbar navbar-expand-lg " data-bs-theme="dark">
-      <div class="navbar-container container-fluid">
+  <header id="quarto-header" class="headroom fixed-top"><nav class="navbar navbar-expand-lg " data-bs-theme="dark"><div class="navbar-container container-fluid">
       <div class="navbar-brand-container mx-auto">
     <a class="navbar-brand" href="./index.html">
     <span class="navbar-title">Arrow and DuckDB</span>
@@ -294,19 +283,17 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </button>
           <div class="collapse navbar-collapse" id="navbarCollapse">
             <ul class="navbar-nav navbar-nav-scroll me-auto">
-  <li class="nav-item">
+<li class="nav-item">
     <a class="nav-link" href="./index.html"> 
 <span class="menu-text">Home</span></a>
   </li>  
 </ul>
-          </div> <!-- /navcollapse -->
+</div> <!-- /navcollapse -->
             <div class="quarto-navbar-tools">
   <a href="" class="quarto-color-scheme-toggle quarto-navigation-tool  px-1" onclick="window.quartoToggleColorScheme(); return false;" title="Toggle dark mode"><i class="bi"></i></a>
 </div>
       </div> <!-- /container-fluid -->
-    </nav>
-  <nav class="quarto-secondary-nav">
-    <div class="container-fluid d-flex">
+    </nav><nav class="quarto-secondary-nav"><div class="container-fluid d-flex">
       <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" role="button" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
         <i class="bi bi-layout-text-sidebar-reverse"></i>
       </button>
@@ -314,15 +301,11 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
         <a class="flex-grow-1" role="navigation" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
         </a>
     </div>
-  </nav>
-</header>
-<!-- content -->
-<div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article page-navbar">
+  </nav></header><!-- content --><div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article page-navbar">
 <!-- sidebar -->
-  <nav id="quarto-sidebar" class="sidebar collapse collapse-horizontal quarto-sidebar-collapse-item sidebar-navigation floating overflow-auto">
-    <div class="sidebar-menu-container"> 
+  <nav id="quarto-sidebar" class="sidebar collapse collapse-horizontal quarto-sidebar-collapse-item sidebar-navigation floating overflow-auto"><div class="sidebar-menu-container"> 
     <ul class="list-unstyled mt-1">
-        <li class="sidebar-item">
+<li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="./arrow.html" class="sidebar-item-text sidebar-link active">
  <span class="menu-text">Apache Arrow and Apache Parqet: Ch22 &amp; More</span></a>
@@ -347,98 +330,119 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   </div>
 </li>
     </ul>
-    </div>
-</nav>
-<div id="quarto-sidebar-glass" class="quarto-sidebar-collapse-item" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item"></div>
+</div>
+</nav><div id="quarto-sidebar-glass" class="quarto-sidebar-collapse-item" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item"></div>
 <!-- margin-sidebar -->
     <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
-        <nav id="TOC" role="doc-toc" class="toc-active" data-toc-expanded="1">
-    <h2 id="toc-title">On this page</h2>
+        <nav id="TOC" role="doc-toc" class="toc-active" data-toc-expanded="1"><h2 id="toc-title">On this page</h2>
    
   <ul>
-  <li><a href="#introduction-to-arrow" id="toc-introduction-to-arrow" class="nav-link active" data-scroll-target="#introduction-to-arrow"><span class="header-section-number">1</span> Introduction to Arrow</a>
+<li>
+<a href="#introduction-to-arrow" id="toc-introduction-to-arrow" class="nav-link active" data-scroll-target="#introduction-to-arrow"><span class="header-section-number">1</span> Introduction to Arrow</a>
   <ul class="collapse">
-  <li><a href="#what-is-apache-arrow" id="toc-what-is-apache-arrow" class="nav-link" data-scroll-target="#what-is-apache-arrow"><span class="header-section-number">1.1</span> What is Apache Arrow?</a></li>
+<li><a href="#what-is-apache-arrow" id="toc-what-is-apache-arrow" class="nav-link" data-scroll-target="#what-is-apache-arrow"><span class="header-section-number">1.1</span> What is Apache Arrow?</a></li>
   <li><a href="#learning-resources" id="toc-learning-resources" class="nav-link" data-scroll-target="#learning-resources"><span class="header-section-number">1.2</span> Learning Resources</a></li>
   <li><a href="#what-you-will-learn-from-this-lecture" id="toc-what-you-will-learn-from-this-lecture" class="nav-link" data-scroll-target="#what-you-will-learn-from-this-lecture"><span class="header-section-number">1.3</span> What you will learn from this lecture</a></li>
   <li><a href="#when-to-use-arrow-vs.-dbplyr" id="toc-when-to-use-arrow-vs.-dbplyr" class="nav-link" data-scroll-target="#when-to-use-arrow-vs.-dbplyr"><span class="header-section-number">1.4</span> When to Use Arrow vs.&nbsp;dbplyr</a></li>
-  </ul></li>
-  <li><a href="#getting-the-data" id="toc-getting-the-data" class="nav-link" data-scroll-target="#getting-the-data"><span class="header-section-number">2</span> Getting the data</a>
+  </ul>
+</li>
+  <li>
+<a href="#getting-the-data" id="toc-getting-the-data" class="nav-link" data-scroll-target="#getting-the-data"><span class="header-section-number">2</span> Getting the data</a>
   <ul class="collapse">
-  <li><a href="#data-source" id="toc-data-source" class="nav-link" data-scroll-target="#data-source"><span class="header-section-number">2.1</span> Data Source:</a></li>
+<li><a href="#data-source" id="toc-data-source" class="nav-link" data-scroll-target="#data-source"><span class="header-section-number">2.1</span> Data Source:</a></li>
   <li><a href="#whats-in-the-data" id="toc-whats-in-the-data" class="nav-link" data-scroll-target="#whats-in-the-data"><span class="header-section-number">2.2</span> What’s in the Data?</a></li>
   <li><a href="#setting-up-arrow" id="toc-setting-up-arrow" class="nav-link" data-scroll-target="#setting-up-arrow"><span class="header-section-number">2.3</span> Setting Up Arrow</a></li>
   <li><a href="#downloading-data" id="toc-downloading-data" class="nav-link" data-scroll-target="#downloading-data"><span class="header-section-number">2.4</span> Downloading Data</a></li>
-  </ul></li>
+  </ul>
+</li>
   <li><a href="#opening-a-dataset" id="toc-opening-a-dataset" class="nav-link" data-scroll-target="#opening-a-dataset"><span class="header-section-number">3</span> Opening a Dataset</a></li>
-  <li><a href="#data-manipulation-with-arrow" id="toc-data-manipulation-with-arrow" class="nav-link" data-scroll-target="#data-manipulation-with-arrow"><span class="header-section-number">4</span> Data Manipulation with Arrow</a>
+  <li>
+<a href="#data-manipulation-with-arrow" id="toc-data-manipulation-with-arrow" class="nav-link" data-scroll-target="#data-manipulation-with-arrow"><span class="header-section-number">4</span> Data Manipulation with Arrow</a>
   <ul class="collapse">
-  <li><a href="#collect-vs.-compute" id="toc-collect-vs.-compute" class="nav-link" data-scroll-target="#collect-vs.-compute"><span class="header-section-number">4.1</span> <code>collect()</code> vs.&nbsp;<code>compute()</code></a>
+<li>
+<a href="#collect-vs.-compute" id="toc-collect-vs.-compute" class="nav-link" data-scroll-target="#collect-vs.-compute"><span class="header-section-number">4.1</span> <code>collect()</code> vs.&nbsp;<code>compute()</code></a>
   <ul class="collapse">
-  <li><a href="#key-differences" id="toc-key-differences" class="nav-link" data-scroll-target="#key-differences"><span class="header-section-number">4.1.1</span> Key Differences</a></li>
-  </ul></li>
-  <li><a href="#when-to-use-which" id="toc-when-to-use-which" class="nav-link" data-scroll-target="#when-to-use-which"><span class="header-section-number">4.2</span> When to use which</a>
+<li><a href="#key-differences" id="toc-key-differences" class="nav-link" data-scroll-target="#key-differences"><span class="header-section-number">4.1.1</span> Key Differences</a></li>
+  </ul>
+</li>
+  <li>
+<a href="#when-to-use-which" id="toc-when-to-use-which" class="nav-link" data-scroll-target="#when-to-use-which"><span class="header-section-number">4.2</span> When to use which</a>
   <ul class="collapse">
-  <li><a href="#use-case" id="toc-use-case" class="nav-link" data-scroll-target="#use-case"><span class="header-section-number">4.2.1</span> Use Case</a></li>
-  </ul></li>
-  </ul></li>
-  <li><a href="#engineering-data-with-apache-parquet" id="toc-engineering-data-with-apache-parquet" class="nav-link" data-scroll-target="#engineering-data-with-apache-parquet"><span class="header-section-number">5</span> Engineering Data with Apache Parquet</a>
+<li><a href="#use-case" id="toc-use-case" class="nav-link" data-scroll-target="#use-case"><span class="header-section-number">4.2.1</span> Use Case</a></li>
+  </ul>
+</li>
+  </ul>
+</li>
+  <li>
+<a href="#engineering-data-with-apache-parquet" id="toc-engineering-data-with-apache-parquet" class="nav-link" data-scroll-target="#engineering-data-with-apache-parquet"><span class="header-section-number">5</span> Engineering Data with Apache Parquet</a>
   <ul class="collapse">
-  <li><a href="#what-is-apache-parquet" id="toc-what-is-apache-parquet" class="nav-link" data-scroll-target="#what-is-apache-parquet"><span class="header-section-number">5.1</span> What is Apache Parquet?</a>
+<li>
+<a href="#what-is-apache-parquet" id="toc-what-is-apache-parquet" class="nav-link" data-scroll-target="#what-is-apache-parquet"><span class="header-section-number">5.1</span> What is Apache Parquet?</a>
   <ul class="collapse">
-  <li><a href="#key-features" id="toc-key-features" class="nav-link" data-scroll-target="#key-features"><span class="header-section-number">5.1.1</span> Key Features</a></li>
-  </ul></li>
+<li><a href="#key-features" id="toc-key-features" class="nav-link" data-scroll-target="#key-features"><span class="header-section-number">5.1.1</span> Key Features</a></li>
+  </ul>
+</li>
   <li><a href="#why-it-matters" id="toc-why-it-matters" class="nav-link" data-scroll-target="#why-it-matters"><span class="header-section-number">5.2</span> Why It Matters</a></li>
   <li><a href="#advantages-of-parquet" id="toc-advantages-of-parquet" class="nav-link" data-scroll-target="#advantages-of-parquet"><span class="header-section-number">5.3</span> Advantages of parquet</a></li>
   <li><a href="#parquet-vs.-other-formats" id="toc-parquet-vs.-other-formats" class="nav-link" data-scroll-target="#parquet-vs.-other-formats"><span class="header-section-number">5.4</span> Parquet vs.&nbsp;Other Formats</a></li>
   <li><a href="#common-use-in-r" id="toc-common-use-in-r" class="nav-link" data-scroll-target="#common-use-in-r"><span class="header-section-number">5.5</span> Common Use in R</a></li>
   <li><a href="#resources" id="toc-resources" class="nav-link" data-scroll-target="#resources"><span class="header-section-number">5.6</span> Resources</a></li>
   <li><a href="#parquet-format" id="toc-parquet-format" class="nav-link" data-scroll-target="#parquet-format"><span class="header-section-number">5.7</span> Parquet Format</a></li>
-  </ul></li>
-  <li><a href="#converting-arrow-data-type-to-a-single-parquet-data" id="toc-converting-arrow-data-type-to-a-single-parquet-data" class="nav-link" data-scroll-target="#converting-arrow-data-type-to-a-single-parquet-data"><span class="header-section-number">6</span> Converting Arrow Data Type to a Single Parquet Data</a>
+  </ul>
+</li>
+  <li>
+<a href="#converting-arrow-data-type-to-a-single-parquet-data" id="toc-converting-arrow-data-type-to-a-single-parquet-data" class="nav-link" data-scroll-target="#converting-arrow-data-type-to-a-single-parquet-data"><span class="header-section-number">6</span> Converting Arrow Data Type to a Single Parquet Data</a>
   <ul class="collapse">
-  <li><a href="#saving-to-local-directory" id="toc-saving-to-local-directory" class="nav-link" data-scroll-target="#saving-to-local-directory"><span class="header-section-number">6.1</span> Saving to Local Directory</a></li>
-  <li><a href="#opening-the-parquet-file-arrow-dplyr" id="toc-opening-the-parquet-file-arrow-dplyr" class="nav-link" data-scroll-target="#opening-the-parquet-file-arrow-dplyr"><span class="header-section-number">6.2</span> Opening The Parquet File + Arrow + dplyr</a>
+<li><a href="#saving-to-local-directory" id="toc-saving-to-local-directory" class="nav-link" data-scroll-target="#saving-to-local-directory"><span class="header-section-number">6.1</span> Saving to Local Directory</a></li>
+  <li>
+<a href="#opening-the-parquet-file-arrow-dplyr" id="toc-opening-the-parquet-file-arrow-dplyr" class="nav-link" data-scroll-target="#opening-the-parquet-file-arrow-dplyr"><span class="header-section-number">6.2</span> Opening The Parquet File + Arrow + dplyr</a>
   <ul class="collapse">
-  <li><a href="#measuring-speed" id="toc-measuring-speed" class="nav-link" data-scroll-target="#measuring-speed"><span class="header-section-number">6.2.1</span> Measuring Speed</a></li>
-  </ul></li>
+<li><a href="#measuring-speed" id="toc-measuring-speed" class="nav-link" data-scroll-target="#measuring-speed"><span class="header-section-number">6.2.1</span> Measuring Speed</a></li>
+  </ul>
+</li>
   <li><a href="#measuring-size" id="toc-measuring-size" class="nav-link" data-scroll-target="#measuring-size"><span class="header-section-number">6.3</span> Measuring Size</a></li>
-  </ul></li>
-  <li><a href="#partitioning-converting-arrow-file-into-multiple-parquets" id="toc-partitioning-converting-arrow-file-into-multiple-parquets" class="nav-link" data-scroll-target="#partitioning-converting-arrow-file-into-multiple-parquets"><span class="header-section-number">7</span> Partitioning (Converting Arrow File into Multiple Parquets)</a>
+  </ul>
+</li>
+  <li>
+<a href="#partitioning-converting-arrow-file-into-multiple-parquets" id="toc-partitioning-converting-arrow-file-into-multiple-parquets" class="nav-link" data-scroll-target="#partitioning-converting-arrow-file-into-multiple-parquets"><span class="header-section-number">7</span> Partitioning (Converting Arrow File into Multiple Parquets)</a>
   <ul class="collapse">
-  <li><a href="#saving-data" id="toc-saving-data" class="nav-link" data-scroll-target="#saving-data"><span class="header-section-number">7.1</span> Saving Data</a></li>
-  <li><a href="#opening-the-data" id="toc-opening-the-data" class="nav-link" data-scroll-target="#opening-the-data"><span class="header-section-number">7.2</span> Opening the Data</a>
+<li><a href="#saving-data" id="toc-saving-data" class="nav-link" data-scroll-target="#saving-data"><span class="header-section-number">7.1</span> Saving Data</a></li>
+  <li>
+<a href="#opening-the-data" id="toc-opening-the-data" class="nav-link" data-scroll-target="#opening-the-data"><span class="header-section-number">7.2</span> Opening the Data</a>
   <ul class="collapse">
-  <li><a href="#measuring-speed-1" id="toc-measuring-speed-1" class="nav-link" data-scroll-target="#measuring-speed-1"><span class="header-section-number">7.2.1</span> Measuring Speed</a></li>
-  </ul></li>
+<li><a href="#measuring-speed-1" id="toc-measuring-speed-1" class="nav-link" data-scroll-target="#measuring-speed-1"><span class="header-section-number">7.2.1</span> Measuring Speed</a></li>
+  </ul>
+</li>
   <li><a href="#comparisons-with-more-filtering" id="toc-comparisons-with-more-filtering" class="nav-link" data-scroll-target="#comparisons-with-more-filtering"><span class="header-section-number">7.3</span> Comparisons with more filtering</a></li>
-  </ul></li>
-  <li><a href="#partitioning-topic-in-ch22" id="toc-partitioning-topic-in-ch22" class="nav-link" data-scroll-target="#partitioning-topic-in-ch22"><span class="header-section-number">8</span> Partitioning topic in Ch22</a>
+  </ul>
+</li>
+  <li>
+<a href="#partitioning-topic-in-ch22" id="toc-partitioning-topic-in-ch22" class="nav-link" data-scroll-target="#partitioning-topic-in-ch22"><span class="header-section-number">8</span> Partitioning topic in Ch22</a>
   <ul class="collapse">
-  <li><a href="#saving-to-local-data" id="toc-saving-to-local-data" class="nav-link" data-scroll-target="#saving-to-local-data"><span class="header-section-number">8.1</span> Saving to Local Data</a></li>
+<li><a href="#saving-to-local-data" id="toc-saving-to-local-data" class="nav-link" data-scroll-target="#saving-to-local-data"><span class="header-section-number">8.1</span> Saving to Local Data</a></li>
   <li><a href="#reading-the-partioined-parquet-data-in" id="toc-reading-the-partioined-parquet-data-in" class="nav-link" data-scroll-target="#reading-the-partioined-parquet-data-in"><span class="header-section-number">8.2</span> Reading the Partioined Parquet data in</a></li>
   <li><a href="#using-dplyr-pipeline" id="toc-using-dplyr-pipeline" class="nav-link" data-scroll-target="#using-dplyr-pipeline"><span class="header-section-number">8.3</span> Using <code>dplyr</code> pipeline</a></li>
-  <li><a href="#performance-comparison" id="toc-performance-comparison" class="nav-link" data-scroll-target="#performance-comparison"><span class="header-section-number">8.4</span> Performance Comparison</a>
+  <li>
+<a href="#performance-comparison" id="toc-performance-comparison" class="nav-link" data-scroll-target="#performance-comparison"><span class="header-section-number">8.4</span> Performance Comparison</a>
   <ul class="collapse">
-  <li><a href="#one-large-csv-file-saved-with-arrow" id="toc-one-large-csv-file-saved-with-arrow" class="nav-link" data-scroll-target="#one-large-csv-file-saved-with-arrow"><span class="header-section-number">8.4.1</span> One large CSV file Saved with Arrow</a></li>
+<li><a href="#one-large-csv-file-saved-with-arrow" id="toc-one-large-csv-file-saved-with-arrow" class="nav-link" data-scroll-target="#one-large-csv-file-saved-with-arrow"><span class="header-section-number">8.4.1</span> One large CSV file Saved with Arrow</a></li>
   <li><a href="#different-smaller-parquet-files" id="toc-different-smaller-parquet-files" class="nav-link" data-scroll-target="#different-smaller-parquet-files"><span class="header-section-number">8.4.2</span> 18 different smaller parquet files</a></li>
   <li><a href="#performance-attribution" id="toc-performance-attribution" class="nav-link" data-scroll-target="#performance-attribution"><span class="header-section-number">8.4.3</span> Performance Attribution</a></li>
-  </ul></li>
-  </ul></li>
-  <li><a href="#using-duckdb-with-arrow" id="toc-using-duckdb-with-arrow" class="nav-link" data-scroll-target="#using-duckdb-with-arrow"><span class="header-section-number">9</span> Using Duckdb with Arrow</a>
-  <ul class="collapse">
-  <li><a href="#assignment" id="toc-assignment" class="nav-link" data-scroll-target="#assignment"><span class="header-section-number">9.1</span> Assignment</a></li>
-  </ul></li>
-  <li><a href="#reference" id="toc-reference" class="nav-link" data-scroll-target="#reference"><span class="header-section-number">10</span> Reference</a></li>
   </ul>
-</nav>
+</li>
+  </ul>
+</li>
+  <li>
+<a href="#using-duckdb-with-arrow" id="toc-using-duckdb-with-arrow" class="nav-link" data-scroll-target="#using-duckdb-with-arrow"><span class="header-section-number">9</span> Using Duckdb with Arrow</a>
+  <ul class="collapse">
+<li><a href="#assignment" id="toc-assignment" class="nav-link" data-scroll-target="#assignment"><span class="header-section-number">9.1</span> Assignment</a></li>
+  </ul>
+</li>
+  <li><a href="#reference" id="toc-reference" class="nav-link" data-scroll-target="#reference"><span class="header-section-number">10</span> Reference</a></li>
+  </ul></nav>
     </div>
 <!-- main -->
-<main class="content" id="quarto-document-content">
-
-
-<header id="title-block-header" class="quarto-title-block default">
-<div class="quarto-title">
+<main class="content" id="quarto-document-content"><header id="title-block-header" class="quarto-title-block default"><div class="quarto-title">
 <h1 class="title">Apache Arrow and Apache Parqet: Ch22 &amp; More</h1>
 <p class="subtitle lead">Enhance Speed with Arrow and Parquet</p>
   <div class="quarto-categories">
@@ -477,92 +481,115 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   
 
 
-</header>
-
-<nav id="TOC-body" role="doc-toc">
-    <h2 id="toc-title">On this page</h2>
+</header><nav id="TOC-body" role="doc-toc"><h2 id="toc-title">On this page</h2>
    
   <ul>
-  <li><a href="#introduction-to-arrow" id="toc-introduction-to-arrow"><span class="header-section-number">1</span> Introduction to Arrow</a>
+<li>
+<a href="#introduction-to-arrow" id="toc-introduction-to-arrow"><span class="header-section-number">1</span> Introduction to Arrow</a>
   <ul>
-  <li><a href="#what-is-apache-arrow" id="toc-what-is-apache-arrow"><span class="header-section-number">1.1</span> What is Apache Arrow?</a></li>
+<li><a href="#what-is-apache-arrow" id="toc-what-is-apache-arrow"><span class="header-section-number">1.1</span> What is Apache Arrow?</a></li>
   <li><a href="#learning-resources" id="toc-learning-resources"><span class="header-section-number">1.2</span> Learning Resources</a></li>
   <li><a href="#what-you-will-learn-from-this-lecture" id="toc-what-you-will-learn-from-this-lecture"><span class="header-section-number">1.3</span> What you will learn from this lecture</a></li>
   <li><a href="#when-to-use-arrow-vs.-dbplyr" id="toc-when-to-use-arrow-vs.-dbplyr"><span class="header-section-number">1.4</span> When to Use Arrow vs.&nbsp;dbplyr</a></li>
-  </ul></li>
-  <li><a href="#getting-the-data" id="toc-getting-the-data"><span class="header-section-number">2</span> Getting the data</a>
+  </ul>
+</li>
+  <li>
+<a href="#getting-the-data" id="toc-getting-the-data"><span class="header-section-number">2</span> Getting the data</a>
   <ul>
-  <li><a href="#data-source" id="toc-data-source"><span class="header-section-number">2.1</span> Data Source:</a></li>
+<li><a href="#data-source" id="toc-data-source"><span class="header-section-number">2.1</span> Data Source:</a></li>
   <li><a href="#whats-in-the-data" id="toc-whats-in-the-data"><span class="header-section-number">2.2</span> What’s in the Data?</a></li>
   <li><a href="#setting-up-arrow" id="toc-setting-up-arrow"><span class="header-section-number">2.3</span> Setting Up Arrow</a></li>
   <li><a href="#downloading-data" id="toc-downloading-data"><span class="header-section-number">2.4</span> Downloading Data</a></li>
-  </ul></li>
+  </ul>
+</li>
   <li><a href="#opening-a-dataset" id="toc-opening-a-dataset"><span class="header-section-number">3</span> Opening a Dataset</a></li>
-  <li><a href="#data-manipulation-with-arrow" id="toc-data-manipulation-with-arrow"><span class="header-section-number">4</span> Data Manipulation with Arrow</a>
+  <li>
+<a href="#data-manipulation-with-arrow" id="toc-data-manipulation-with-arrow"><span class="header-section-number">4</span> Data Manipulation with Arrow</a>
   <ul>
-  <li><a href="#collect-vs.-compute" id="toc-collect-vs.-compute"><span class="header-section-number">4.1</span> <code>collect()</code> vs.&nbsp;<code>compute()</code></a>
+<li>
+<a href="#collect-vs.-compute" id="toc-collect-vs.-compute"><span class="header-section-number">4.1</span> <code>collect()</code> vs.&nbsp;<code>compute()</code></a>
   <ul>
-  <li><a href="#key-differences" id="toc-key-differences"><span class="header-section-number">4.1.1</span> Key Differences</a></li>
-  </ul></li>
-  <li><a href="#when-to-use-which" id="toc-when-to-use-which"><span class="header-section-number">4.2</span> When to use which</a>
+<li><a href="#key-differences" id="toc-key-differences"><span class="header-section-number">4.1.1</span> Key Differences</a></li>
+  </ul>
+</li>
+  <li>
+<a href="#when-to-use-which" id="toc-when-to-use-which"><span class="header-section-number">4.2</span> When to use which</a>
   <ul>
-  <li><a href="#use-case" id="toc-use-case"><span class="header-section-number">4.2.1</span> Use Case</a></li>
-  </ul></li>
-  </ul></li>
-  <li><a href="#engineering-data-with-apache-parquet" id="toc-engineering-data-with-apache-parquet"><span class="header-section-number">5</span> Engineering Data with Apache Parquet</a>
+<li><a href="#use-case" id="toc-use-case"><span class="header-section-number">4.2.1</span> Use Case</a></li>
+  </ul>
+</li>
+  </ul>
+</li>
+  <li>
+<a href="#engineering-data-with-apache-parquet" id="toc-engineering-data-with-apache-parquet"><span class="header-section-number">5</span> Engineering Data with Apache Parquet</a>
   <ul>
-  <li><a href="#what-is-apache-parquet" id="toc-what-is-apache-parquet"><span class="header-section-number">5.1</span> What is Apache Parquet?</a>
+<li>
+<a href="#what-is-apache-parquet" id="toc-what-is-apache-parquet"><span class="header-section-number">5.1</span> What is Apache Parquet?</a>
   <ul>
-  <li><a href="#key-features" id="toc-key-features"><span class="header-section-number">5.1.1</span> Key Features</a></li>
-  </ul></li>
+<li><a href="#key-features" id="toc-key-features"><span class="header-section-number">5.1.1</span> Key Features</a></li>
+  </ul>
+</li>
   <li><a href="#why-it-matters" id="toc-why-it-matters"><span class="header-section-number">5.2</span> Why It Matters</a></li>
   <li><a href="#advantages-of-parquet" id="toc-advantages-of-parquet"><span class="header-section-number">5.3</span> Advantages of parquet</a></li>
   <li><a href="#parquet-vs.-other-formats" id="toc-parquet-vs.-other-formats"><span class="header-section-number">5.4</span> Parquet vs.&nbsp;Other Formats</a></li>
   <li><a href="#common-use-in-r" id="toc-common-use-in-r"><span class="header-section-number">5.5</span> Common Use in R</a></li>
   <li><a href="#resources" id="toc-resources"><span class="header-section-number">5.6</span> Resources</a></li>
   <li><a href="#parquet-format" id="toc-parquet-format"><span class="header-section-number">5.7</span> Parquet Format</a></li>
-  </ul></li>
-  <li><a href="#converting-arrow-data-type-to-a-single-parquet-data" id="toc-converting-arrow-data-type-to-a-single-parquet-data"><span class="header-section-number">6</span> Converting Arrow Data Type to a Single Parquet Data</a>
+  </ul>
+</li>
+  <li>
+<a href="#converting-arrow-data-type-to-a-single-parquet-data" id="toc-converting-arrow-data-type-to-a-single-parquet-data"><span class="header-section-number">6</span> Converting Arrow Data Type to a Single Parquet Data</a>
   <ul>
-  <li><a href="#saving-to-local-directory" id="toc-saving-to-local-directory"><span class="header-section-number">6.1</span> Saving to Local Directory</a></li>
-  <li><a href="#opening-the-parquet-file-arrow-dplyr" id="toc-opening-the-parquet-file-arrow-dplyr"><span class="header-section-number">6.2</span> Opening The Parquet File + Arrow + dplyr</a>
+<li><a href="#saving-to-local-directory" id="toc-saving-to-local-directory"><span class="header-section-number">6.1</span> Saving to Local Directory</a></li>
+  <li>
+<a href="#opening-the-parquet-file-arrow-dplyr" id="toc-opening-the-parquet-file-arrow-dplyr"><span class="header-section-number">6.2</span> Opening The Parquet File + Arrow + dplyr</a>
   <ul>
-  <li><a href="#measuring-speed" id="toc-measuring-speed"><span class="header-section-number">6.2.1</span> Measuring Speed</a></li>
-  </ul></li>
+<li><a href="#measuring-speed" id="toc-measuring-speed"><span class="header-section-number">6.2.1</span> Measuring Speed</a></li>
+  </ul>
+</li>
   <li><a href="#measuring-size" id="toc-measuring-size"><span class="header-section-number">6.3</span> Measuring Size</a></li>
-  </ul></li>
-  <li><a href="#partitioning-converting-arrow-file-into-multiple-parquets" id="toc-partitioning-converting-arrow-file-into-multiple-parquets"><span class="header-section-number">7</span> Partitioning (Converting Arrow File into Multiple Parquets)</a>
+  </ul>
+</li>
+  <li>
+<a href="#partitioning-converting-arrow-file-into-multiple-parquets" id="toc-partitioning-converting-arrow-file-into-multiple-parquets"><span class="header-section-number">7</span> Partitioning (Converting Arrow File into Multiple Parquets)</a>
   <ul>
-  <li><a href="#saving-data" id="toc-saving-data"><span class="header-section-number">7.1</span> Saving Data</a></li>
-  <li><a href="#opening-the-data" id="toc-opening-the-data"><span class="header-section-number">7.2</span> Opening the Data</a>
+<li><a href="#saving-data" id="toc-saving-data"><span class="header-section-number">7.1</span> Saving Data</a></li>
+  <li>
+<a href="#opening-the-data" id="toc-opening-the-data"><span class="header-section-number">7.2</span> Opening the Data</a>
   <ul>
-  <li><a href="#measuring-speed-1" id="toc-measuring-speed-1"><span class="header-section-number">7.2.1</span> Measuring Speed</a></li>
-  </ul></li>
+<li><a href="#measuring-speed-1" id="toc-measuring-speed-1"><span class="header-section-number">7.2.1</span> Measuring Speed</a></li>
+  </ul>
+</li>
   <li><a href="#comparisons-with-more-filtering" id="toc-comparisons-with-more-filtering"><span class="header-section-number">7.3</span> Comparisons with more filtering</a></li>
-  </ul></li>
-  <li><a href="#partitioning-topic-in-ch22" id="toc-partitioning-topic-in-ch22"><span class="header-section-number">8</span> Partitioning topic in Ch22</a>
+  </ul>
+</li>
+  <li>
+<a href="#partitioning-topic-in-ch22" id="toc-partitioning-topic-in-ch22"><span class="header-section-number">8</span> Partitioning topic in Ch22</a>
   <ul>
-  <li><a href="#saving-to-local-data" id="toc-saving-to-local-data"><span class="header-section-number">8.1</span> Saving to Local Data</a></li>
+<li><a href="#saving-to-local-data" id="toc-saving-to-local-data"><span class="header-section-number">8.1</span> Saving to Local Data</a></li>
   <li><a href="#reading-the-partioined-parquet-data-in" id="toc-reading-the-partioined-parquet-data-in"><span class="header-section-number">8.2</span> Reading the Partioined Parquet data in</a></li>
   <li><a href="#using-dplyr-pipeline" id="toc-using-dplyr-pipeline"><span class="header-section-number">8.3</span> Using <code>dplyr</code> pipeline</a></li>
-  <li><a href="#performance-comparison" id="toc-performance-comparison"><span class="header-section-number">8.4</span> Performance Comparison</a>
+  <li>
+<a href="#performance-comparison" id="toc-performance-comparison"><span class="header-section-number">8.4</span> Performance Comparison</a>
   <ul>
-  <li><a href="#one-large-csv-file-saved-with-arrow" id="toc-one-large-csv-file-saved-with-arrow"><span class="header-section-number">8.4.1</span> One large CSV file Saved with Arrow</a></li>
+<li><a href="#one-large-csv-file-saved-with-arrow" id="toc-one-large-csv-file-saved-with-arrow"><span class="header-section-number">8.4.1</span> One large CSV file Saved with Arrow</a></li>
   <li><a href="#different-smaller-parquet-files" id="toc-different-smaller-parquet-files"><span class="header-section-number">8.4.2</span> 18 different smaller parquet files</a></li>
   <li><a href="#performance-attribution" id="toc-performance-attribution"><span class="header-section-number">8.4.3</span> Performance Attribution</a></li>
-  </ul></li>
-  </ul></li>
-  <li><a href="#using-duckdb-with-arrow" id="toc-using-duckdb-with-arrow"><span class="header-section-number">9</span> Using Duckdb with Arrow</a>
-  <ul>
-  <li><a href="#assignment" id="toc-assignment"><span class="header-section-number">9.1</span> Assignment</a></li>
-  </ul></li>
-  <li><a href="#reference" id="toc-reference"><span class="header-section-number">10</span> Reference</a></li>
   </ul>
-</nav>
-<section id="introduction-to-arrow" class="level1" data-number="1">
-<h1 data-number="1"><span class="header-section-number">1</span> Introduction to Arrow</h1>
-<section id="what-is-apache-arrow" class="level2" data-number="1.1">
-<h2 data-number="1.1" class="anchored" data-anchor-id="what-is-apache-arrow"><span class="header-section-number">1.1</span> What is Apache Arrow?</h2>
+</li>
+  </ul>
+</li>
+  <li>
+<a href="#using-duckdb-with-arrow" id="toc-using-duckdb-with-arrow"><span class="header-section-number">9</span> Using Duckdb with Arrow</a>
+  <ul>
+<li><a href="#assignment" id="toc-assignment"><span class="header-section-number">9.1</span> Assignment</a></li>
+  </ul>
+</li>
+  <li><a href="#reference" id="toc-reference"><span class="header-section-number">10</span> Reference</a></li>
+  </ul></nav><section id="introduction-to-arrow" class="level1" data-number="1"><h1 data-number="1">
+<span class="header-section-number">1</span> Introduction to Arrow</h1>
+<section id="what-is-apache-arrow" class="level2" data-number="1.1"><h2 data-number="1.1" class="anchored" data-anchor-id="what-is-apache-arrow">
+<span class="header-section-number">1.1</span> What is Apache Arrow?</h2>
 <p><img src="images/paste-1.png" class="img-fluid"></p>
 <p><strong>Apache Arrow</strong>&nbsp;is a&nbsp;<a href="https://en.wikipedia.org/wiki/Language-agnostic" title="Language-agnostic">language-agnostic</a>&nbsp;<a href="https://en.wikipedia.org/wiki/Software_framework" title="Software framework">software framework</a>&nbsp;for developing data analytics applications that process&nbsp;<a href="https://en.wikipedia.org/wiki/Column-oriented_DBMS" title="Column-oriented DBMS">columnar data</a>. It contains a standardized column-oriented memory format that is able to represent flat and hierarchical data for efficient analytic operations on modern&nbsp;<a href="https://en.wikipedia.org/wiki/Central_processing_unit" title="Central processing unit">CPU</a>&nbsp;and&nbsp;<a href="https://en.wikipedia.org/wiki/Graphics_processing_unit" title="Graphics processing unit">GPU</a>&nbsp;hardware (<a href="https://en.wikipedia.org/" class="uri">https://en.wikipedia.org/</a>).</p>
 <p>Arrow can be used with&nbsp;<a href="https://en.wikipedia.org/wiki/Apache_Parquet" title="Apache Parquet">Apache Parquet</a>,&nbsp;<a href="https://en.wikipedia.org/wiki/Apache_Spark" title="Apache Spark">Apache Spark</a>,&nbsp;<a href="https://en.wikipedia.org/wiki/NumPy" title="NumPy">NumPy</a>,&nbsp;<a href="https://en.wikipedia.org/wiki/PySpark" title="PySpark">PySpark</a>,&nbsp;<a href="https://en.wikipedia.org/wiki/Pandas_(software)" title="Pandas (software)">pandas</a>&nbsp;and other data processing libraries. The project includes native&nbsp;<a href="https://en.wikipedia.org/wiki/Library_(computing)" title="Library (computing)">software libraries</a>&nbsp;written in C, C++, C#, Go, Java, JavaScript, Julia, MATLAB, Python (PyArrow<sup><a href="https://en.wikipedia.org/wiki/Apache_Arrow#cite_note-8">[8]</a></sup>), R, Ruby, and Rust. Arrow allows for zero-copy reads and fast data access and interchange without serialization overhead between these languages and systems (<a href="https://en.wikipedia.org/" class="uri">https://en.wikipedia.org/</a>).</p>
@@ -571,46 +598,38 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <p><img src="images/paste-4.png" class="img-fluid"></p>
 <p><img src="images/paste-5.png" class="img-fluid"></p>
 <p><img src="images/paste-6.png" class="img-fluid"></p>
-</section>
-<section id="learning-resources" class="level2" data-number="1.2">
-<h2 data-number="1.2" class="anchored" data-anchor-id="learning-resources"><span class="header-section-number">1.2</span> Learning Resources</h2>
+</section><section id="learning-resources" class="level2" data-number="1.2"><h2 data-number="1.2" class="anchored" data-anchor-id="learning-resources">
+<span class="header-section-number">1.2</span> Learning Resources</h2>
 <ul>
 <li><p>Scaling Up With R and Arrow (<a href="https://arrowrbook.com/" class="uri">https://arrowrbook.com/</a>)</p></li>
 <li><p>R4DS, Chapter 22 (<a href="https://r4ds.hadley.nz/arrow.html" class="uri">https://r4ds.hadley.nz/arrow.html</a>)</p></li>
-</ul>
-</section>
-<section id="what-you-will-learn-from-this-lecture" class="level2" data-number="1.3">
-<h2 data-number="1.3" class="anchored" data-anchor-id="what-you-will-learn-from-this-lecture"><span class="header-section-number">1.3</span> What you will learn from this lecture</h2>
+</ul></section><section id="what-you-will-learn-from-this-lecture" class="level2" data-number="1.3"><h2 data-number="1.3" class="anchored" data-anchor-id="what-you-will-learn-from-this-lecture">
+<span class="header-section-number">1.3</span> What you will learn from this lecture</h2>
 <ul>
 <li><p>You’ll learn about a powerful alternative: the <code>parquet</code> format, an open standards-based format widely used by big data systems.</p></li>
 <li><p><code>parquet</code> is designed for efficient storage and fast querying, making it ideal for large datasets. It’s a <strong>columnar storage</strong> format, which means it stores data by columns rather than rows, allowing for better compression and faster read times.</p></li>
 <li><p>We’ll pair <code>parquet</code> files with <a href="#0">Apache Arrow</a>, a cross-language development platform for in-memory data.</p></li>
 <li><p>We’ll use Apache Arrow via the <a href="https://arrow.apache.org/docs/r/">arrow package</a>, which provides a dplyr backend allowing you to analyze larger-than-memory datasets using familiar dplyr syntax.</p></li>
 <li><p>Both <strong><code>arrow</code></strong> and <strong><code>dbplyr</code></strong> provide dplyr backends, so you might wonder when to use each.</p></li>
-</ul>
-</section>
-<section id="when-to-use-arrow-vs.-dbplyr" class="level2" data-number="1.4">
-<h2 data-number="1.4" class="anchored" data-anchor-id="when-to-use-arrow-vs.-dbplyr"><span class="header-section-number">1.4</span> When to Use Arrow vs.&nbsp;dbplyr</h2>
+</ul></section><section id="when-to-use-arrow-vs.-dbplyr" class="level2" data-number="1.4"><h2 data-number="1.4" class="anchored" data-anchor-id="when-to-use-arrow-vs.-dbplyr">
+<span class="header-section-number">1.4</span> When to Use Arrow vs.&nbsp;dbplyr</h2>
 <ul>
 <li>Use <strong><code>arrow</code></strong> when working with large datasets stored in <strong><code>parquet</code></strong> files, especially when you want to perform in-memory analytics without the overhead of a database connection.</li>
 <li>Use <strong><code>dbplyr</code></strong> when you have data stored in a <strong><em>relational database</em></strong> and want to leverage <strong>SQL</strong> for querying, especially if you need to perform complex joins or transactions that are better handled by a database system.</li>
-</ul>
-</section>
-</section>
-<section id="getting-the-data" class="level1" data-number="2">
-<h1 data-number="2"><span class="header-section-number">2</span> Getting the data</h1>
-<section id="data-source" class="level2" data-number="2.1">
-<h2 data-number="2.1" class="anchored" data-anchor-id="data-source"><span class="header-section-number">2.1</span> Data Source:</h2>
+</ul></section></section><section id="getting-the-data" class="level1" data-number="2"><h1 data-number="2">
+<span class="header-section-number">2</span> Getting the data</h1>
+<section id="data-source" class="level2" data-number="2.1"><h2 data-number="2.1" class="anchored" data-anchor-id="data-source">
+<span class="header-section-number">2.1</span> Data Source:</h2>
 <ul>
-<li><p>&nbsp;<a href="https://data.seattle.gov/Community/Checkouts-by-Title/tmmm-ytt6">data.seattle.gov/Community/Checkouts-by-Title/tmmm-ytt6</a></p>
+<li>
+<p>&nbsp;<a href="https://data.seattle.gov/Community/Checkouts-by-Title/tmmm-ytt6">data.seattle.gov/Community/Checkouts-by-Title/tmmm-ytt6</a></p>
 <ul>
 <li><p>Item checkout data from Seattle public libraries</p></li>
 <li><p>9GB CSV file</p></li>
-</ul></li>
 </ul>
-</section>
-<section id="whats-in-the-data" class="level2" data-number="2.2">
-<h2 data-number="2.2" class="anchored" data-anchor-id="whats-in-the-data"><span class="header-section-number">2.2</span> What’s in the Data?</h2>
+</li>
+</ul></section><section id="whats-in-the-data" class="level2" data-number="2.2"><h2 data-number="2.2" class="anchored" data-anchor-id="whats-in-the-data">
+<span class="header-section-number">2.2</span> What’s in the Data?</h2>
 <dl>
 <dt>Rows</dt>
 <dd>
@@ -627,14 +646,12 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </dl>
 <p><strong>Columns (12)</strong></p>
 <table class="caption-top table">
-<thead>
-<tr class="header">
+<thead><tr class="header">
 <th style="text-align: left;"><strong>Column Name</strong></th>
 <th style="text-align: left;"><strong>Description</strong></th>
 <th style="text-align: left;"><strong>API Field Name</strong></th>
 <th style="text-align: left;"><strong>Data Type</strong></th>
-</tr>
-</thead>
+</tr></thead>
 <tbody>
 <tr class="odd">
 <td style="text-align: left;">UsageClass</td>
@@ -714,27 +731,21 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <li><a href="https://data.seattle.gov/Community-and-Culture/Checkouts-by-Title/tmmm-ytt6/data_preview" class="uri">https://data.seattle.gov/Community-and-Culture/Checkouts-by-Title/tmmm-ytt6/data_preview</a></li>
 </ul>
 <p><img src="images/paste-8.png" class="img-fluid"></p>
-</section>
-<section id="setting-up-arrow" class="level2" data-number="2.3">
-<h2 data-number="2.3" class="anchored" data-anchor-id="setting-up-arrow"><span class="header-section-number">2.3</span> Setting Up Arrow</h2>
+</section><section id="setting-up-arrow" class="level2" data-number="2.3"><h2 data-number="2.3" class="anchored" data-anchor-id="setting-up-arrow">
+<span class="header-section-number">2.3</span> Setting Up Arrow</h2>
 <p>To get started with <code>arrow</code>, you can install the package from CRAN:</p>
 <div class="cell">
-<details open="" class="code-fold">
-<summary>Code</summary>
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb1"><pre class="sourceCode markdown code-with-copy"><code class="sourceCode markdown"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
+<details open="" class="code-fold"><summary>Code</summary><div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb1"><pre class="sourceCode markdown code-with-copy"><code class="sourceCode markdown"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
 <span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="co"># install.packages("arrow")</span></span>
 <span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(arrow)</span>
 <span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(tidyverse)</span>
 <span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </details>
 </div>
-</section>
-<section id="downloading-data" class="level2" data-number="2.4">
-<h2 data-number="2.4" class="anchored" data-anchor-id="downloading-data"><span class="header-section-number">2.4</span> Downloading Data</h2>
+</section><section id="downloading-data" class="level2" data-number="2.4"><h2 data-number="2.4" class="anchored" data-anchor-id="downloading-data">
+<span class="header-section-number">2.4</span> Downloading Data</h2>
 <div class="cell">
-<details open="" class="code-fold">
-<summary>Code</summary>
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb2"><pre class="sourceCode markdown code-with-copy"><code class="sourceCode markdown"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
+<details open="" class="code-fold"><summary>Code</summary><div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb2"><pre class="sourceCode markdown code-with-copy"><code class="sourceCode markdown"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
 <span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a><span class="co">#| eval: true</span></span>
 <span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a><span class="fu">dir.create</span>(<span class="st">"data"</span>, <span class="at">showWarnings =</span> <span class="cn">FALSE</span>)</span>
 <span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a></span>
@@ -744,8 +755,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <span id="cb2-8"><a href="#cb2-8" aria-hidden="true" tabindex="-1"></a>  <span class="at">resume =</span> <span class="cn">TRUE</span></span>
 <span id="cb2-9"><a href="#cb2-9" aria-hidden="true" tabindex="-1"></a>)</span>
 <span id="cb2-10"><a href="#cb2-10" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-</details>
-<div class="cell-output cell-output-stdout">
+</details><div class="cell-output cell-output-stdout">
 <pre><code># A tibble: 1 × 10
   success status_code resumefrom url    destfile error type  modified
   &lt;lgl&gt;         &lt;dbl&gt;      &lt;dbl&gt; &lt;chr&gt;  &lt;chr&gt;    &lt;chr&gt; &lt;chr&gt; &lt;dttm&gt;  
@@ -757,9 +767,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <li>Alternatively, you can use this approach below.</li>
 </ul>
 <div class="cell">
-<details open="" class="code-fold">
-<summary>Code</summary>
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb4"><pre class="sourceCode markdown code-with-copy"><code class="sourceCode markdown"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
+<details open="" class="code-fold"><summary>Code</summary><div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb4"><pre class="sourceCode markdown code-with-copy"><code class="sourceCode markdown"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
 <span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a><span class="co">#| eval: false</span></span>
 <span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a><span class="fu">options</span>(<span class="at">timeout =</span> <span class="dv">1800</span>)</span>
 <span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a><span class="fu">download.file</span>(</span>
@@ -770,18 +778,14 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <span id="cb4-9"><a href="#cb4-9" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </details>
 </div>
-</section>
-</section>
-<section id="opening-a-dataset" class="level1" data-number="3">
-<h1 data-number="3"><span class="header-section-number">3</span> Opening a Dataset</h1>
+</section></section><section id="opening-a-dataset" class="level1" data-number="3"><h1 data-number="3">
+<span class="header-section-number">3</span> Opening a Dataset</h1>
 <ul>
 <li><p>A good rule of thumb is that you usually want at least <strong>twice as much memory</strong> as the size of the data, and many laptops top out at <strong>16 GB</strong>.</p></li>
 <li><p>This means we want to avoid <strong>read_csv()</strong> and instead use the <strong>arrow::open_dataset()</strong>:</p></li>
 </ul>
 <div class="cell">
-<details open="" class="code-fold">
-<summary>Code</summary>
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb5"><pre class="sourceCode markdown code-with-copy"><code class="sourceCode markdown"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
+<details open="" class="code-fold"><summary>Code</summary><div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb5"><pre class="sourceCode markdown code-with-copy"><code class="sourceCode markdown"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
 <span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a>seattle_csv <span class="ot">&lt;-</span> <span class="fu">open_dataset</span>(</span>
 <span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">sources =</span> <span class="st">"data/seattle-library-checkouts.csv"</span>,</span>
 <span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">col_types =</span> <span class="fu">schema</span>(<span class="at">ISBN =</span> <span class="fu">string</span>()), <span class="co"># ISBN is null above: string == NULL</span></span>
@@ -810,9 +814,7 @@ Publisher: string
 PublicationYear: string</code></pre>
 <p><img src="images/paste-9.png" class="img-fluid"></p>
 <div class="cell">
-<details open="" class="code-fold">
-<summary>Code</summary>
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb7"><pre class="sourceCode markdown code-with-copy"><code class="sourceCode markdown"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
+<details open="" class="code-fold"><summary>Code</summary><div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb7"><pre class="sourceCode markdown code-with-copy"><code class="sourceCode markdown"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
 <span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a>seattle_csv</span>
 <span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a><span class="co"># or</span></span>
 <span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a><span class="fu">schema</span>(seattle_csv)</span>
@@ -821,8 +823,7 @@ PublicationYear: string</code></pre>
 <span id="cb7-7"><a href="#cb7-7" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb7-8"><a href="#cb7-8" aria-hidden="true" tabindex="-1"></a><span class="fu">glimpse</span>(seattle_csv) <span class="co"># Takes time</span></span>
 <span id="cb7-9"><a href="#cb7-9" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-</details>
-<div class="cell-output cell-output-stdout">
+</details><div class="cell-output cell-output-stdout">
 <pre><code>FileSystemDataset with 1 csv file
 12 columns
 UsageClass: string
@@ -871,9 +872,7 @@ $ PublicationYear &lt;string&gt; "c2011.", "2010.", "2015", "2005.", "c2004.", "
 <li>We can start to use this dataset with dplyr verbs, using <code>collect()</code> to force arrow to perform the computation and return some data.</li>
 </ul>
 <div class="cell">
-<details open="" class="code-fold">
-<summary>Code</summary>
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb9"><pre class="sourceCode markdown code-with-copy"><code class="sourceCode markdown"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
+<details open="" class="code-fold"><summary>Code</summary><div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb9"><pre class="sourceCode markdown code-with-copy"><code class="sourceCode markdown"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
 <span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a>seattle_csv <span class="sc">|&gt;</span></span>
 <span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(CheckoutYear) <span class="sc">|&gt;</span></span>
 <span id="cb9-4"><a href="#cb9-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">summarize</span>(<span class="at">checkouts =</span> <span class="fu">sum</span>(Checkouts)) <span class="sc">|&gt;</span></span>
@@ -885,8 +884,7 @@ $ PublicationYear &lt;string&gt; "c2011.", "2010.", "2015", "2005.", "c2004.", "
 <span id="cb9-10"><a href="#cb9-10" aria-hidden="true" tabindex="-1"></a>  <span class="fu">arrange</span>(CheckoutYear) <span class="sc">|&gt;</span></span>
 <span id="cb9-11"><a href="#cb9-11" aria-hidden="true" tabindex="-1"></a>  <span class="fu">collect</span>() <span class="co"># tibble data frame</span></span>
 <span id="cb9-12"><a href="#cb9-12" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-</details>
-<div class="cell-output cell-output-stdout">
+</details><div class="cell-output cell-output-stdout">
 <pre><code>FileSystemDataset (query)
 CheckoutYear: int64
 checkouts: int64
@@ -917,16 +915,13 @@ See $.data for the source Arrow object
 </div>
 </div>
 <ul>
-<li>The code above still works, but the speed can be improved with <code>parquet</code></li>
-</ul>
-</section>
-<section id="data-manipulation-with-arrow" class="level1" data-number="4">
-<h1 data-number="4"><span class="header-section-number">4</span> Data Manipulation with Arrow</h1>
+<li>The code above still works, but the speed can be improved with <code>parquet</code>
+</li>
+</ul></section><section id="data-manipulation-with-arrow" class="level1" data-number="4"><h1 data-number="4">
+<span class="header-section-number">4</span> Data Manipulation with Arrow</h1>
 <p><img src="images/paste-10.png" class="img-fluid"></p>
 <div class="cell">
-<details open="" class="code-fold">
-<summary>Code</summary>
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb11"><pre class="sourceCode markdown code-with-copy"><code class="sourceCode markdown"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
+<details open="" class="code-fold"><summary>Code</summary><div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb11"><pre class="sourceCode markdown code-with-copy"><code class="sourceCode markdown"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
 <span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a><span class="co">#| eval: false</span></span>
 <span id="cb11-3"><a href="#cb11-3" aria-hidden="true" tabindex="-1"></a>seattle_csv <span class="sc">|&gt;</span></span>
 <span id="cb11-4"><a href="#cb11-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">IsBook =</span> <span class="fu">endsWith</span>(MaterialType, <span class="st">"BOOK"</span>)) <span class="sc">|&gt;</span> <span class="co">#endWith: base</span></span>
@@ -944,9 +939,7 @@ See $.data for the source Arrow object</code></pre>
 <p>Nothing is pulled into memory yet.</p>
 </blockquote>
 <div class="cell">
-<details open="" class="code-fold">
-<summary>Code</summary>
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb13"><pre class="sourceCode markdown code-with-copy"><code class="sourceCode markdown"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
+<details open="" class="code-fold"><summary>Code</summary><div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb13"><pre class="sourceCode markdown code-with-copy"><code class="sourceCode markdown"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
 <span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a><span class="co">#| eval: false</span></span>
 <span id="cb13-3"><a href="#cb13-3" aria-hidden="true" tabindex="-1"></a>seattle_csv <span class="sc">|&gt;</span></span>
 <span id="cb13-4"><a href="#cb13-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">head</span>(<span class="dv">20</span>) <span class="sc">|&gt;</span></span>
@@ -962,9 +955,7 @@ IsBook: bool (ends_with(MaterialType, {pattern="BOOK", ignore_case=false}))
 
 See $.data for the source Arrow object</code></pre>
 <div class="cell">
-<details open="" class="code-fold">
-<summary>Code</summary>
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb15"><pre class="sourceCode markdown code-with-copy"><code class="sourceCode markdown"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
+<details open="" class="code-fold"><summary>Code</summary><div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb15"><pre class="sourceCode markdown code-with-copy"><code class="sourceCode markdown"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
 <span id="cb15-2"><a href="#cb15-2" aria-hidden="true" tabindex="-1"></a><span class="co">#| eval: false</span></span>
 <span id="cb15-3"><a href="#cb15-3" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb15-4"><a href="#cb15-4" aria-hidden="true" tabindex="-1"></a>seattle_csv <span class="sc">|&gt;</span></span>
@@ -1011,8 +1002,9 @@ Warning
   14.25    5.43   14.69 </code></pre>
 </div>
 </div>
-<section id="collect-vs.-compute" class="level2" data-number="4.1">
-<h2 data-number="4.1" class="anchored" data-anchor-id="collect-vs.-compute"><span class="header-section-number">4.1</span> <code>collect()</code> vs.&nbsp;<code>compute()</code></h2>
+<section id="collect-vs.-compute" class="level2" data-number="4.1"><h2 data-number="4.1" class="anchored" data-anchor-id="collect-vs.-compute">
+<span class="header-section-number">4.1</span> <code>collect()</code> vs.&nbsp;<code>compute()</code>
+</h2>
 <p><strong><code>collect()</code></strong></p>
 <ul>
 <li><p>Executes the query <strong>and pulls the result into R</strong> as a local <code>tibble</code>. Now the data lives in your R session’s memory.</p></li>
@@ -1024,9 +1016,7 @@ Warning
 <li><p>Use it when you want to <strong>checkpoint</strong> an intermediate result that you’ll query again — avoids re-running expensive upstream steps.</p></li>
 </ul>
 <div class="cell">
-<details open="" class="code-fold">
-<summary>Code</summary>
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb17"><pre class="sourceCode markdown code-with-copy"><code class="sourceCode markdown"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
+<details open="" class="code-fold"><summary>Code</summary><div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb17"><pre class="sourceCode markdown code-with-copy"><code class="sourceCode markdown"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
 <span id="cb17-2"><a href="#cb17-2" aria-hidden="true" tabindex="-1"></a><span class="co">#| eval: false</span></span>
 <span id="cb17-3"><a href="#cb17-3" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb17-4"><a href="#cb17-4" aria-hidden="true" tabindex="-1"></a>seattle_csv_compute <span class="ot">&lt;-</span> seattle_csv <span class="sc">|&gt;</span></span>
@@ -1051,23 +1041,22 @@ Warning
 </details>
 </div>
 <ul>
-<li>Both are from <code>dplyr</code></li>
+<li>Both are from <code>dplyr</code>
+</li>
 </ul>
-<section id="key-differences" class="level3" data-number="4.1.1">
-<h3 data-number="4.1.1" class="anchored" data-anchor-id="key-differences"><span class="header-section-number">4.1.1</span> Key Differences</h3>
+<section id="key-differences" class="level3" data-number="4.1.1"><h3 data-number="4.1.1" class="anchored" data-anchor-id="key-differences">
+<span class="header-section-number">4.1.1</span> Key Differences</h3>
 <table class="caption-top table">
 <colgroup>
 <col style="width: 33%">
 <col style="width: 33%">
 <col style="width: 33%">
 </colgroup>
-<thead>
-<tr class="header">
+<thead><tr class="header">
 <th>Feature</th>
 <th><code>collect()</code></th>
 <th><code>compute()</code></th>
-</tr>
-</thead>
+</tr></thead>
 <tbody>
 <tr class="odd">
 <td><strong>Where result lives</strong></td>
@@ -1095,17 +1084,14 @@ Warning
 <td>Yes (still a remote reference)</td>
 </tr>
 </tbody>
-</table>
-</section>
-</section>
-<section id="when-to-use-which" class="level2" data-number="4.2">
-<h2 data-number="4.2" class="anchored" data-anchor-id="when-to-use-which"><span class="header-section-number">4.2</span> When to use which</h2>
+</table></section></section><section id="when-to-use-which" class="level2" data-number="4.2"><h2 data-number="4.2" class="anchored" data-anchor-id="when-to-use-which">
+<span class="header-section-number">4.2</span> When to use which</h2>
 <ul>
 <li><p>Use <strong><code>collect()</code></strong> when you’re done querying and need the data in R for plotting, modeling, or export.</p></li>
 <li><p>Use <strong><code>compute()</code></strong> when your query is complex/expensive and you want to <strong>cache an intermediate result</strong> in the database to build further queries on top of it — avoiding recomputation.</p></li>
 </ul>
-<section id="use-case" class="level3" data-number="4.2.1">
-<h3 data-number="4.2.1" class="anchored" data-anchor-id="use-case"><span class="header-section-number">4.2.1</span> Use Case</h3>
+<section id="use-case" class="level3" data-number="4.2.1"><h3 data-number="4.2.1" class="anchored" data-anchor-id="use-case">
+<span class="header-section-number">4.2.1</span> Use Case</h3>
 <p>A common pattern is to use <code>compute()</code> for heavy intermediate transformations, then <code>collect()</code> at the very end:</p>
 <div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb18"><pre class="sourceCode markdown code-with-copy"><code class="sourceCode markdown"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
 <span id="cb18-2"><a href="#cb18-2" aria-hidden="true" tabindex="-1"></a>filtered <span class="ot">&lt;-</span> <span class="fu">tbl</span>(con, <span class="st">"big_table"</span>) <span class="sc">|&gt;</span></span>
@@ -1118,43 +1104,35 @@ Warning
 <span id="cb18-9"><a href="#cb18-9" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(n <span class="sc">&gt;</span> <span class="dv">100</span>) <span class="sc">|&gt;</span></span>
 <span id="cb18-10"><a href="#cb18-10" aria-hidden="true" tabindex="-1"></a>  <span class="fu">collect</span>() <span class="co"># Now bring into R</span></span>
 <span id="cb18-11"><a href="#cb18-11" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-</section>
-</section>
-</section>
-<section id="engineering-data-with-apache-parquet" class="level1" data-number="5">
-<h1 data-number="5"><span class="header-section-number">5</span> Engineering Data with Apache Parquet</h1>
+</section></section></section><section id="engineering-data-with-apache-parquet" class="level1" data-number="5"><h1 data-number="5">
+<span class="header-section-number">5</span> Engineering Data with Apache Parquet</h1>
 <p><img src="images/paste-11.png" class="img-fluid"></p>
-<section id="what-is-apache-parquet" class="level2" data-number="5.1">
-<h2 data-number="5.1" class="anchored" data-anchor-id="what-is-apache-parquet"><span class="header-section-number">5.1</span> What is Apache Parquet?</h2>
+<section id="what-is-apache-parquet" class="level2" data-number="5.1"><h2 data-number="5.1" class="anchored" data-anchor-id="what-is-apache-parquet">
+<span class="header-section-number">5.1</span> What is Apache Parquet?</h2>
 <p>Apache Parquet is an open-source <strong>columnar storage file format</strong> designed for efficient data storage and retrieval, particularly in big data ecosystems.</p>
 <ul>
 <li><p>parquet is used for <strong>rectangular data</strong>.</p></li>
 <li><p>It is a custom <strong>binary format</strong> specifically for the needs of big data.</p></li>
 </ul>
-<section id="key-features" class="level3" data-number="5.1.1">
-<h3 data-number="5.1.1" class="anchored" data-anchor-id="key-features"><span class="header-section-number">5.1.1</span> Key Features</h3>
+<section id="key-features" class="level3" data-number="5.1.1"><h3 data-number="5.1.1" class="anchored" data-anchor-id="key-features">
+<span class="header-section-number">5.1.1</span> Key Features</h3>
 <ul>
 <li><p><strong>Compression</strong> — Similar values stored together compress extremely well (e.g., a column of integers vs.&nbsp;mixed row data). Supports Snappy, Gzip, Zstd, etc.</p></li>
 <li><p><strong>Predicate pushdown</strong> — Stores min/max statistics per row group, so query engines can skip entire chunks of data without reading them.</p></li>
 <li><p><strong>Schema evolution</strong> — Columns can be added or removed over time without rewriting old files.</p></li>
 <li><p><strong>Nested data support</strong> — Handles complex types like <strong>arrays, maps, and structs</strong> (using Dremel encoding).</p></li>
 <li><p><strong>Language agnostic</strong> — Readable by Python, R, Java, Scala, C++, and more.</p></li>
-</ul>
-</section>
-</section>
-<section id="why-it-matters" class="level2" data-number="5.2">
-<h2 data-number="5.2" class="anchored" data-anchor-id="why-it-matters"><span class="header-section-number">5.2</span> Why It Matters</h2>
+</ul></section></section><section id="why-it-matters" class="level2" data-number="5.2"><h2 data-number="5.2" class="anchored" data-anchor-id="why-it-matters">
+<span class="header-section-number">5.2</span> Why It Matters</h2>
 <table class="caption-top table">
 <colgroup>
 <col style="width: 50%">
 <col style="width: 50%">
 </colgroup>
-<thead>
-<tr class="header">
+<thead><tr class="header">
 <th>Scenario</th>
 <th>Benefit</th>
-</tr>
-</thead>
+</tr></thead>
 <tbody>
 <tr class="odd">
 <td>Analytical queries (<code>SELECT col_a, col_b</code>)</td>
@@ -1175,22 +1153,19 @@ Warning
 </tbody>
 </table>
 <p><img src="images/paste-12.png" class="img-fluid"></p>
-</section>
-<section id="advantages-of-parquet" class="level2" data-number="5.3">
-<h2 data-number="5.3" class="anchored" data-anchor-id="advantages-of-parquet"><span class="header-section-number">5.3</span> Advantages of parquet</h2>
+</section><section id="advantages-of-parquet" class="level2" data-number="5.3"><h2 data-number="5.3" class="anchored" data-anchor-id="advantages-of-parquet">
+<span class="header-section-number">5.3</span> Advantages of parquet</h2>
 <table class="caption-top table">
 <colgroup>
 <col style="width: 36%">
 <col style="width: 26%">
 <col style="width: 37%">
 </colgroup>
-<thead>
-<tr class="header">
+<thead><tr class="header">
 <th>Comparison Dimensions</th>
 <th>CSV</th>
 <th>Parquet</th>
-</tr>
-</thead>
+</tr></thead>
 <tbody>
 <tr class="odd">
 <td>File size</td>
@@ -1223,10 +1198,8 @@ Warning
 <td>Unreadeable to humans</td>
 </tr>
 </tbody>
-</table>
-</section>
-<section id="parquet-vs.-other-formats" class="level2" data-number="5.4">
-<h2 data-number="5.4" class="anchored" data-anchor-id="parquet-vs.-other-formats"><span class="header-section-number">5.4</span> Parquet vs.&nbsp;Other Formats</h2>
+</table></section><section id="parquet-vs.-other-formats" class="level2" data-number="5.4"><h2 data-number="5.4" class="anchored" data-anchor-id="parquet-vs.-other-formats">
+<span class="header-section-number">5.4</span> Parquet vs.&nbsp;Other Formats</h2>
 <table class="caption-top table">
 <colgroup>
 <col style="width: 22%">
@@ -1235,15 +1208,13 @@ Warning
 <col style="width: 14%">
 <col style="width: 23%">
 </colgroup>
-<thead>
-<tr class="header">
+<thead><tr class="header">
 <th>Format</th>
 <th>Type</th>
 <th>Compressed</th>
 <th>Columnar</th>
 <th>Human-readable</th>
-</tr>
-</thead>
+</tr></thead>
 <tbody>
 <tr class="odd">
 <td>CSV</td>
@@ -1283,13 +1254,10 @@ Warning
 </tbody>
 </table>
 <p>Parquet has become essentially the <strong>standard format for data lakes and analytics pipelines</strong> — you’ll find it everywhere from AWS S3 + Athena to Databricks to dbt projects.</p>
-</section>
-<section id="common-use-in-r" class="level2" data-number="5.5">
-<h2 data-number="5.5" class="anchored" data-anchor-id="common-use-in-r"><span class="header-section-number">5.5</span> Common Use in R</h2>
+</section><section id="common-use-in-r" class="level2" data-number="5.5"><h2 data-number="5.5" class="anchored" data-anchor-id="common-use-in-r">
+<span class="header-section-number">5.5</span> Common Use in R</h2>
 <div class="cell">
-<details open="" class="code-fold">
-<summary>Code</summary>
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb19"><pre class="sourceCode markdown code-with-copy"><code class="sourceCode markdown"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
+<details open="" class="code-fold"><summary>Code</summary><div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb19"><pre class="sourceCode markdown code-with-copy"><code class="sourceCode markdown"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
 <span id="cb19-2"><a href="#cb19-2" aria-hidden="true" tabindex="-1"></a><span class="co">#| eval: false</span></span>
 <span id="cb19-3"><a href="#cb19-3" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(arrow)</span>
 <span id="cb19-4"><a href="#cb19-4" aria-hidden="true" tabindex="-1"></a></span>
@@ -1304,41 +1272,33 @@ Warning
 <span id="cb19-13"><a href="#cb19-13" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </details>
 </div>
-</section>
-<section id="resources" class="level2" data-number="5.6">
-<h2 data-number="5.6" class="anchored" data-anchor-id="resources"><span class="header-section-number">5.6</span> Resources</h2>
+</section><section id="resources" class="level2" data-number="5.6"><h2 data-number="5.6" class="anchored" data-anchor-id="resources">
+<span class="header-section-number">5.6</span> Resources</h2>
 <ul>
 <li><a href="https://parquet.apache.org/" class="uri">https://parquet.apache.org/</a></li>
-</ul>
-</section>
-<section id="parquet-format" class="level2" data-number="5.7">
-<h2 data-number="5.7" class="anchored" data-anchor-id="parquet-format"><span class="header-section-number">5.7</span> Parquet Format</h2>
+</ul></section><section id="parquet-format" class="level2" data-number="5.7"><h2 data-number="5.7" class="anchored" data-anchor-id="parquet-format">
+<span class="header-section-number">5.7</span> Parquet Format</h2>
 <ol type="1">
-<li><p>Split the file into multiple files</p>
+<li>
+<p>Split the file into multiple files</p>
 <ul>
 <li><p>Parquet</p></li>
 <li><p>Partitioning</p></li>
-</ul></li>
+</ul>
+</li>
 <li><p>Apply the concept to the Seattle library data</p></li>
-</ol>
-</section>
-</section>
-<section id="converting-arrow-data-type-to-a-single-parquet-data" class="level1" data-number="6">
-<h1 data-number="6"><span class="header-section-number">6</span> Converting Arrow Data Type to a Single Parquet Data</h1>
-<section id="saving-to-local-directory" class="level2" data-number="6.1">
-<h2 data-number="6.1" class="anchored" data-anchor-id="saving-to-local-directory"><span class="header-section-number">6.1</span> Saving to Local Directory</h2>
+</ol></section></section><section id="converting-arrow-data-type-to-a-single-parquet-data" class="level1" data-number="6"><h1 data-number="6">
+<span class="header-section-number">6</span> Converting Arrow Data Type to a Single Parquet Data</h1>
+<section id="saving-to-local-directory" class="level2" data-number="6.1"><h2 data-number="6.1" class="anchored" data-anchor-id="saving-to-local-directory">
+<span class="header-section-number">6.1</span> Saving to Local Directory</h2>
 <div class="cell">
-<details open="" class="code-fold">
-<summary>Code</summary>
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb20"><pre class="sourceCode markdown code-with-copy"><code class="sourceCode markdown"><span id="cb20-1"><a href="#cb20-1" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
+<details open="" class="code-fold"><summary>Code</summary><div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb20"><pre class="sourceCode markdown code-with-copy"><code class="sourceCode markdown"><span id="cb20-1"><a href="#cb20-1" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
 <span id="cb20-2"><a href="#cb20-2" aria-hidden="true" tabindex="-1"></a>seattle_parquet_dir <span class="ot">&lt;-</span> <span class="st">"./data/seattle-library-checkouts-parquet"</span></span>
 <span id="cb20-3"><a href="#cb20-3" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </details>
 </div>
 <div class="cell">
-<details open="" class="code-fold">
-<summary>Code</summary>
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb21"><pre class="sourceCode markdown code-with-copy"><code class="sourceCode markdown"><span id="cb21-1"><a href="#cb21-1" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
+<details open="" class="code-fold"><summary>Code</summary><div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb21"><pre class="sourceCode markdown code-with-copy"><code class="sourceCode markdown"><span id="cb21-1"><a href="#cb21-1" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
 <span id="cb21-2"><a href="#cb21-2" aria-hidden="true" tabindex="-1"></a><span class="co">#| eval: false</span></span>
 <span id="cb21-3"><a href="#cb21-3" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb21-4"><a href="#cb21-4" aria-hidden="true" tabindex="-1"></a>seattle_csv <span class="sc">|&gt;</span></span>
@@ -1346,13 +1306,10 @@ Warning
 <span id="cb21-6"><a href="#cb21-6" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </details>
 </div>
-</section>
-<section id="opening-the-parquet-file-arrow-dplyr" class="level2" data-number="6.2">
-<h2 data-number="6.2" class="anchored" data-anchor-id="opening-the-parquet-file-arrow-dplyr"><span class="header-section-number">6.2</span> Opening The Parquet File + Arrow + dplyr</h2>
+</section><section id="opening-the-parquet-file-arrow-dplyr" class="level2" data-number="6.2"><h2 data-number="6.2" class="anchored" data-anchor-id="opening-the-parquet-file-arrow-dplyr">
+<span class="header-section-number">6.2</span> Opening The Parquet File + Arrow + dplyr</h2>
 <div class="cell">
-<details open="" class="code-fold">
-<summary>Code</summary>
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb22"><pre class="sourceCode markdown code-with-copy"><code class="sourceCode markdown"><span id="cb22-1"><a href="#cb22-1" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
+<details open="" class="code-fold"><summary>Code</summary><div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb22"><pre class="sourceCode markdown code-with-copy"><code class="sourceCode markdown"><span id="cb22-1"><a href="#cb22-1" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
 <span id="cb22-2"><a href="#cb22-2" aria-hidden="true" tabindex="-1"></a><span class="co">#| eval: false</span></span>
 <span id="cb22-3"><a href="#cb22-3" aria-hidden="true" tabindex="-1"></a><span class="fu">open_dataset</span>(<span class="at">sources =</span> seattle_parquet_dir, <span class="at">format =</span> <span class="st">"parquet"</span>)</span>
 <span id="cb22-4"><a href="#cb22-4" aria-hidden="true" tabindex="-1"></a><span class="co"># also</span></span>
@@ -1375,12 +1332,10 @@ Creator: string
 Subjects: string
 Publisher: string
 PublicationYear: string</code></pre>
-<section id="measuring-speed" class="level3" data-number="6.2.1">
-<h3 data-number="6.2.1" class="anchored" data-anchor-id="measuring-speed"><span class="header-section-number">6.2.1</span> Measuring Speed</h3>
+<section id="measuring-speed" class="level3" data-number="6.2.1"><h3 data-number="6.2.1" class="anchored" data-anchor-id="measuring-speed">
+<span class="header-section-number">6.2.1</span> Measuring Speed</h3>
 <div class="cell">
-<details open="" class="code-fold">
-<summary>Code</summary>
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb24"><pre class="sourceCode markdown code-with-copy"><code class="sourceCode markdown"><span id="cb24-1"><a href="#cb24-1" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
+<details open="" class="code-fold"><summary>Code</summary><div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb24"><pre class="sourceCode markdown code-with-copy"><code class="sourceCode markdown"><span id="cb24-1"><a href="#cb24-1" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
 <span id="cb24-2"><a href="#cb24-2" aria-hidden="true" tabindex="-1"></a><span class="co">#| eval: false</span></span>
 <span id="cb24-3"><a href="#cb24-3" aria-hidden="true" tabindex="-1"></a><span class="fu">open_dataset</span>(<span class="at">sources =</span> seattle_parquet_dir, <span class="at">format =</span> <span class="st">"parquet"</span>) <span class="sc">|&gt;</span></span>
 <span id="cb24-4"><a href="#cb24-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(<span class="fu">endsWith</span>(MaterialType, <span class="st">"BOOK"</span>)) <span class="sc">|&gt;</span></span>
@@ -1395,14 +1350,10 @@ PublicationYear: string</code></pre>
 <p><strong>Output</strong>:</p>
 <pre><code>   user  system elapsed 
    5.75    3.81    2.05 </code></pre>
-</section>
-</section>
-<section id="measuring-size" class="level2" data-number="6.3">
-<h2 data-number="6.3" class="anchored" data-anchor-id="measuring-size"><span class="header-section-number">6.3</span> Measuring Size</h2>
+</section></section><section id="measuring-size" class="level2" data-number="6.3"><h2 data-number="6.3" class="anchored" data-anchor-id="measuring-size">
+<span class="header-section-number">6.3</span> Measuring Size</h2>
 <div class="cell">
-<details open="" class="code-fold">
-<summary>Code</summary>
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb26"><pre class="sourceCode markdown code-with-copy"><code class="sourceCode markdown"><span id="cb26-1"><a href="#cb26-1" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
+<details open="" class="code-fold"><summary>Code</summary><div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb26"><pre class="sourceCode markdown code-with-copy"><code class="sourceCode markdown"><span id="cb26-1"><a href="#cb26-1" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
 <span id="cb26-2"><a href="#cb26-2" aria-hidden="true" tabindex="-1"></a><span class="co">#| eval: false</span></span>
 <span id="cb26-3"><a href="#cb26-3" aria-hidden="true" tabindex="-1"></a>file <span class="ot">&lt;-</span> <span class="fu">list.files</span>(seattle_parquet_dir, <span class="at">recursive =</span> <span class="cn">TRUE</span>, <span class="at">full.names =</span> <span class="cn">TRUE</span>)</span>
 <span id="cb26-4"><a href="#cb26-4" aria-hidden="true" tabindex="-1"></a><span class="fu">file.size</span>(file) <span class="sc">/</span> <span class="dv">10</span><span class="sc">^</span><span class="dv">9</span></span>
@@ -1413,40 +1364,37 @@ PublicationYear: string</code></pre>
 <pre><code>[1] 4.416318</code></pre>
 <ul>
 <li>The file size was reduced by half compared with CSV file on-disk.</li>
-</ul>
-</section>
-</section>
-<section id="partitioning-converting-arrow-file-into-multiple-parquets" class="level1" data-number="7">
-<h1 data-number="7"><span class="header-section-number">7</span> Partitioning (Converting Arrow File into Multiple Parquets)</h1>
+</ul></section></section><section id="partitioning-converting-arrow-file-into-multiple-parquets" class="level1" data-number="7"><h1 data-number="7">
+<span class="header-section-number">7</span> Partitioning (Converting Arrow File into Multiple Parquets)</h1>
 <p><img src="images/paste-13.png" class="img-fluid"></p>
 <ul>
-<li><p><strong>Why Petitioning?</strong></p>
+<li>
+<p><strong>Why Petitioning?</strong></p>
 <ul>
 <li><p>As datasets get larger and larger, storing all the data in a single file gets increasingly painful and it’s often useful to split large datasets across many files.</p></li>
 <li><p>Many analyses will only require a subset of the files.</p></li>
-</ul></li>
+</ul>
+</li>
 <li><p>No hard and fast rules about how to partition your dataset;</p></li>
-<li><p>Rough guideline</p>
+<li>
+<p>Rough guideline</p>
 <ul>
 <li><p>Avoid files smaller than 20MB and larger than 2GB</p></li>
 <li><p>Avoid partitions that produce more than 10,000 files.&nbsp;</p></li>
 <li><p>Partition by variables that you filter by</p></li>
-</ul></li>
 </ul>
-<section id="saving-data" class="level2" data-number="7.1">
-<h2 data-number="7.1" class="anchored" data-anchor-id="saving-data"><span class="header-section-number">7.1</span> Saving Data</h2>
+</li>
+</ul>
+<section id="saving-data" class="level2" data-number="7.1"><h2 data-number="7.1" class="anchored" data-anchor-id="saving-data">
+<span class="header-section-number">7.1</span> Saving Data</h2>
 <div class="cell">
-<details open="" class="code-fold">
-<summary>Code</summary>
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb28"><pre class="sourceCode markdown code-with-copy"><code class="sourceCode markdown"><span id="cb28-1"><a href="#cb28-1" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
+<details open="" class="code-fold"><summary>Code</summary><div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb28"><pre class="sourceCode markdown code-with-copy"><code class="sourceCode markdown"><span id="cb28-1"><a href="#cb28-1" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
 <span id="cb28-2"><a href="#cb28-2" aria-hidden="true" tabindex="-1"></a>seattle_parquet_part <span class="ot">&lt;-</span> <span class="st">"./data/seattle-library-checkouts"</span></span>
 <span id="cb28-3"><a href="#cb28-3" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </details>
 </div>
 <div class="cell">
-<details open="" class="code-fold">
-<summary>Code</summary>
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb29"><pre class="sourceCode markdown code-with-copy"><code class="sourceCode markdown"><span id="cb29-1"><a href="#cb29-1" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
+<details open="" class="code-fold"><summary>Code</summary><div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb29"><pre class="sourceCode markdown code-with-copy"><code class="sourceCode markdown"><span id="cb29-1"><a href="#cb29-1" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
 <span id="cb29-2"><a href="#cb29-2" aria-hidden="true" tabindex="-1"></a><span class="co">#| eval: false</span></span>
 <span id="cb29-3"><a href="#cb29-3" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb29-4"><a href="#cb29-4" aria-hidden="true" tabindex="-1"></a>seattle_csv <span class="sc">|&gt;</span></span>
@@ -1455,13 +1403,10 @@ PublicationYear: string</code></pre>
 <span id="cb29-7"><a href="#cb29-7" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </details>
 </div>
-</section>
-<section id="opening-the-data" class="level2" data-number="7.2">
-<h2 data-number="7.2" class="anchored" data-anchor-id="opening-the-data"><span class="header-section-number">7.2</span> Opening the Data</h2>
+</section><section id="opening-the-data" class="level2" data-number="7.2"><h2 data-number="7.2" class="anchored" data-anchor-id="opening-the-data">
+<span class="header-section-number">7.2</span> Opening the Data</h2>
 <div class="cell">
-<details open="" class="code-fold">
-<summary>Code</summary>
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb30"><pre class="sourceCode markdown code-with-copy"><code class="sourceCode markdown"><span id="cb30-1"><a href="#cb30-1" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
+<details open="" class="code-fold"><summary>Code</summary><div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb30"><pre class="sourceCode markdown code-with-copy"><code class="sourceCode markdown"><span id="cb30-1"><a href="#cb30-1" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
 <span id="cb30-2"><a href="#cb30-2" aria-hidden="true" tabindex="-1"></a><span class="fu">open_dataset</span>(<span class="at">sources =</span> seattle_parquet_part, <span class="at">format =</span> <span class="st">"parquet"</span>) <span class="sc">|&gt;</span></span>
 <span id="cb30-3"><a href="#cb30-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(<span class="fu">endsWith</span>(MaterialType, <span class="st">"BOOK"</span>)) <span class="sc">|&gt;</span></span>
 <span id="cb30-4"><a href="#cb30-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(CheckoutYear) <span class="sc">|&gt;</span></span>
@@ -1469,8 +1414,7 @@ PublicationYear: string</code></pre>
 <span id="cb30-6"><a href="#cb30-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">arrange</span>(CheckoutYear) <span class="sc">|&gt;</span></span>
 <span id="cb30-7"><a href="#cb30-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">collect</span>()</span>
 <span id="cb30-8"><a href="#cb30-8" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-</details>
-<div class="cell-output cell-output-stdout">
+</details><div class="cell-output cell-output-stdout">
 <pre><code># A tibble: 18 × 2
    CheckoutYear Checkouts
           &lt;int&gt;     &lt;int&gt;
@@ -1494,12 +1438,10 @@ PublicationYear: string</code></pre>
 18         2022   6301822</code></pre>
 </div>
 </div>
-<section id="measuring-speed-1" class="level3" data-number="7.2.1">
-<h3 data-number="7.2.1" class="anchored" data-anchor-id="measuring-speed-1"><span class="header-section-number">7.2.1</span> Measuring Speed</h3>
+<section id="measuring-speed-1" class="level3" data-number="7.2.1"><h3 data-number="7.2.1" class="anchored" data-anchor-id="measuring-speed-1">
+<span class="header-section-number">7.2.1</span> Measuring Speed</h3>
 <div class="cell">
-<details open="" class="code-fold">
-<summary>Code</summary>
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb32"><pre class="sourceCode markdown code-with-copy"><code class="sourceCode markdown"><span id="cb32-1"><a href="#cb32-1" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
+<details open="" class="code-fold"><summary>Code</summary><div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb32"><pre class="sourceCode markdown code-with-copy"><code class="sourceCode markdown"><span id="cb32-1"><a href="#cb32-1" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
 <span id="cb32-2"><a href="#cb32-2" aria-hidden="true" tabindex="-1"></a><span class="co">#| eval: false</span></span>
 <span id="cb32-3"><a href="#cb32-3" aria-hidden="true" tabindex="-1"></a><span class="fu">open_dataset</span>(<span class="at">sources =</span> seattle_parquet_part, <span class="at">format =</span> <span class="st">"parquet"</span>) <span class="sc">|&gt;</span></span>
 <span id="cb32-4"><a href="#cb32-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(<span class="fu">endsWith</span>(MaterialType, <span class="st">"BOOK"</span>)) <span class="sc">|&gt;</span></span>
@@ -1527,18 +1469,14 @@ Tip
 <p>There was not a huge gain in speed beween one parquet file and partitioning.</p>
 </div>
 </div>
-</section>
-</section>
-<section id="comparisons-with-more-filtering" class="level2" data-number="7.3">
-<h2 data-number="7.3" class="anchored" data-anchor-id="comparisons-with-more-filtering"><span class="header-section-number">7.3</span> Comparisons with more filtering</h2>
+</section></section><section id="comparisons-with-more-filtering" class="level2" data-number="7.3"><h2 data-number="7.3" class="anchored" data-anchor-id="comparisons-with-more-filtering">
+<span class="header-section-number">7.3</span> Comparisons with more filtering</h2>
 <div class="columns">
 <div class="column" style="width:49%;">
-<section id="partitioned-parquet-files-arrow-dplyr" class="level3" data-number="7.3.1">
-<h3 data-number="7.3.1" class="anchored" data-anchor-id="partitioned-parquet-files-arrow-dplyr"><span class="header-section-number">7.3.1</span> Partitioned Parquet Files + Arrow + dplyr</h3>
+<section id="partitioned-parquet-files-arrow-dplyr" class="level3" data-number="7.3.1"><h3 data-number="7.3.1" class="anchored" data-anchor-id="partitioned-parquet-files-arrow-dplyr">
+<span class="header-section-number">7.3.1</span> Partitioned Parquet Files + Arrow + dplyr</h3>
 <div class="cell">
-<details open="" class="code-fold">
-<summary>Code</summary>
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb34"><pre class="sourceCode markdown code-with-copy"><code class="sourceCode markdown"><span id="cb34-1"><a href="#cb34-1" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
+<details open="" class="code-fold"><summary>Code</summary><div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb34"><pre class="sourceCode markdown code-with-copy"><code class="sourceCode markdown"><span id="cb34-1"><a href="#cb34-1" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
 <span id="cb34-2"><a href="#cb34-2" aria-hidden="true" tabindex="-1"></a><span class="co">#| eval: false</span></span>
 <span id="cb34-3"><a href="#cb34-3" aria-hidden="true" tabindex="-1"></a><span class="co"># filtering by CheckoutYear as well</span></span>
 <span id="cb34-4"><a href="#cb34-4" aria-hidden="true" tabindex="-1"></a></span>
@@ -1559,12 +1497,10 @@ Tip
 </div><div class="column" style="width:2%;">
 
 </div><div class="column" style="width:49%;">
-<section id="csv-file-read-with-arrow-function-dplyr" class="level3" data-number="7.3.2">
-<h3 data-number="7.3.2" class="anchored" data-anchor-id="csv-file-read-with-arrow-function-dplyr"><span class="header-section-number">7.3.2</span> CSV File read with Arrow function + dplyr</h3>
+<section id="csv-file-read-with-arrow-function-dplyr" class="level3" data-number="7.3.2"><h3 data-number="7.3.2" class="anchored" data-anchor-id="csv-file-read-with-arrow-function-dplyr">
+<span class="header-section-number">7.3.2</span> CSV File read with Arrow function + dplyr</h3>
 <div class="cell">
-<details open="" class="code-fold">
-<summary>Code</summary>
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb36"><pre class="sourceCode markdown code-with-copy"><code class="sourceCode markdown"><span id="cb36-1"><a href="#cb36-1" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
+<details open="" class="code-fold"><summary>Code</summary><div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb36"><pre class="sourceCode markdown code-with-copy"><code class="sourceCode markdown"><span id="cb36-1"><a href="#cb36-1" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
 <span id="cb36-2"><a href="#cb36-2" aria-hidden="true" tabindex="-1"></a><span class="co">#| eval: false</span></span>
 <span id="cb36-3"><a href="#cb36-3" aria-hidden="true" tabindex="-1"></a><span class="co"># filtering by CheckoutYear as well</span></span>
 <span id="cb36-4"><a href="#cb36-4" aria-hidden="true" tabindex="-1"></a></span>
@@ -1584,24 +1520,18 @@ Tip
 </section>
 </div>
 </div>
-</section>
-</section>
-<section id="partitioning-topic-in-ch22" class="level1" data-number="8">
-<h1 data-number="8"><span class="header-section-number">8</span> Partitioning topic in Ch22</h1>
-<section id="saving-to-local-data" class="level2" data-number="8.1">
-<h2 data-number="8.1" class="anchored" data-anchor-id="saving-to-local-data"><span class="header-section-number">8.1</span> Saving to Local Data</h2>
+</section></section><section id="partitioning-topic-in-ch22" class="level1" data-number="8"><h1 data-number="8">
+<span class="header-section-number">8</span> Partitioning topic in Ch22</h1>
+<section id="saving-to-local-data" class="level2" data-number="8.1"><h2 data-number="8.1" class="anchored" data-anchor-id="saving-to-local-data">
+<span class="header-section-number">8.1</span> Saving to Local Data</h2>
 <div class="cell">
-<details open="" class="code-fold">
-<summary>Code</summary>
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb38"><pre class="sourceCode markdown code-with-copy"><code class="sourceCode markdown"><span id="cb38-1"><a href="#cb38-1" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
+<details open="" class="code-fold"><summary>Code</summary><div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb38"><pre class="sourceCode markdown code-with-copy"><code class="sourceCode markdown"><span id="cb38-1"><a href="#cb38-1" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
 <span id="cb38-2"><a href="#cb38-2" aria-hidden="true" tabindex="-1"></a>pq_path <span class="ot">&lt;-</span> <span class="st">"data/seattle-library-checkouts"</span></span>
 <span id="cb38-3"><a href="#cb38-3" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </details>
 </div>
 <div class="cell">
-<details open="" class="code-fold">
-<summary>Code</summary>
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb39"><pre class="sourceCode markdown code-with-copy"><code class="sourceCode markdown"><span id="cb39-1"><a href="#cb39-1" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
+<details open="" class="code-fold"><summary>Code</summary><div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb39"><pre class="sourceCode markdown code-with-copy"><code class="sourceCode markdown"><span id="cb39-1"><a href="#cb39-1" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
 <span id="cb39-2"><a href="#cb39-2" aria-hidden="true" tabindex="-1"></a><span class="co">#| eval: false</span></span>
 <span id="cb39-3"><a href="#cb39-3" aria-hidden="true" tabindex="-1"></a>seattle_csv <span class="sc">|&gt;</span> <span class="co"># Arrow data</span></span>
 <span id="cb39-4"><a href="#cb39-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(CheckoutYear) <span class="sc">|&gt;</span></span>
@@ -1631,9 +1561,7 @@ Note
 </ul>
 </blockquote>
 <div class="cell">
-<details open="" class="code-fold">
-<summary>Code</summary>
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb40"><pre class="sourceCode markdown code-with-copy"><code class="sourceCode markdown"><span id="cb40-1"><a href="#cb40-1" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
+<details open="" class="code-fold"><summary>Code</summary><div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb40"><pre class="sourceCode markdown code-with-copy"><code class="sourceCode markdown"><span id="cb40-1"><a href="#cb40-1" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
 <span id="cb40-2"><a href="#cb40-2" aria-hidden="true" tabindex="-1"></a><span class="fu">tibble</span>(</span>
 <span id="cb40-3"><a href="#cb40-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">files =</span> <span class="fu">list.files</span>(pq_path, <span class="at">recursive =</span> <span class="cn">TRUE</span>),</span>
 <span id="cb40-4"><a href="#cb40-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">size_MB =</span> <span class="fu">file.size</span>(<span class="fu">file.path</span>(pq_path, files)) <span class="sc">/</span> <span class="dv">1024</span><span class="sc">^</span><span class="dv">2</span></span>
@@ -1645,8 +1573,7 @@ Note
 <span id="cb40-10"><a href="#cb40-10" aria-hidden="true" tabindex="-1"></a>) <span class="sc">|&gt;</span></span>
 <span id="cb40-11"><a href="#cb40-11" aria-hidden="true" tabindex="-1"></a>  <span class="fu">summarize</span>(<span class="at">total_size =</span> <span class="fu">sum</span>(size_MB))</span>
 <span id="cb40-12"><a href="#cb40-12" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-</details>
-<div class="cell-output cell-output-stdout">
+</details><div class="cell-output cell-output-stdout">
 <pre><code># A tibble: 18 × 2
    files                            size_MB
    &lt;chr&gt;                              &lt;dbl&gt;
@@ -1674,21 +1601,18 @@ Note
 1      4212.</code></pre>
 </div>
 </div>
-</section>
-<section id="reading-the-partioined-parquet-data-in" class="level2" data-number="8.2">
-<h2 data-number="8.2" class="anchored" data-anchor-id="reading-the-partioined-parquet-data-in"><span class="header-section-number">8.2</span> Reading the Partioined Parquet data in</h2>
+</section><section id="reading-the-partioined-parquet-data-in" class="level2" data-number="8.2"><h2 data-number="8.2" class="anchored" data-anchor-id="reading-the-partioined-parquet-data-in">
+<span class="header-section-number">8.2</span> Reading the Partioined Parquet data in</h2>
 <ul>
-<li>Using parquet data with <code>dplyr</code> and <code>arrow</code></li>
+<li>Using parquet data with <code>dplyr</code> and <code>arrow</code>
+</li>
 </ul>
 <div class="cell">
-<details open="" class="code-fold">
-<summary>Code</summary>
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb42"><pre class="sourceCode markdown code-with-copy"><code class="sourceCode markdown"><span id="cb42-1"><a href="#cb42-1" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
+<details open="" class="code-fold"><summary>Code</summary><div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb42"><pre class="sourceCode markdown code-with-copy"><code class="sourceCode markdown"><span id="cb42-1"><a href="#cb42-1" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
 <span id="cb42-2"><a href="#cb42-2" aria-hidden="true" tabindex="-1"></a>seattle_pq <span class="ot">&lt;-</span> <span class="fu">open_dataset</span>(pq_path) <span class="co"># directory only</span></span>
 <span id="cb42-3"><a href="#cb42-3" aria-hidden="true" tabindex="-1"></a>seattle_pq</span>
 <span id="cb42-4"><a href="#cb42-4" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-</details>
-<div class="cell-output cell-output-stdout">
+</details><div class="cell-output cell-output-stdout">
 <pre><code>FileSystemDataset with 18 Parquet files
 12 columns
 UsageClass: string
@@ -1705,16 +1629,14 @@ PublicationYear: string
 CheckoutYear: int32</code></pre>
 </div>
 </div>
-</section>
-<section id="using-dplyr-pipeline" class="level2" data-number="8.3">
-<h2 data-number="8.3" class="anchored" data-anchor-id="using-dplyr-pipeline"><span class="header-section-number">8.3</span> Using <code>dplyr</code> pipeline</h2>
+</section><section id="using-dplyr-pipeline" class="level2" data-number="8.3"><h2 data-number="8.3" class="anchored" data-anchor-id="using-dplyr-pipeline">
+<span class="header-section-number">8.3</span> Using <code>dplyr</code> pipeline</h2>
 <ul>
-<li><strong>Task</strong>: count the total number of books checked out in each month for the last five years:</li>
+<li>
+<strong>Task</strong>: count the total number of books checked out in each month for the last five years:</li>
 </ul>
 <div class="cell">
-<details open="" class="code-fold">
-<summary>Code</summary>
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb44"><pre class="sourceCode markdown code-with-copy"><code class="sourceCode markdown"><span id="cb44-1"><a href="#cb44-1" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
+<details open="" class="code-fold"><summary>Code</summary><div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb44"><pre class="sourceCode markdown code-with-copy"><code class="sourceCode markdown"><span id="cb44-1"><a href="#cb44-1" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
 <span id="cb44-2"><a href="#cb44-2" aria-hidden="true" tabindex="-1"></a><span class="co">#| eval: true</span></span>
 <span id="cb44-3"><a href="#cb44-3" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb44-4"><a href="#cb44-4" aria-hidden="true" tabindex="-1"></a>seattle_pq <span class="sc">|&gt;</span></span>
@@ -1728,8 +1650,7 @@ CheckoutYear: int32</code></pre>
 <span id="cb44-12"><a href="#cb44-12" aria-hidden="true" tabindex="-1"></a>  <span class="fu">arrange</span>(CheckoutYear, CheckoutMonth, Checkouts) <span class="sc">|&gt;</span></span>
 <span id="cb44-13"><a href="#cb44-13" aria-hidden="true" tabindex="-1"></a>  <span class="fu">collect</span>()</span>
 <span id="cb44-14"><a href="#cb44-14" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-</details>
-<div class="cell-output cell-output-stdout">
+</details><div class="cell-output cell-output-stdout">
 <pre><code># A tibble: 41,389,465 × 4
 # Groups:   CheckoutYear [18]
    CheckoutYear CheckoutMonth MaterialType Checkouts
@@ -1762,9 +1683,7 @@ CheckoutYear: int32</code></pre>
 </div>
 </div>
 <div class="cell">
-<details open="" class="code-fold">
-<summary>Code</summary>
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb46"><pre class="sourceCode markdown code-with-copy"><code class="sourceCode markdown"><span id="cb46-1"><a href="#cb46-1" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
+<details open="" class="code-fold"><summary>Code</summary><div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb46"><pre class="sourceCode markdown code-with-copy"><code class="sourceCode markdown"><span id="cb46-1"><a href="#cb46-1" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
 <span id="cb46-2"><a href="#cb46-2" aria-hidden="true" tabindex="-1"></a>query <span class="ot">&lt;-</span> seattle_pq <span class="sc">|&gt;</span></span>
 <span id="cb46-3"><a href="#cb46-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(CheckoutYear <span class="sc">&gt;=</span> <span class="dv">2018</span>, MaterialType <span class="sc">==</span> <span class="st">"BOOK"</span>) <span class="sc">|&gt;</span></span>
 <span id="cb46-4"><a href="#cb46-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(CheckoutYear, CheckoutMonth) <span class="sc">|&gt;</span></span>
@@ -1774,18 +1693,17 @@ CheckoutYear: int32</code></pre>
 </details>
 </div>
 <ul>
-<li><strong>Mechnics</strong>: you write dplyr code, which is automatically transformed into a query that the Apache Arrow C++ library understands, which is then executed when you call <code>collect()</code></li>
+<li>
+<strong>Mechnics</strong>: you write dplyr code, which is automatically transformed into a query that the Apache Arrow C++ library understands, which is then executed when you call <code>collect()</code>
+</li>
 </ul>
 <div class="cell">
-<details open="" class="code-fold">
-<summary>Code</summary>
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb47"><pre class="sourceCode markdown code-with-copy"><code class="sourceCode markdown"><span id="cb47-1"><a href="#cb47-1" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
+<details open="" class="code-fold"><summary>Code</summary><div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb47"><pre class="sourceCode markdown code-with-copy"><code class="sourceCode markdown"><span id="cb47-1"><a href="#cb47-1" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
 <span id="cb47-2"><a href="#cb47-2" aria-hidden="true" tabindex="-1"></a>query</span>
 <span id="cb47-3"><a href="#cb47-3" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb47-4"><a href="#cb47-4" aria-hidden="true" tabindex="-1"></a>query <span class="sc">|&gt;</span> <span class="fu">collect</span>()</span>
 <span id="cb47-5"><a href="#cb47-5" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-</details>
-<div class="cell-output cell-output-stdout">
+</details><div class="cell-output cell-output-stdout">
 <pre><code>FileSystemDataset (query)
 CheckoutYear: int32
 CheckoutMonth: int64
@@ -1828,15 +1746,12 @@ Tip
 </ul>
 </div>
 </div>
-</section>
-<section id="performance-comparison" class="level2" data-number="8.4">
-<h2 data-number="8.4" class="anchored" data-anchor-id="performance-comparison"><span class="header-section-number">8.4</span> Performance Comparison</h2>
-<section id="one-large-csv-file-saved-with-arrow" class="level3" data-number="8.4.1">
-<h3 data-number="8.4.1" class="anchored" data-anchor-id="one-large-csv-file-saved-with-arrow"><span class="header-section-number">8.4.1</span> One large CSV file Saved with Arrow</h3>
+</section><section id="performance-comparison" class="level2" data-number="8.4"><h2 data-number="8.4" class="anchored" data-anchor-id="performance-comparison">
+<span class="header-section-number">8.4</span> Performance Comparison</h2>
+<section id="one-large-csv-file-saved-with-arrow" class="level3" data-number="8.4.1"><h3 data-number="8.4.1" class="anchored" data-anchor-id="one-large-csv-file-saved-with-arrow">
+<span class="header-section-number">8.4.1</span> One large CSV file Saved with Arrow</h3>
 <div class="cell">
-<details open="" class="code-fold">
-<summary>Code</summary>
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb49"><pre class="sourceCode markdown code-with-copy"><code class="sourceCode markdown"><span id="cb49-1"><a href="#cb49-1" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
+<details open="" class="code-fold"><summary>Code</summary><div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb49"><pre class="sourceCode markdown code-with-copy"><code class="sourceCode markdown"><span id="cb49-1"><a href="#cb49-1" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
 <span id="cb49-2"><a href="#cb49-2" aria-hidden="true" tabindex="-1"></a><span class="co">#| eval: false</span></span>
 <span id="cb49-3"><a href="#cb49-3" aria-hidden="true" tabindex="-1"></a><span class="co"># Task: how long does it take to calculate the number of books checked out in each month of 2021</span></span>
 <span id="cb49-4"><a href="#cb49-4" aria-hidden="true" tabindex="-1"></a>seattle_csv <span class="sc">|&gt;</span></span>
@@ -1863,13 +1778,10 @@ Note
   12.99    5.44   15.00 </code></pre>
 </div>
 </div>
-</section>
-<section id="different-smaller-parquet-files" class="level3" data-number="8.4.2">
-<h3 data-number="8.4.2" class="anchored" data-anchor-id="different-smaller-parquet-files"><span class="header-section-number">8.4.2</span> 18 different smaller parquet files</h3>
+</section><section id="different-smaller-parquet-files" class="level3" data-number="8.4.2"><h3 data-number="8.4.2" class="anchored" data-anchor-id="different-smaller-parquet-files">
+<span class="header-section-number">8.4.2</span> 18 different smaller parquet files</h3>
 <div class="cell">
-<details open="" class="code-fold">
-<summary>Code</summary>
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb51"><pre class="sourceCode markdown code-with-copy"><code class="sourceCode markdown"><span id="cb51-1"><a href="#cb51-1" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
+<details open="" class="code-fold"><summary>Code</summary><div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb51"><pre class="sourceCode markdown code-with-copy"><code class="sourceCode markdown"><span id="cb51-1"><a href="#cb51-1" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
 <span id="cb51-2"><a href="#cb51-2" aria-hidden="true" tabindex="-1"></a><span class="co">#| eval: false</span></span>
 <span id="cb51-3"><a href="#cb51-3" aria-hidden="true" tabindex="-1"></a>seattle_pq <span class="sc">|&gt;</span></span>
 <span id="cb51-4"><a href="#cb51-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(CheckoutYear <span class="sc">==</span> <span class="dv">2021</span>, MaterialType <span class="sc">==</span> <span class="st">"BOOK"</span>) <span class="sc">|&gt;</span></span>
@@ -1895,9 +1807,8 @@ Note
    0.42    0.25    0.13 </code></pre>
 </div>
 </div>
-</section>
-<section id="performance-attribution" class="level3" data-number="8.4.3">
-<h3 data-number="8.4.3" class="anchored" data-anchor-id="performance-attribution"><span class="header-section-number">8.4.3</span> Performance Attribution</h3>
+</section><section id="performance-attribution" class="level3" data-number="8.4.3"><h3 data-number="8.4.3" class="anchored" data-anchor-id="performance-attribution">
+<span class="header-section-number">8.4.3</span> Performance Attribution</h3>
 <div class="callout callout-style-default callout-important callout-titled">
 <div class="callout-header d-flex align-content-center">
 <div class="callout-icon-container">
@@ -1915,18 +1826,13 @@ Note
 </ul>
 </div>
 </div>
-</section>
-</section>
-</section>
-<section id="using-duckdb-with-arrow" class="level1" data-number="9">
-<h1 data-number="9"><span class="header-section-number">9</span> Using Duckdb with Arrow</h1>
+</section></section></section><section id="using-duckdb-with-arrow" class="level1" data-number="9"><h1 data-number="9">
+<span class="header-section-number">9</span> Using Duckdb with Arrow</h1>
 <blockquote class="blockquote">
-<p>It’s very easy to turn an arrow dataset into a DuckDB database by calling <code>arrow::to_duckdb()</code>:</p>
+<p>It’s very easy to turn an arrow dataset into a DuckDB database by calling <code><a href="https://arrow.apache.org/docs/r/reference/to_duckdb.html">arrow::to_duckdb()</a></code>:</p>
 </blockquote>
 <div class="cell">
-<details open="" class="code-fold">
-<summary>Code</summary>
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb53"><pre class="sourceCode markdown code-with-copy"><code class="sourceCode markdown"><span id="cb53-1"><a href="#cb53-1" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
+<details open="" class="code-fold"><summary>Code</summary><div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb53"><pre class="sourceCode markdown code-with-copy"><code class="sourceCode markdown"><span id="cb53-1"><a href="#cb53-1" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
 <span id="cb53-2"><a href="#cb53-2" aria-hidden="true" tabindex="-1"></a>seattle_pq <span class="sc">|&gt;</span></span>
 <span id="cb53-3"><a href="#cb53-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">to_duckdb</span>() <span class="sc">|&gt;</span></span>
 <span id="cb53-4"><a href="#cb53-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(CheckoutYear <span class="sc">&gt;=</span> <span class="dv">2018</span>, MaterialType <span class="sc">==</span> <span class="st">"BOOK"</span>) <span class="sc">|&gt;</span></span>
@@ -1935,8 +1841,7 @@ Note
 <span id="cb53-7"><a href="#cb53-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">arrange</span>(<span class="fu">desc</span>(CheckoutYear), CheckoutMonth) <span class="sc">|&gt;</span></span>
 <span id="cb53-8"><a href="#cb53-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">collect</span>()</span>
 <span id="cb53-9"><a href="#cb53-9" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-</details>
-<div class="cell-output cell-output-stdout">
+</details><div class="cell-output cell-output-stdout">
 <pre><code># A tibble: 58 × 3
 # Groups:   CheckoutYear [5]
    CheckoutYear CheckoutMonth TotalCheckouts
@@ -1967,17 +1872,14 @@ Tip
 <p>The neat thing about <code>to_duckdb()</code> is that the transfer doesn’t involve any memory copying, and speaks to the goals of the arrow ecosystem: enabling seamless transitions from one computing environment to another.</p>
 </div>
 </div>
-<section id="assignment" class="level2" data-number="9.1">
-<h2 data-number="9.1" class="anchored" data-anchor-id="assignment"><span class="header-section-number">9.1</span> Assignment</h2>
+<section id="assignment" class="level2" data-number="9.1"><h2 data-number="9.1" class="anchored" data-anchor-id="assignment">
+<span class="header-section-number">9.1</span> Assignment</h2>
 <ol type="1">
 <li><p>Figure out the most popular book each year.</p></li>
 <li><p>Which author has the most books in the Seattle library system?</p></li>
 <li><p>How has checkouts of books vs ebooks changed over the last 10 years?</p></li>
-</ol>
-</section>
-</section>
-<section id="reference" class="level1" data-number="10">
-<h1 data-number="10"><span class="header-section-number">10</span> Reference</h1>
+</ol></section></section><section id="reference" class="level1" data-number="10"><h1 data-number="10">
+<span class="header-section-number">10</span> Reference</h1>
 <ul>
 <li><p><a href="https://r4ds.hadley.nz/arrow.html">R for Data Science, Ch22</a></p></li>
 <li><p>Apache Arrow (<a href="https://arrow.apache.org/" class="uri">https://arrow.apache.org/</a>)</p></li>
@@ -1986,10 +1888,7 @@ Tip
 </ul>
 
 
-</section>
-
-</main> <!-- /main -->
-<script id="quarto-html-after-body" type="application/javascript">
+</section></main><!-- /main --><script id="quarto-html-after-body" type="application/javascript">
   window.document.addEventListener("DOMContentLoaded", function (event) {
     // Ensure there is a toggle, if there isn't float one in the top right
     if (window.document.querySelector('.quarto-color-scheme-toggle') === null) {
@@ -2408,7 +2307,6 @@ Tip
   });
   </script>
 </div> <!-- /content -->
-
 
 
 

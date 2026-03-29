@@ -128,3 +128,4 @@ The data acquisition notebook on this site uses rectangling briefly to prepare r
 2.  A Google Cloud Platform account with billing enabled (setup instructions are in Notebook 2)
 3.  The R packages listed in each notebook's setup chunk — install instructions are included
 :::
+
