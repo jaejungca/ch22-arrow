@@ -32,7 +32,7 @@ execute:
   warning: false
   message: false
   echo: fenced
-  cache: true
+  cache: false # ← see discussion below about when to use cache: true vs false
   freeze: auto
 ---
 
@@ -97,7 +97,6 @@ data/
 ```{r}
 #| label: install-packages
 #| eval: true
-#| cache: false
 
 # Run this chunk once if you have not installed these packages yet.
 # After installing, you do not need to run it again.
@@ -136,7 +135,6 @@ if (length(missing_packages) > 0) {
 
 ```{r}
 #| label: load-packages
-#| cache: false
 
 library(bigrquery)
 library(DBI)
@@ -207,10 +205,10 @@ Replace `"your-actual-project-id"` in the code chunk below with your real GCP Pr
 
 # ── Replace this string with your actual GCP Project ID ──────────────────────
 # Example: "marketing-analytics-391408"
-BILLING_PROJECT <- "your-actual-project-id" # ← CHANGE THIS LINE:
+BILLING_PROJECT <- "your-actual-project-id" # ← CHANGE THIS LINE with your real project ID
 
 # ── Validate ──────────────────────────────────────────────────────────────────
-if (BILLING_PROJECT == "your-actual-project-id") {
+if (BILLING_PROJECT == "") {
   stop(
     "\n",
     "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n",
@@ -232,6 +230,11 @@ if (nchar(trimws(BILLING_PROJECT)) == 0) {
 cli::cli_alert_success("Billing project set to: {.val {BILLING_PROJECT}}")
 ```
 
+```{r}
+#| label: my-project-id
+#| echo: false
+BILLING_PROJECT <- "marketing-analytics-491507"
+```
 ------------------------------------------------------------------------
 
 ## Connect to BigQuery
@@ -241,7 +244,7 @@ cli::cli_alert_success("Billing project set to: {.val {BILLING_PROJECT}}")
 ```{r}
 #| label: authenticate
 #| eval: true
-#| cache: true
+#| cache: false
 
 # This opens a browser window asking you to sign in with your Google account.
 # After signing in once, your credentials are cached — you will not need
@@ -267,6 +270,7 @@ cli::cli_alert_info("Authenticated as: {.val {bq_user()}}")
 ```{r}
 #| label: connect
 #| eval: true
+#| cache: true
 
 # ── Connect to the public GA4 dataset ─────────────────────────────────────────
 # project  = where the PUBLIC data lives (always "bigquery-public-data")
@@ -310,6 +314,7 @@ Before downloading 90 days of data, take a moment to understand the structure an
 ```{r}
 #| label: inspect-schema
 #| eval: true
+#| cache: true
 
 # ── Inspect the schema of a single day ────────────────────────────────────────
 # tbl() creates a lazy reference — nothing is downloaded yet
@@ -341,6 +346,7 @@ These nested columns are why we need the rectangling techniques taught in the pr
 ```{r}
 #| label: check-row-counts
 #| eval: true
+#| cache: true
 
 # ── Sample a few days to understand data volume ────────────────────────────────
 sample_dates <- c(
@@ -379,6 +385,7 @@ cli::cli_alert_info(
 ```{r}
 #| label: plan-download
 #| eval: true
+#| cache: true
 
 # ── Define the three months to download ───────────────────────────────────────
 # November 2020, December 2020, January 2021
@@ -422,6 +429,7 @@ cli::cli_bullets(c(
 
 ```{r}
 #| label: create-folders
+#| cache: true
 
 # ── Create all required directories ───────────────────────────────────────────
 # fs::dir_create() is safer than base R dir.create() — it does not error If directory already exists → silently does nothing, leaves contents intact
@@ -479,6 +487,7 @@ If the code below looks unfamiliar, visit that site first and return here when y
 
 ```{r}
 #| label: helper-flatten-structs
+#| cache: true
 
 # Flatten all struct (RECORD) columns in a GA4 day's data
 #
@@ -533,6 +542,7 @@ flatten_structs <- function(data) {
 
 ```{r}
 #| label: helper-flatten-params
+#| cache: true
 
 # Flatten the event_params repeated RECORD column
 #
@@ -622,6 +632,7 @@ flatten_event_params <- function(data) {
 
 ```{r}
 #| label: helper-flatten-items
+#| cache: true
 
 #' Flatten the items repeated RECORD column
 #'
@@ -665,6 +676,7 @@ flatten_items <- function(data) {
 
 ```{r}
 #| label: confirm-helpers
+#| cache: true
 
 cli::cli_alert_success("All three helper functions are defined and ready.")
 cli::cli_bullets(c(
@@ -688,15 +700,21 @@ This is the main download process. Each iteration:
 6.  Flattens `items` and saves as Parquet
 7.  Logs the result for the summary report
 
-```{r}
+::: callout-important
+## Important Update: Remove `page_size` from `collect()`
+
+-  `page_size` was previously included in the `collect()` call to control how many rows are fetched per API request. However, with the BigQuery Storage API streaming enabled via `bigrquerystorage`, `collect()` now handles pagination automatically and efficiently without needing a `page_size` argument.
+
+```r
 #| label: download-method-update
-#| eval: false
+
 library(bigrquery)
 library(bigrquerystorage) # Activates BigQuery Storage API streaming
 
 # Inside the loop:
 raw_day <- tbl(con, tbl_name) |> collect() # page_size removed entirely
 ```
+:::
 
 ::: callout-warning
 ## Do Not Interrupt This Process
@@ -950,7 +968,6 @@ Run these checks after the download completes to confirm everything is correct b
 
 ```{r}
 #| label: verify-file-counts
-#| cache: false
 
 cli::cli_h2("Verification: File Counts")
 
@@ -994,7 +1011,6 @@ knitr::kable(
 
 ```{r}
 #| label: verify-storage
-#| cache: false
 
 cli::cli_h2("Verification: Storage Used")
 
@@ -1039,7 +1055,6 @@ cli::cli_alert_info(
 ```{r}
 #| label: verify-partitions
 #| eval: true
-#| cache: false
 
 cli::cli_h2("Verification: Partition Structure")
 
@@ -1087,7 +1102,6 @@ if (fs::dir_exists("data/ga4_partitioned")) {
 ```{r}
 #| label: verify-sample-data
 #| eval: true
-#| cache: false
 
 cli::cli_h2("Verification: Sample Data")
 
@@ -1150,7 +1164,6 @@ if (fs::dir_exists("data/ga4_items_partitioned")) {
 ```{r}
 #| label: download-summary
 #| eval: true
-#| cache: false
 
 cli::cli_h1("Download Summary")
 
@@ -1257,7 +1270,6 @@ That is all you need. No BigQuery, no authentication, no waiting.
 ```{r}
 #| label: loading-patterns
 #| eval: true
-#| cache: false
 
 library(arrow)
 library(dplyr)
@@ -1335,7 +1347,6 @@ ga4_duck |>
 ```{r}
 #| label: troubleshooting
 #| eval: false
-#| cache: false
 
 # ── Problem 1: "notFound" error ───────────────────────────────────────────────
 # Symptom: Error in bq_post(): Request couldn't be served. [notFound]
@@ -1424,9 +1435,9 @@ cli::cli_alert_info("Downloading table {1} of {92}")
 cli::cli_alert_success("Done: {scales::comma(51941)} rows saved")
 ```
 
-### Most Important Functions
+#### Most Important Functions
 
-#### 1. Status Alerts
+**1.  Status Alerts**
 
 ```{r}
 cli::cli_alert_info("Starting download...") # ℹ blue  - general info
@@ -1435,7 +1446,7 @@ cli::cli_alert_warning("Token refreshing...") # ! yellow - warning
 cli::cli_alert_danger("Download failed!") # ✖ red   - error
 ```
 
-#### 2. Section Headers
+**2. Section Headers**
 
 ```{r}
 cli::cli_h1("GA4 Download Pipeline") # Large header
@@ -1443,7 +1454,7 @@ cli::cli_h2("Processing event_params") # Medium header
 cli::cli_h3("Flattening structs") # Small header
 ```
 
-#### 3. Progress Bar for Loops
+**3. Progress Bar for Loops**
 
 ```{r}
 pb <- cli::cli_progress_bar(
@@ -1459,7 +1470,7 @@ for (i in 1:92) {
 cli::cli_progress_done(id = pb)
 ```
 
-#### 4. String Interpolation with `{}`
+**4. String Interpolation with `{}`**
 
 ```{r}
 date <- "20201101"
@@ -1470,7 +1481,7 @@ cli::cli_alert_success("Downloaded {date}: {scales::comma(rows)} rows")
 # ✔ Downloaded 20201101: 51,941 rows
 ```
 
-### Summary
+#### Summary
 
 | Function | Symbol | Use Case |
 |----------|--------|----------|
@@ -1480,3 +1491,72 @@ cli::cli_alert_success("Downloaded {date}: {scales::comma(rows)} rows")
 | `cli_alert_danger()` | ✖ | Errors and failures |
 | `cli_h1/h2/h3()` | `──` | Section separators |
 | `cli_progress_bar()` | `[====]` | Visual progress in loops |
+
+### `cache: true` vs `cache: false` in Quarto
+
+Caching saves the **results of a code chunk to disk** so it does not re-run on every render. Here is when to use each:
+
+---
+
+#### Use `cache: true` When
+
+```yaml
+#| cache: true
+```
+
+| Scenario | Example |
+|----------|---------|
+| **Slow computations** that rarely change | BigQuery downloads, model fitting |
+| **Static data processing** with fixed inputs | Reading and cleaning a fixed dataset |
+| **Expensive visualizations** | Complex ggplot with many layers |
+
+```r
+#| cache: true
+# Good candidate - slow and result never changes
+ga4_raw <- bq_table_download(tb, bigint = "numeric")
+```
+
+---
+
+#### Use `cache: false` When
+
+```yaml
+#| cache: false
+```
+
+| Scenario | Example |
+|----------|---------|
+| **duckplyr/Arrow objects** | Cannot be serialized to disk |
+| **Database connections** | `con` objects are session-specific |
+| **Random results** | `sample()`, `set.seed()` |
+| **Side effects** | Creating folders, saving files |
+| **Fast code** | No benefit from caching |
+
+```r
+#| cache: false
+# Bad candidate for caching - duckplyr object
+ga4_duck <- duckplyr::read_parquet_duckdb("data/ga4_parquet")
+```
+
+---
+
+#### General Rule of Thumb
+
+```
+Slow + stable result    → cache: true
+Fast code               → cache: false  (default)
+Database/Arrow objects  → cache: false  (always)
+Side effects            → cache: false  (always)
+```
+
+---
+
+#### Common Mistake
+
+```r
+#| cache: true   # ❌ Never cache these
+con     <- dbConnect(duckdb())           # connection = session specific
+ga4_duck <- as_duckplyr_df(ga4_raw)     # duckplyr   = cannot serialize
+ga4_arrow <- as_arrow_table(ga4_raw)    # arrow      = cannot serialize
+```
+
