@@ -208,7 +208,7 @@ Replace `"your-actual-project-id"` in the code chunk below with your real GCP Pr
 BILLING_PROJECT <- "your-actual-project-id" # ← CHANGE THIS LINE with your real project ID
 
 # ── Validate ──────────────────────────────────────────────────────────────────
-if (BILLING_PROJECT == "") {
+if (BILLING_PROJECT == "your-actual-project-id") {
   stop(
     "\n",
     "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n",
