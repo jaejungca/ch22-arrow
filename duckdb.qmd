@@ -1464,28 +1464,29 @@ DBI::dbDisconnect(con, shutdown = TRUE)
 
 ## Which to use for GA4 data?
 
-```{r}
-#| eval: false
-# Ask these questions in order:
+The choice between `open_dataset()` and `read_parquet()` depends on your specific use case, data size, and workflow needs. Here are some guidelines to help you decide:
 
-# 1. How big is the file?
-#    < 500 MB and fits in RAM  → read_parquet() is fine
-#    > 500 MB or close to RAM  → open_dataset()
+1.  How big is the file?
 
-# 2. How many files?
-#    One file                  → either works
-#    Multiple files or folder  → open_dataset() only
+    -   \<500 MB and fits in RAM → `read_parquet()` is fine
+    -   \>500 MB or close to RAM → `open_dataset()`
 
-# 3. How many columns do you need?
-#    Most or all columns       → read_parquet() is simpler
-#    Only a few columns        → open_dataset() (column pruning saves RAM)
+2.  How many files?
 
-# 4. Are you exploring or producing?
-#    Exploring unknown data    → read_parquet() (View(), summary(), hist())
-#    Building analysis pipeline → open_dataset() (lazy, memory-efficient)
+    -   One file → either works
+    -   Multiple files or folder → `open_dataset()` only
 
-# 5. Do you need the result as a tibble immediately?
-#    Yes                       → read_parquet()
-#    No — you will filter first → open_dataset() + collect()
-```
+3.  How many columns do you need?
 
+    -   Most or all columns → `read_parquet()` is simpler
+    -   Only a few columns → `open_dataset()` (column pruning saves RAM)
+
+4.  Are you exploring or producing?
+
+    -   Exploring unknown data → `read_parquet()` (`View()`, `summary()`, `hist()`)
+    -   Building analysis pipeline → `open_dataset()` (lazy, memory-efficient)
+
+5.  Do you need the result as a tibble immediately?
+
+    -   Yes → `read_parquet()`
+    -   No — you will filter first → `open_dataset()` + `collect()`

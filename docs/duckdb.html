@@ -2777,33 +2777,47 @@ Tip
 </div>
 </section></section><section id="which-to-use-for-ga4-data" class="level2" data-number="6.11"><h2 data-number="6.11" class="anchored" data-anchor-id="which-to-use-for-ga4-data">
 <span class="header-section-number">6.11</span> Which to use for GA4 data?</h2>
-<div class="cell">
-<details open="" class="code-fold"><summary>Code</summary><div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb35"><pre class="sourceCode markdown code-with-copy"><code class="sourceCode markdown"><span id="cb35-1"><a href="#cb35-1" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
-<span id="cb35-2"><a href="#cb35-2" aria-hidden="true" tabindex="-1"></a><span class="co">#| eval: false</span></span>
-<span id="cb35-3"><a href="#cb35-3" aria-hidden="true" tabindex="-1"></a><span class="co"># Ask these questions in order:</span></span>
-<span id="cb35-4"><a href="#cb35-4" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb35-5"><a href="#cb35-5" aria-hidden="true" tabindex="-1"></a><span class="co"># 1. How big is the file?</span></span>
-<span id="cb35-6"><a href="#cb35-6" aria-hidden="true" tabindex="-1"></a><span class="co">#    &lt; 500 MB and fits in RAM  → read_parquet() is fine</span></span>
-<span id="cb35-7"><a href="#cb35-7" aria-hidden="true" tabindex="-1"></a><span class="co">#    &gt; 500 MB or close to RAM  → open_dataset()</span></span>
-<span id="cb35-8"><a href="#cb35-8" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb35-9"><a href="#cb35-9" aria-hidden="true" tabindex="-1"></a><span class="co"># 2. How many files?</span></span>
-<span id="cb35-10"><a href="#cb35-10" aria-hidden="true" tabindex="-1"></a><span class="co">#    One file                  → either works</span></span>
-<span id="cb35-11"><a href="#cb35-11" aria-hidden="true" tabindex="-1"></a><span class="co">#    Multiple files or folder  → open_dataset() only</span></span>
-<span id="cb35-12"><a href="#cb35-12" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb35-13"><a href="#cb35-13" aria-hidden="true" tabindex="-1"></a><span class="co"># 3. How many columns do you need?</span></span>
-<span id="cb35-14"><a href="#cb35-14" aria-hidden="true" tabindex="-1"></a><span class="co">#    Most or all columns       → read_parquet() is simpler</span></span>
-<span id="cb35-15"><a href="#cb35-15" aria-hidden="true" tabindex="-1"></a><span class="co">#    Only a few columns        → open_dataset() (column pruning saves RAM)</span></span>
-<span id="cb35-16"><a href="#cb35-16" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb35-17"><a href="#cb35-17" aria-hidden="true" tabindex="-1"></a><span class="co"># 4. Are you exploring or producing?</span></span>
-<span id="cb35-18"><a href="#cb35-18" aria-hidden="true" tabindex="-1"></a><span class="co">#    Exploring unknown data    → read_parquet() (View(), summary(), hist())</span></span>
-<span id="cb35-19"><a href="#cb35-19" aria-hidden="true" tabindex="-1"></a><span class="co">#    Building analysis pipeline → open_dataset() (lazy, memory-efficient)</span></span>
-<span id="cb35-20"><a href="#cb35-20" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb35-21"><a href="#cb35-21" aria-hidden="true" tabindex="-1"></a><span class="co"># 5. Do you need the result as a tibble immediately?</span></span>
-<span id="cb35-22"><a href="#cb35-22" aria-hidden="true" tabindex="-1"></a><span class="co">#    Yes                       → read_parquet()</span></span>
-<span id="cb35-23"><a href="#cb35-23" aria-hidden="true" tabindex="-1"></a><span class="co">#    No — you will filter first → open_dataset() + collect()</span></span>
-<span id="cb35-24"><a href="#cb35-24" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-</details>
-</div>
+<p>The choice between <code>open_dataset()</code> and <code>read_parquet()</code> depends on your specific use case, data size, and workflow needs. Here are some guidelines to help you decide:</p>
+<ol type="1">
+<li>
+<p>How big is the file?</p>
+<ul>
+<li>&lt;500 MB and fits in RAM → <code>read_parquet()</code> is fine</li>
+<li>&gt;500 MB or close to RAM → <code>open_dataset()</code>
+</li>
+</ul>
+</li>
+<li>
+<p>How many files?</p>
+<ul>
+<li>One file → either works</li>
+<li>Multiple files or folder → <code>open_dataset()</code> only</li>
+</ul>
+</li>
+<li>
+<p>How many columns do you need?</p>
+<ul>
+<li>Most or all columns → <code>read_parquet()</code> is simpler</li>
+<li>Only a few columns → <code>open_dataset()</code> (column pruning saves RAM)</li>
+</ul>
+</li>
+<li>
+<p>Are you exploring or producing?</p>
+<ul>
+<li>Exploring unknown data → <code>read_parquet()</code> (<code><a href="https://rdrr.io/r/utils/View.html">View()</a></code>, <code><a href="https://rdrr.io/r/base/summary.html">summary()</a></code>, <code><a href="https://rdrr.io/r/graphics/hist.html">hist()</a></code>)</li>
+<li>Building analysis pipeline → <code>open_dataset()</code> (lazy, memory-efficient)</li>
+</ul>
+</li>
+<li>
+<p>Do you need the result as a tibble immediately?</p>
+<ul>
+<li>Yes → <code>read_parquet()</code>
+</li>
+<li>No — you will filter first → <code>open_dataset()</code> + <code>collect()</code>
+</li>
+</ul>
+</li>
+</ol>
 
 
 </section></section></main><!-- /main --><script id="quarto-html-after-body" type="application/javascript">
