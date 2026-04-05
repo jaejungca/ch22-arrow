@@ -4,6 +4,7 @@ project:
   render: 
     - "*.qmd"
     - "!draft-*.qmd"
+    - "!Jung-*.qmd"
 
 website: 
   title: "Arrow and DuckDB"

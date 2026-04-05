@@ -9,3 +9,4 @@ test.R
 /.quarto/
 **/*.quarto_ipynb
 draft*.qmd
+Jung-*.qmd

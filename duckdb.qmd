@@ -143,6 +143,98 @@ result <- dbGetQuery(con, "
 They work beautifully together — DuckDB can read Arrow tables directly and query Parquet files on disk, and you can pass results back to Arrow or collect into R.
 :::
 
+## Should you use DuckDB always when working with Arrow and Parquet?
+
+> Not necessarily. It depends on your workflow and needs:
+
+-   If you just need to read a Parquet file into R and do simple transformations, `arrow::read_parquet()` might be sufficient.
+
+-   If you want to do complex SQL queries, joins, or aggregations on large datasets without loading them into memory, DuckDB is the way to go.
+
+-   If you want to do in-memory transformations with dplyr and then collect results, you can use DuckDB as a dplyr backend.
+
+-   If you want to create a persistent analytical database for repeated queries, you can write your data into a DuckDB file and query it directly.
+
+-   The beauty of this stack is that you can choose the right tool for each step of your workflow, and they integrate seamlessly.
+
+::: callout-tip
+### Specific Question for GA4 Data
+
+**Question**: When pulling GA4 data from BigQuery, saving the data to local drive in parquet file with Arrow, and reading the data and apply dplyr to do analysis, do I also need to pass Arrow table to DuckDB? What is pros and cons for using DuckDB in this situation?
+
+**Answer**:
+
+-   **No, you don't need to pass the Arrow table to DuckDB.** Your described stack — BigQuery → Parquet → Arrow → dplyr — is already complete and functional. DuckDB is optional, but it has real tradeoffs worth understanding.
+
+-   It depends on the size of your GA4 data and the complexity of your analysis.
+
+    -   If your dataset is small enough to fit comfortably in memory (e.g., a few hundred thousand rows), you can read the Parquet file directly into R with `arrow::read_parquet()` and use dplyr for your analysis without needing DuckDB.
+
+    -   However, if your GA4 dataset is larger (e.g., millions of rows) or if you want to perform complex SQL queries, joins, or aggregations that would be inefficient in R, then using DuckDB to query the Parquet file directly can be a great option.
+
+        -   DuckDB can read the Parquet file without loading it entirely into memory, allowing you to work with larger datasets and more complex queries efficiently.
+
+-   For GA4 data, which is often large and stored in Parquet format, using DuckDB to query the Parquet files directly is often the most efficient approach.
+
+    -   You can write SQL queries that read only the columns you need and perform complex aggregations without ever loading the entire dataset into memory.
+:::
+
+## Pros & Cons of Adding DuckDB
+
+### Pros
+
+| Benefit | Detail |
+|------------------------------------|------------------------------------|
+| **Broader SQL coverage** | DuckDB supports window functions, `QUALIFY`, `PIVOT`, complex CTEs — some of which `{arrow}`'s dplyr backend doesn't yet support |
+| **Query Parquet directly** | DuckDB can scan Parquet files natively without loading into Arrow first — skipping the intermediate step |
+| **Zero-copy Arrow integration** | DuckDB and Arrow share memory via Apache Arrow IPC — passing between them is nearly free |
+| **Multi-file / partitioned datasets** | DuckDB handles `read_parquet('path/*.parquet')` elegantly, great for partitioned GA4 exports |
+| **Better error messages** | DuckDB SQL errors are often clearer than Arrow's dplyr translation errors |
+| **Joins across sources** | Easily join Parquet files with in-memory R data frames or other DuckDB tables |
+
+### Cons
+
+| Drawback | Detail |
+|------------------------------------|------------------------------------|
+| **Extra dependency** | Adds `{duckdb}` + `{dbplyr}` to your stack for marginal gain if your dplyr queries are simple |
+| **Not needed for simple workflows** | Filter → group_by → summarise → mutate all work fine directly on Arrow |
+| **dbplyr translation gaps** | Some R/dplyr idioms don't translate cleanly to DuckDB SQL either |
+| **Context switching** | Mixing dplyr-on-Arrow and dplyr-on-DuckDB in the same project can be confusing |
+| **Collect() discipline** | You must remember to `collect()` to get results back into R, same as with Arrow |
+
+## Practical Recommendation
+
+| Your Situation | Recommendation |
+|------------------------------------|------------------------------------|
+| Simple aggregations, filters, summaries on GA4 data | **Stick with Arrow + dplyr** — no DuckDB needed |
+| Need window functions (e.g., session ranking, lag/lead) | **Add DuckDB** — Arrow's dplyr backend lacks full window support |
+| Working with many partitioned Parquet files | **Use DuckDB directly on Parquet** — skip Arrow as intermediate |
+| Joining GA4 data with other tables | **DuckDB** handles this more flexibly |
+
+### Shortcut: Query Parquet Directly with DuckDB (skipping Arrow)
+
+```{r}
+#| eval: false
+library(duckdb)
+library(dplyr)
+
+con <- dbConnect(duckdb())
+duckdb_register(con, "ga4", arrow_table)  # zero-copy if you have Arrow already
+
+# OR skip Arrow entirely:
+tbl(con, "read_parquet('ga4_data.parquet')") |>
+  filter(event_name == "page_view") |>
+  group_by(user_pseudo_id) |>
+  summarise(sessions = n()) |>
+  collect()
+```
+
+::: callout-tip
+### Final Note:
+
+In short: **Arrow + dplyr is sufficient for most GA4 analysis**. Reach for DuckDB when you hit the edges of Arrow's dplyr translation — especially window functions or complex multi-file queries.
+:::
+
 # Setup: Connecting to BigQuery
 
 ## Authentication and Connection
@@ -188,7 +280,7 @@ dbListTables(con)
 
 ## Downloading and Caching the Data
 
-> GA4 tables are large. For this workshop we download **one week of events** (\~150,000 rows) once, then save locally to avoid re-querying BigQuery on every render. 
+> GA4 tables are large. For this workshop we download **one week of events** (\~150,000 rows) once, then save locally to avoid re-querying BigQuery on every render.
 
 ```{r}
 #| label: download-data
@@ -222,11 +314,11 @@ ga4_raw <- query_result |>
   )
 ```
 
-:::callout-tip
+::: callout-tip
 Since the data is relatively small size, we have three options to save the data as you can see below
 
--   RDS, 
--   One Parquet file, 
+-   RDS,
+-   One Parquet file,
 -   Partitioned Parquet files.
 :::
 
@@ -260,6 +352,7 @@ library(arrow)
 write_parquet(ga4_raw, "data/ga4_raw.parquet")
 message("Saved to data/ga4_raw.parquet")
 ```
+
 ```{r}
 #| label: load-parquet
 #| eval: false
@@ -270,6 +363,7 @@ ga4 <- read_parquet("data/ga4_raw.parquet")
 ### Options 3: Saving as Partitioned Parquet
 
 > Also no iteration needed — write_dataset() handles the partitioning automatically:
+
 ```{r}
 #| label: save-partitioned
 #| eval: false
@@ -284,8 +378,7 @@ ga4_raw |>
 message("Saved partitioned Parquet to data/ga4_parquet/")
 ```
 
-> **Note**: `write_dataset()` automatically creates one subfolder per `event_date`,
-> e.g. `data/ga4_parquet/event_date=20210101/part-0.parquet`
+> **Note**: `write_dataset()` automatically creates one subfolder per `event_date`, e.g. `data/ga4_parquet/event_date=20210101/part-0.parquet`
 
 ```{r}
 #| label: load-partitioned
@@ -949,9 +1042,7 @@ ga4_ds |>
 
 ## The Biggest Difference: Multiple Files
 
-This is where `open_dataset()` becomes **dramatically** more powerful.
-`read_parquet()` reads one file. `open_dataset()` reads many files as
-if they were one:
+This is where `open_dataset()` becomes **dramatically** more powerful. `read_parquet()` reads one file. `open_dataset()` reads many files as if they were one:
 
 ```{r}
 #| eval: false
@@ -1071,7 +1162,6 @@ ga4_partitioned$schema
 | Multiple file formats? | Yes (Parquet, CSV, Arrow) | Parquet only |
 | Use with dplyr? | Yes, lazily | Yes, but already in memory |
 | Best for | Large, partitioned, multi-file data | Small-to-medium single files |
-
 
 ### Detailed Feature Comparison Table
 
@@ -1374,8 +1464,8 @@ DBI::dbDisconnect(con, shutdown = TRUE)
 
 ## Which to use for GA4 data?
 
-
-```{{r}}
+```{r}
+#| eval: false
 # Ask these questions in order:
 
 # 1. How big is the file?
@@ -1398,3 +1488,4 @@ DBI::dbDisconnect(con, shutdown = TRUE)
 #    Yes                       → read_parquet()
 #    No — you will filter first → open_dataset() + collect()
 ```
+
